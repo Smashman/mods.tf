@@ -30,3 +30,9 @@ body {
 	font-family:'TF2 Secondary';
 	font-size:2em;
 }
+.soon a {
+    color:#F5E7DE;
+}
+.soon a:hover {
+    color:#DEC0AD;
+}
