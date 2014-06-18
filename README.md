@@ -9,4 +9,5 @@ The website source for mods.tf, powered by Flask - currently in the development 
 
 ## Set-up
 
+* ```pip install -r requirements.txt```
 * ```bower install```

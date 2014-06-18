@@ -21,5 +21,4 @@ bundles = {
 assets = Environment(app)
 assets.load_path = [abspath(join(app.root_path, 'assets'))]
 assets.cache = abspath(join(app.root_path, 'assets/cache'))
-
 assets.register(bundles)
