@@ -1,7 +1,9 @@
 <html>
 <head>
 <title>Mods.tf</title>
-<link href="{{ url_for('static', filename='style/main.css') }}" rel="stylesheet">
+    {% assets "main_css" %}
+        <link href="{{ ASSET_URL }}" rel="stylesheet">
+    {% endassets %}
 </head>
 <body>
 	<div id="tron">

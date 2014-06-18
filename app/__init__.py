@@ -10,3 +10,5 @@ if app.debug:
     toolbar = DebugToolbarExtension(app)
 
 import views
+
+from assets import assets

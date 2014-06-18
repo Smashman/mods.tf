@@ -1,0 +1,45 @@
+@import ../lib/bourbon/dist/_bourbon
+
+$text-color: #f5e7de
+$background-color: #2e2a28
+
++font-face("TF2 Secondary", "http://i1.theportalwiki.net/fonts/tf2secondary-webfont")
++font-face("TF2 Build", "http://i1.theportalwiki.net/fonts/tf2build-webfont")
+
+html, body
+  margin: 0
+  padding: 0
+  height: 100%
+
+body
+  color: $text-color
+  background: $background-color
+
+a
+  color: $text-color
+
+  &:hover
+    color: darken($text-color,15%)
+
+#tron
+  width: 100%
+  min-width: 350px
+  max-width: 800px
+  margin: auto
+  position: relative
+  top: 20%
+
+.main, .soon
+  width: 100%
+  text-align: center
+
+.main
+  font-family: "TF2 Build"
+  font-size: 5em
+  color: #ef9849
+  text-shadow: 4px 4px 2px rgba(55, 55, 55, 1)
+
+.soon
+  font:
+    family: "TF2 Secondary"
+    size: 2em
