@@ -1,5 +1,4 @@
-$alert-types: success info warning danger
-$alert-colors: #518F3F #3F799B #C28A2E #A63E38
+$alerts: (success: #518F3F, info: #3F799B, warning: #C28A2E, danger: #A63E38)
 
 .alert
   padding: 15px
@@ -7,9 +6,7 @@ $alert-colors: #518F3F #3F799B #C28A2E #A63E38
   border: 1px solid transparent
   border-radius: 4px
 
-@for $i from 1 to length($alert-types)+1
-  $alert-type: nth($alert-types, $i)
-  $alert-color: nth($alert-colors, $i)
+@each $alert-type, $alert-color in $alerts
   .alert-#{$alert-type}
     color: lighten($alert-color, 50%)
     background: $alert-color
