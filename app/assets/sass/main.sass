@@ -1,45 +1,67 @@
 @import ../lib/bourbon/dist/_bourbon
 
-$text-color: #f5e7de
-$background-color: #2e2a28
+$alert-types: success info warning danger
+$alert-colors: #518F3F #3F799B #C28A2E #A63E38
 
-+font-face("TF2 Secondary", "http://i1.theportalwiki.net/fonts/tf2secondary-webfont")
-+font-face("TF2 Build", "http://i1.theportalwiki.net/fonts/tf2build-webfont")
+$text-color: #e6e6e6
+$background-color: #312e29
+$orange: #f3732d
+
++font-face("Neris Light", "../fonts/nerislight/nerislight-webfont")
 
 html, body
   margin: 0
   padding: 0
   height: 100%
 
+*
+  @include box-sizing(border-box)
+  &:before, &:after
+    @include box-sizing(border-box)
+
+.cf
+  *zoom: 1
+  &:before, &:after
+    content: " "
+    display: table
+  &:after
+    clear: both
+
 body
   color: $text-color
   background: $background-color
+  min-width: 800px
+  font:
+    family: Neris Light, Helvetica Neue, Helvetica, Arial, sans-serif
+
+.logo
+  display: block
+  margin: 0 auto
+  width: 200px
+  height: 57px
+  background: url('../images/mods_tf_logo.png') no-repeat center
+
+.header
+  border-bottom: 6px solid $orange
+  padding: 29px 60px
+  margin-bottom: 1em
+  $number_of_backgrounds: 2
+
+  @for $bg from 1 to $number_of_backgrounds+1
+    &.alpine_0#{$bg}
+      background: url('../images/headers/alpine_0#{$bg}.png') no-repeat center
+
+.container
+  max-width: 1000px
+  margin: 0 auto
+  padding: 0 15px
 
 a
   color: $text-color
+  text-decoration: none
 
   &:hover
     color: darken($text-color,15%)
 
-#tron
-  width: 100%
-  min-width: 350px
-  max-width: 800px
-  margin: auto
-  position: relative
-  top: 20%
-
-.main, .soon
-  width: 100%
-  text-align: center
-
-.main
-  font-family: "TF2 Build"
-  font-size: 5em
-  color: #ef9849
-  text-shadow: 4px 4px 2px rgba(55, 55, 55, 1)
-
-.soon
-  font:
-    family: "TF2 Secondary"
-    size: 2em
+@import flashes.sass
+@import steam.sass

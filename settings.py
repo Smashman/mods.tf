@@ -1,3 +1,2 @@
-DEBUG = False
-SECRET_KEY = ''  # Required for Flask-DebugToolbar
 SASS_STYLE = 'compressed'
+DEBUG_TB_INTERCEPT_REDIRECTS = False

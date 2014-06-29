@@ -3,4 +3,5 @@ instance/
 *.py[cod]
 app/assets/lib
 app/assets/cache
-app/static/*
+app/static/css/*
+app/static/js/*

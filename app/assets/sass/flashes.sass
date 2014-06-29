@@ -1,0 +1,13 @@
+.alert
+  padding: 15px
+  margin-bottom: 1em
+  border: 1px solid transparent
+  border-radius: 4px
+
+@for $i from 1 to length($alert-types)+1
+  $alert-type: nth($alert-types, $i)
+  $alert-color: nth($alert-colors, $i)
+  .alert-#{$alert-type}
+    color: lighten($alert-color, 50%)
+    background: $alert-color
+    border-color: darken($alert-color, 20%)
