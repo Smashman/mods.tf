@@ -60,6 +60,12 @@ def logout():
     flash(u"You are now logged out.")
     return redirect(oid.get_next_url())
 
-@users.route('/<int:user_id>')
+
+@users.route('/<int:user_id>/')
 def user_page(user_id):
-    return "user_page for {}".format(user_id)
+    return render_template('construction.html')
+
+
+@users.route('/<int:user_id>/settings/')
+def user_settings(user_id):
+    return render_template('construction.html')

@@ -1,33 +1,30 @@
 .steam_block
   position: relative
-  float: right
+  float: left
   padding: 8px
   border-radius: 4px
   text-align: left
-  background: darken($background-color, 4%)
-  &:hover
-    color: inherit
-    background: darken($background-color, 8%)
-  &.active
-    box-shadow: inset 0 0 10px #000000
+
+  & div
+    display: inline-block
+    position: relative
+    line-height: 36px
+    overflow: hidden
 
   & .iconholder
-    background: $orange
+    background: $mods_tf-orange
     height: 40px
     width: 40px
     padding: 4px
-    position: relative
     float: left
     border-radius: 3px
 
   & .name
-    overflow: hidden
     white-space: nowrap
     text-overflow: ellipsis
-    position: relative
     max-width: 160px
     padding-left: 5px
-    line-height: 40px
 
 .steam_login
   float: right
+  margin-top: 7px

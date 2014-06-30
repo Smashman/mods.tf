@@ -6,6 +6,25 @@ $alerts: (success: #518F3F, info: #3F799B, warning: #C28A2E, danger: #A63E38)
   border: 1px solid transparent
   border-radius: 4px
 
+.alert .close
+  padding: 0
+  cursor: pointer
+  background: transparent
+  border: 0
+  -webkit-appearance: none
+  margin: 0
+  float: right
+  font-size: 21px
+  font-weight: bold
+  color: #000000
+  text-shadow: 0 1px 0 #ffffff
+  opacity: 0.2
+  text-decoration: none
+  line-height: 1
+  &:hover
+    opacity: 0.5
+    
+
 @each $alert-type, $alert-color in $alerts
   .alert-#{$alert-type}
     color: lighten($alert-color, 50%)

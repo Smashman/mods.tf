@@ -1,8 +1,8 @@
 @import ../lib/bourbon/dist/_bourbon
 
-$text-color: #e6e6e6
-$background-color: #312e29
-$orange: #f3732d
+$mods_tf-text-color: #e6e6e6
+$mods_tf-background-color: #312e29
+$mods_tf-orange: #f3732d
 
 +font-face("Neris Light", "../fonts/nerislight/nerislight-webfont")
 
@@ -25,8 +25,8 @@ html, body
     clear: both
 
 body
-  color: $text-color
-  background: $background-color
+  color: $mods_tf-text-color
+  background: $mods_tf-background-color
   min-width: 800px
   font:
     family: Neris Light, Helvetica Neue, Helvetica, Arial, sans-serif
@@ -39,14 +39,15 @@ body
   background: url('../images/mods_tf_logo.png') no-repeat center
 
 .header
-  border-bottom: 6px solid $orange
+  border-bottom: 6px solid $mods_tf-orange
   padding: 29px 60px
   margin-bottom: 1em
-  $number_of_backgrounds: 2
+  max-height: 125px
 
-  @for $bg from 1 to $number_of_backgrounds+1
-    &.alpine_0#{$bg}
-      background: url('../images/headers/alpine_0#{$bg}.png') no-repeat center
+  $number_of_backgrounds: 2
+  @for $bg_num from 0 to $number_of_backgrounds
+    &.alpine_#{$bg_num}
+      background: url('../images/headers/bg_#{$bg_num}.png') no-repeat center
 
 .container
   max-width: 1000px
@@ -54,11 +55,15 @@ body
   padding: 0 15px
 
 a
-  color: $text-color
+  color: $mods_tf-text-color
   text-decoration: none
 
   &:hover
-    color: darken($text-color,15%)
+    color: darken($mods_tf-text-color,15%)
+
+.construction
+  text-align: center
 
 @import alerts.sass
 @import steam.sass
+@import header.sass

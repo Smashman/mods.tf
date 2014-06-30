@@ -6,12 +6,16 @@
     {% assets "main_css" %}
     <link href="{{ ASSET_URL }}" rel="stylesheet">
     {% endassets %}
+    {% assets "main_js" %}
+    <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
 </head>
 <body>
 {% include "header.html" %}
 <div class="container">
     {% for category, message in get_flashed_messages(with_categories=true) %}
         <div class="flash alert {{ 'alert-' + category if category != 'message' else 'alert-info'}}">
+        <button type="button" class="close">×</button>
             {{message}}
         </div>
     {% endfor %}

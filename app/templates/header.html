@@ -1,9 +1,17 @@
 {% import "macros/macros.html" as macros %}
-<div class="header alpine_{{ ['01', '02'] | random }} cf">
+<div class="header alpine_{{ range(2) | random }} cf">
     {% if current_user.is_authenticated() %}
-        {{ macros.steam_block(current_user) }}
+        {{ macros.header_steam_block(current_user) }}
+        <ul class="dropdown-menu">
+            <li><a href="{{ url_for('users.user_page', user_id=current_user.account_id) }}">Profile</a></li>
+            <li><a href="{{ url_for('users.user_settings', user_id=current_user.account_id) }}">Settings</a></li>
+            <li class="spacer"></li>
+            <li><a href="{{ url_for('users.logout') }}">Logout</a></li>
+        </ul>
     {% else %}
         <a class="steam_login" href="{{ url_for("users.login") }}"><img src="{{ url_for('static', filename='images/sits_large_noborder.png') }}" alt="Sign in with Steam"/></a>
     {% endif %}
     <a class="logo" href="{{ url_for('index') }}"></a>
 </div>
+{% if current_user.is_authenticated() %}
+{% endif %}
