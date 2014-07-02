@@ -15,7 +15,7 @@ def index():
         },
         {
             "name":"engi_banditana",
-            "author":"Spark Wire, R&#9650;in, Metabolic",
+            "author":u"Spark Wire, R\u25B2in, Metabolic",
             "pretty_name":"The Farmer's Collective",
             "mod_class": "engineer",
             "size":"small"
