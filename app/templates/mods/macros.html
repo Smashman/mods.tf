@@ -1,0 +1,10 @@
+{% macro mod_block(mod) -%}
+    <a href="#mods" class="mod{{ " %s" % mod.classes if mod.classes }}">
+        <div class="mod_class {{ mod.mod_class }}"></div>
+        <div class="info">
+            <div class="authors">{{ mod.author }}</div>
+            <div class="name">{{ mod.pretty_name }}</div>
+        </div>
+        <img src="{{ url_for('mods.mod_image', name=mod.name, img_id=1) }}" />
+    </a>
+{%- endmacro %}

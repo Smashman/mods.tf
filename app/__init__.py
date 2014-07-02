@@ -27,8 +27,10 @@ import views
 
 # Blueprints
 from app.users.views import users as users_blueprint
+from app.mods.views import mods as mods_blueprint
 
 app.register_blueprint(users_blueprint)
+app.register_blueprint(mods_blueprint)
 
 # Assets
 from assets import assets

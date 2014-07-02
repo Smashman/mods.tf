@@ -63,9 +63,9 @@ def logout():
 
 @users.route('/<int:user_id>/')
 def user_page(user_id):
-    return render_template('construction.html')
+    return render_template('construction.html', title="Under Construction")
 
 
 @users.route('/<int:user_id>/settings/')
 def user_settings(user_id):
-    return render_template('construction.html')
+    return render_template('construction.html', title="Under Construction")

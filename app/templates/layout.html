@@ -2,25 +2,26 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>Mods.tf</title>
+    <title>mods.tf{{ " - " if title }}{{ title }}</title>
     {% assets "main_css" %}
-    <link href="{{ ASSET_URL }}" rel="stylesheet">
-    {% endassets %}
-    {% assets "main_js" %}
-    <script src="{{ ASSET_URL }}"></script>
+        <link href="{{ ASSET_URL }}" rel="stylesheet">
     {% endassets %}
 </head>
 <body>
-{% include "header.html" %}
-<div class="container">
-    {% for category, message in get_flashed_messages(with_categories=true) %}
-        <div class="flash alert {{ 'alert-' + category if category != 'message' else 'alert-info'}}">
-        <button type="button" class="close">×</button>
-            {{message}}
+    {% include "header.html" %}
+        <div class="container cf">
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+                <div class="flash alert {{ 'alert-' + category if category != 'message' else 'alert-info'}}">
+                <button type="button" class="close">×</button>
+                    {{message}}
+                </div>
+            {% endfor %}
+            {% block content %}
+            {% endblock %}
         </div>
-    {% endfor %}
-    {% block content %}
-    {% endblock %}
-</div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    {% assets "main_js" %}
+        <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
 </body>
 </html>

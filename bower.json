@@ -2,7 +2,7 @@
     "name": "mods.tf",
     "private": true,
     "dependencies": {
-        "bourbon": ">4.0.0",
-        "jquery": "~1.11.1"
+        "bourbon": "~4.0.0",
+        "normalize-css": "~3.0.1"
     }
 }

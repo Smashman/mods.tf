@@ -3,8 +3,10 @@
 $mods_tf-text-color: #e6e6e6
 $mods_tf-background-color: #312e29
 $mods_tf-orange: #f3732d
+$mods_tf-fonts: Neris Light, Helvetica Neue, Helvetica, Arial, sans-serif
+$mods_tf-classes: scout soldier pyro demo heavy engineer medic sniper spy
 
-+font-face("Neris Light", "../fonts/nerislight/nerislight-webfont")
++font-face("Neris Light", "../fonts/neris-light/Neris-Light-webfont")
 
 html, body
   margin: 0
@@ -17,19 +19,14 @@ html, body
     @include box-sizing(border-box)
 
 .cf
-  *zoom: 1
-  &:before, &:after
-    content: " "
-    display: table
-  &:after
-    clear: both
+  +clearfix
 
 body
   color: $mods_tf-text-color
   background: $mods_tf-background-color
   min-width: 800px
   font:
-    family: Neris Light, Helvetica Neue, Helvetica, Arial, sans-serif
+    family: $mods_tf-fonts
 
 .logo
   display: block
@@ -38,21 +35,11 @@ body
   height: 57px
   background: url('../images/mods_tf_logo.png') no-repeat center
 
-.header
-  border-bottom: 6px solid $mods_tf-orange
-  padding: 29px 60px
-  margin-bottom: 1em
-  max-height: 125px
-
-  $number_of_backgrounds: 2
-  @for $bg_num from 0 to $number_of_backgrounds
-    &.alpine_#{$bg_num}
-      background: url('../images/headers/bg_#{$bg_num}.png') no-repeat center
-
 .container
   max-width: 1000px
   margin: 0 auto
   padding: 0 15px
+  position: relative
 
 a
   color: $mods_tf-text-color
@@ -67,3 +54,4 @@ a
 @import alerts.sass
 @import steam.sass
 @import header.sass
+@import mods.sass

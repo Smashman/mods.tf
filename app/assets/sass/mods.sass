@@ -1,0 +1,49 @@
+=overflow_ellipse
+  overflow: hidden
+  text-overflow: ellipsis
+  white-space: nowrap
+
++font-face("Neris SemiBold", "../fonts/neris-semibold/Neris-SemiBold-webfont")
+
+.mod
+  position: relative
+  float: left
+  &:hover
+    color: inherit
+
+  & .info
+    position: absolute
+    width: 100%
+    bottom: 0
+    background: transparentize($mods_tf-orange, 0.7)
+    padding: 15px
+    
+    & .name
+      +overflow_ellipse()
+      font:
+        size: golden-ratio(16px, 1)
+        family: Neris SemiBold, $mods_tf-fonts
+
+    & .authors
+      +overflow_ellipse()
+
+  & .mod_class
+    width: 80px
+    height: 80px
+    background-image: url('../images/class_icons.png')
+    +position(absolute, 10px 10px null null)
+
+    $mods_tf-class-icon-width: 80
+    @for $i from 0 to length($mods_tf-classes)
+      $mods_tf-class: nth($mods_tf-classes, $i+1)
+      &.#{$mods_tf-class}
+        background-position: -#{$i * $mods_tf-class-icon-width}px
+
+
+
+  & img
+    display: block
+    max-width: 500px
+  &.small
+    & img
+      max-width: 250px
