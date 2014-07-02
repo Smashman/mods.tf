@@ -4,7 +4,7 @@ $mods_tf-text-color: #e6e6e6
 $mods_tf-background-color: #312e29
 $mods_tf-orange: #f3732d
 $mods_tf-fonts: Neris Light, Helvetica Neue, Helvetica, Arial, sans-serif
-$mods_tf-classes: scout soldier pyro demo heavy engineer medic sniper spy
+$mods_tf-classes: all-class scout soldier pyro demo heavy engineer medic sniper spy
 
 +font-face("Neris Light", "../fonts/neris-light/Neris-Light-webfont")
 
@@ -23,8 +23,8 @@ html, body
 
 body
   color: $mods_tf-text-color
+  min-width: 1000px
   background: $mods_tf-background-color
-  min-width: 800px
   font:
     family: $mods_tf-fonts
 
@@ -36,9 +36,9 @@ body
   background: url('../images/mods_tf_logo.png') no-repeat center
 
 .container
-  max-width: 1000px
+  width: 1720px
   margin: 0 auto
-  padding: 0 15px
+  padding: 0 20px
   position: relative
 
 a

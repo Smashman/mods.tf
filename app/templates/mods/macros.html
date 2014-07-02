@@ -1,9 +1,16 @@
 {% macro mod_block(mod) -%}
-    <a href="#mods" class="mod{{ " %s" % mod.classes if mod.classes }}">
+    <a href="#mods" class="mod {{ mod.size }}">
         <div class="mod_class {{ mod.mod_class }}"></div>
         <div class="info">
-            <div class="authors">{{ mod.author }}</div>
+            <div class="authors">{{ mod.author |safe}}</div>
             <div class="name">{{ mod.pretty_name }}</div>
+            <div class="spacer"></div>
+            <div class="stats">
+            <ul>
+                <li>{{ mod.downloads | default("0") }}<span>Downloads</span></li>
+                <li>{{ mod.replacements | default("0") }}<span>Replacements</span></li>
+            </ul>
+            </div>
         </div>
         <img src="{{ url_for('mods.mod_image', name=mod.name, img_id=1) }}" />
     </a>

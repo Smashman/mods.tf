@@ -7,14 +7,33 @@ def index():
     return render_template('index.html', mods=[
         {
             "name":"arctic_aviator",
-            "author":"NeoDement, Kibble, NassimO, BANG!, void~, BADGERPIG, Frying Dutchman",
-            "pretty_name":"Arctic Aviator",
-            "mod_class": "heavy"
-        },
-        {
-            "name":"arctic_aviator",
             "author":"NeoDement, Kibble",
             "pretty_name":"Arctic Aviator",
-            "classes":"small"
+            "mod_class": "all-class",
+            "downloads": "242",
+            "replacements": "53"
+        },
+        {
+            "name":"engi_banditana",
+            "author":"Spark Wire, R&#9650;in, Metabolic",
+            "pretty_name":"The Farmer's Collective",
+            "mod_class": "engineer",
+            "size":"small"
+        },
+        {
+            "name":"battle_bowler",
+            "author":"donhonk, Sky, Metabolic",
+            "pretty_name":"Battle Bowler",
+            "mod_class": "demo",
+            "size":"small",
+            "downloads": "242",
+            "replacements": "53"
+        },
+        {
+            "name":"disco_shirt",
+            "author":"NeoDement, Spark Wire, Square",
+            "pretty_name":"Groovy Garment",
+            "mod_class": "demo",
+            "size":"small"
         }
     ])
