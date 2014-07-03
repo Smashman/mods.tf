@@ -1,5 +1,5 @@
 Flask==0.10.1
-Flask-Assets==0.10.dev
+Flask-Assets==0.10
 Flask-DebugToolbar==0.9.0
 Flask-Login==0.2.11
 Flask-OpenID==1.2.1
@@ -17,4 +17,3 @@ python-openid==2.2.5
 steamodd==4.10
 webassets==0.10
 wsgiref==0.1.2
--e git+https://github.com/Smashman/flask-assets.git#egg=flask-assets

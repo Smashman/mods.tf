@@ -1,6 +1,6 @@
 {% macro mod_block(mod) -%}
-    <a href="#mods" class="mod {{ mod.size }}">
-        <div class="mod_class {{ mod.mod_class }}"></div>
+    <a href="{{ url_for('mods.mod_page', name=mod.name) }}" class="mod {{ mod.size }}">
+        <div class="mod_class {{ mod.mod_class }}" title="{{ mod.mod_class | capitalize }}"></div>
         <div class="info">
             <div class="authors">{{ mod.author }}</div>
             <div class="name">{{ mod.pretty_name }}</div>

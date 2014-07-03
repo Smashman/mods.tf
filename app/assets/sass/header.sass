@@ -1,8 +1,11 @@
 .header
   border-bottom: 6px solid $mods_tf-orange
-  padding: 29px 60px
+  padding: 30px 60px
   margin-bottom: 1em
   max-height: 125px
+
+  &.minimised
+    padding: 5px 60px
 
   $number_of_backgrounds: 5
   @for $bg_num from 0 to $number_of_backgrounds
@@ -64,3 +67,7 @@
 
   & .container
     max-width: 1600px
+    @each $mods_tf-container-width in $mods_tf-container-widths
+      @media (min-width: #{$mods_tf-container-width}px)
+        $mods_tf-container-width: $mods_tf-container-width - 120
+        width: #{$mods_tf-container-width}px
