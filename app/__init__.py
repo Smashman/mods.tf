@@ -29,6 +29,9 @@ import views
 from app.users.views import users as users_blueprint
 from app.mods.views import mods as mods_blueprint
 
+# TF2 Schema
+from app.tf2.models import TF2Item, TF2EquipRegion, TF2BodyGroup
+
 app.register_blueprint(users_blueprint)
 app.register_blueprint(mods_blueprint)
 

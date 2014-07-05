@@ -5,3 +5,4 @@ app/assets/lib
 app/assets/cache
 app/static/css/*
 app/static/js/*
+alembic.ini
