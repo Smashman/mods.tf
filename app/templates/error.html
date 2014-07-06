@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="center">
+        <h1>{{ error.code }}</h1>
+        <img src="{{ url_for('static', filename='images/error_{}.png'.format(error.code)) }}" />
+        {% if error.quote %}
+            <div class="error_quote">{{ error.quote | safe }}</div>
+        {% endif %}
+        <p class="error_description">{{ error.description | safe }}</p>
+    </div>
+{% endblock %}
