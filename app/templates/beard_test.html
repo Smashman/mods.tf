@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block content %}
+    {%- for beard in beards -%}
+        <div>{{ "The " if beard.proper_name }}{{ beard.item_name }}</div>
+        {%- for class_model in beard.class_model -%}
+            {{ "%s " % class_model.class_name }}
+        {%- endfor -%}
+    {%- endfor -%}
+{% endblock %}

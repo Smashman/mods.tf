@@ -1,11 +1,13 @@
 from . import app, db
 from flask import render_template, url_for
+from tf2.models import TF2Item, TF2ClassModel
 
 
 @app.route('/')
 def index():
     return render_template('index.html', mods=[
         {
+            "id":1,
             "name":"engi_banditana",
             "author":u"Spark Wire, R\u25B2in, Metabolic",
             "pretty_name":"The Farmer's Collective",
@@ -13,6 +15,7 @@ def index():
             "size":"large"
         },
         {
+            "id":1,
             "name":"arctic_aviator",
             "author":"NeoDement, Kibble",
             "pretty_name":"Arctic Aviator",
@@ -21,6 +24,7 @@ def index():
             "replacements": "53"
         },
         {
+            "id":1,
             "name":"battle_bowler",
             "author":"donhonk, Sky, Metabolic",
             "pretty_name":"Battle Bowler",
@@ -29,12 +33,14 @@ def index():
             "replacements": "53"
         },
         {
+            "id":1,
             "name":"disco_shirt",
             "author":"NeoDement, Spark Wire, Square",
             "pretty_name":"Groovy Garment",
             "mod_class": "demo"
         },
         {
+            "id":1,
             "name":"arctic_aviator",
             "author":"NeoDement, Kibble",
             "pretty_name":"Arctic Aviator",
@@ -43,12 +49,14 @@ def index():
             "replacements": "53"
         },
         {
+            "id":1,
             "name":"engi_banditana",
             "author":u"Spark Wire, R\u25B2in, Metabolic",
             "pretty_name":"The Farmer's Collective",
             "mod_class": "engineer"
         },
         {
+            "id":1,
             "name":"battle_bowler",
             "author":"donhonk, Sky, Metabolic",
             "pretty_name":"Battle Bowler",
@@ -57,12 +65,14 @@ def index():
             "replacements": "53"
         },
         {
+            "id":1,
             "name":"disco_shirt",
             "author":"NeoDement, Spark Wire, Square",
             "pretty_name":"Groovy Garment",
             "mod_class": "demo"
         },
         {
+            "id":1,
             "name":"arctic_aviator",
             "author":"NeoDement, Kibble",
             "pretty_name":"Arctic Aviator",
@@ -71,12 +81,14 @@ def index():
             "replacements": "53"
         },
         {
+            "id":1,
             "name":"engi_banditana",
             "author":u"Spark Wire, R\u25B2in, Metabolic",
             "pretty_name":"The Farmer's Collective",
             "mod_class": "engineer"
         },
         {
+            "id":1,
             "name":"battle_bowler",
             "author":"donhonk, Sky, Metabolic",
             "pretty_name":"Battle Bowler",
@@ -85,6 +97,13 @@ def index():
             "replacements": "53"
         }
     ])
+
+
+@app.route('/beards/<string:class_name>')
+def beards(class_name):
+    beards_query = TF2Item.query.filter(~TF2Item.class_model.any(TF2ClassModel.class_name!=class_name))\
+        .filter(TF2Item.equip_regions.any(equip_region='beard')).all()
+    return render_template('beard_test.html', beards=beards_query)
 
 
 @app.errorhandler(401)  # Unauthorized

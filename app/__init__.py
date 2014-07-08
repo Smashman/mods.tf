@@ -2,6 +2,7 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
+from flask.ext.uploads import UploadSet, configure_uploads
 import steam
 
 app = Flask(__name__, instance_relative_config=True)
@@ -17,10 +18,14 @@ if app.debug:
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 oid = OpenID(app)
+workshopzips = UploadSet('workshopZips', 'zip')
 
 # Setup steamodd
 steam.api.key.set(app.config['STEAM_API_KEY'])
 steam.api.socket_timeout.set(5)
+
+# Setup Flask-Uploads
+configure_uploads(app, workshopzips)
 
 # Views
 import views

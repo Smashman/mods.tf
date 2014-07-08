@@ -3,17 +3,8 @@ import urllib2
 from steam.api import HTTPError
 from .. import db
 from ..models import get_or_create
-from ..tf2.models import TF2Item, TF2Class
-
-all_classes = [u'Scout', u'Soldier', u'Pyro', u'Demoman', u'Heavy', u'Engineer', u'Sniper', u'Medic', u'Spy']
-
-
-def list_from_vdf_dict(dictionary):
-    return_list = []
-    for dict_item, number in dictionary.items():
-        if number is not None and number > 0:
-            return_list.append(dict_item)
-    return return_list
+from ..tf2.models import TF2Item, TF2Class, all_classes
+from ..utils.utils import list_from_vdf_dict
 
 
 def insert_classes():
@@ -32,7 +23,7 @@ def update_tf2_items():
     bad_defindexes = [5606,  # Damaged Capacitor (Not equippable)
                       8938,  # Glitched Circuit Board (Not equippable)
                       30143, 30144, 30145, 30146, 30147, 30148, 30149, 30150, 30151, 30152, 30153, 30154, 30155, 30156,
-                      30157, 30158, 30159, 30160, 30161]
+                      30157, 30158, 30159, 30160, 30161]  # Romevision cosmetics - Robots only
     amend_equip_regions = {"hat": [162, 711, 712, 713], "belt_misc": [1011], "ring": [5075], "shirt": [1088]}
 
     for i in range(10):
@@ -114,7 +105,7 @@ def update_tf2_items():
                             class_and_model = {tf2_class: class_model}
                             class_models.update(class_and_model)
                     if existing_item:
-                        db.session.delete(existing_item)
+                        db.session.delete(existing_item)  # TODO: Deal with this in a better way.
                     print u"Adding item: {} ({})".format(item_name, defindex)
                     db_item = TF2Item(defindex, item_name, proper_name, item_slot, image_url, image_url_large,
                                       class_models, equip_regions, bodygroups)

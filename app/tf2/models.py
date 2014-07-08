@@ -1,6 +1,8 @@
 from app import db
 from app.models import get_or_create
 
+all_classes = [u'Scout', u'Soldier', u'Pyro', u'Demoman', u'Heavy', u'Engineer', u'Sniper', u'Medic', u'Spy']
+
 
 class TF2Class(db.Model):
     __tablename__ = "tf2_class"
