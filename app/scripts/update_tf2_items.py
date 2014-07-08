@@ -42,6 +42,8 @@ def update_tf2_items():
                     defindex = item.get('defindex')
 
                     existing_item = TF2Item.query.get(defindex)
+                    if existing_item:
+                        db.session.delete(existing_item)  # TODO: Deal with this in a better way.
 
                     if defindex in bad_defindexes:
                         continue
@@ -57,7 +59,10 @@ def update_tf2_items():
                     items_game_info = items_game['items'].get(str(defindex))
                     if 'prefab' in items_game_info:
                         for prefab in items_game_info['prefab'].split(" "):
-                            items_game_info.update(items_game['prefabs'][prefab])
+                            prefab = items_game['prefabs'][prefab]
+                            items_game_info.update(prefab)
+
+                    image_inventory = items_game_info.get('image_inventory')
 
                     equip_regions = []
                     equip_region = items_game_info.get('equip_region')
@@ -104,11 +109,9 @@ def update_tf2_items():
                                 continue
                             class_and_model = {tf2_class: class_model}
                             class_models.update(class_and_model)
-                    if existing_item:
-                        db.session.delete(existing_item)  # TODO: Deal with this in a better way.
                     print u"Adding item: {} ({})".format(item_name, defindex)
                     db_item = TF2Item(defindex, item_name, proper_name, item_slot, image_url, image_url_large,
-                                      class_models, equip_regions, bodygroups)
+                                      image_inventory, class_models, equip_regions, bodygroups)
                     db.session.add(db_item)
                     db.session.commit()
             print "All items inserted."

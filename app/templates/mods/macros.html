@@ -1,8 +1,17 @@
 {% macro mod_block(mod) -%}
+    {% if mod.class_model | length > 1 %}
+        {% set mod_class = "all_class" %}
+    {% else %}
+        {% set mod_class = mod.class_model[0].class_name %}
+    {% endif %}
     <a href="{{ url_for('mods.mod_page', mod_id=mod.id) }}" class="mod {{ mod.size }}">
-        <div class="mod_class {{ mod.mod_class }}" title="{{ mod.mod_class | capitalize }}"></div>
+        <div class="mod_class {{ mod_class }}" title="{{ mod.mod_class | capitalize }}"></div>
         <div class="info">
-            <div class="authors">{{ mod.author }}</div>
+            <div class="authors">
+                {%- for author in mod.authors -%}
+                    {{ author.name }}
+                {%- endfor -%}
+            </div>
             <div class="name">{{ mod.pretty_name }}</div>
             <div class="spacer"></div>
             <div class="stats">
@@ -12,6 +21,6 @@
             </ul>
             </div>
         </div>
-        <img src="{{ url_for('mods.mod_image', name=mod.name, img_id=1) }}" />
+        <img src="{{ url_for('mods.mod_image', mod_id=mod.id) }}" />
     </a>
 {%- endmacro %}

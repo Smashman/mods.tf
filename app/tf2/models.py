@@ -1,5 +1,6 @@
 from app import db
 from app.models import get_or_create
+from sqlalchemy.orm.collections import attribute_mapped_collection
 
 all_classes = [u'Scout', u'Soldier', u'Pyro', u'Demoman', u'Heavy', u'Engineer', u'Sniper', u'Medic', u'Spy']
 
@@ -21,7 +22,8 @@ class TF2ClassModel(db.Model):
     class_name = db.Column(db.String(64), db.ForeignKey('tf2_class.class_name'), primary_key=True)
     model_path = db.Column(db.String(256))
 
-    tf2_class = db.relationship("TF2Class", backref="item_model")
+    tf2_class = db.relationship("TF2Class",
+                                backref="item_model")
 
     def __init__(self, defindex=None, class_name=None, model_path=None):
         self.defindex = defindex
@@ -80,6 +82,7 @@ class TF2Item(db.Model):
     item_slot = db.Column(db.String(64))
     image_url = db.Column(db.String(256))
     image_url_large = db.Column(db.String(256))
+    image_inventory = db.Column(db.String(256))
 
     # Relationships
     equip_regions = db.relationship('TF2EquipRegion', secondary=schema_equipregion, backref=db.backref('tf2_item',
@@ -89,6 +92,7 @@ class TF2Item(db.Model):
                                                                                                 lazy="dynamic"),
                                  lazy="joined")
     class_model = db.relationship('TF2ClassModel', backref=db.backref('tf2_item'),
+                                  collection_class=attribute_mapped_collection('class_name'),
                                   lazy="joined", cascade='all')
 
     __mapper_args__ = {
@@ -99,17 +103,18 @@ class TF2Item(db.Model):
         return "{} (defindex: {})".format(self.item_name, self.defindex)
 
     def __init__(self, defindex=None, item_name=None, proper_name=None, item_slot=None, image_url=None,
-                 image_url_large=None, class_model=None, _equip_regions=None, _bodygroups=None):
+                 image_url_large=None, image_inventory=None, class_model=None, _equip_regions=None, _bodygroups=None):
         self.defindex = defindex
         self.item_name = item_name
         self.proper_name = proper_name
         self.item_slot = item_slot
         self.image_url = image_url
         self.image_url_large = image_url_large
+        self.image_inventory = image_inventory
         if class_model:
             for class_name, model in class_model.items():
-                self.class_model.append(get_or_create(db.session, TF2ClassModel, defindex=defindex,
-                                                      class_name=class_name, model_path=model))
+                self.class_model[class_name] = (get_or_create(db.session, TF2ClassModel, defindex=defindex,
+                                                              class_name=class_name, model_path=model))
         if _equip_regions:
             for equip_region in _equip_regions:
                 self.equip_regions.append(get_or_create(db.session, TF2EquipRegion, equip_region=equip_region))

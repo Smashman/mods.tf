@@ -1,6 +1,8 @@
 import os
 import steam
 import zipfile
+import shutil
+import subprocess
 from flask import flash, current_app, redirect, url_for
 from PIL import Image
 from io import BytesIO
@@ -10,11 +12,11 @@ from ..mods.models import ModClassModel
 from ..models import get_or_create
 from app import db
 
+
 def list_from_vdf_dict(dictionary):
     return_list = []
     for dict_item, number in dictionary.items():
         if number is not None and number > 0:
-            print dict_item
             return_list.append(dict_item)
     return return_list
 
@@ -83,7 +85,7 @@ def extract_and_image(zip_in, db_record):
         # Do extractings
         print "Extracting."
         safe_name = secure_filename(name)
-        filename_name = "{mod_id}_{name}".format(mod_id=mod_id, name=safe_name)
+        filename_name = "{mod_id}".format(mod_id=mod_id)
         zip_open.extractall(os.path.join(output_folder, filename_name), to_extract)
 
         if icon:
@@ -116,7 +118,6 @@ def extract_and_image(zip_in, db_record):
             equip_region_dict = items_game_info.get('equip_regions')
             if equip_region_dict:
                 equip_regions += list_from_vdf_dict(equip_region_dict)
-        print equip_regions
 
         visuals = items_game_info.get('visuals')
         bodygroups = []
@@ -173,3 +174,95 @@ def extract_and_image(zip_in, db_record):
         # And we're fin
         print "Done: {}".format(db_record.zip_file)
         return db_record
+
+
+def vpk_package(mod, item_name, folder, mod_folder):
+    subprocess.call([os.path.abspath(current_app.config['VPK_BINARY_PATH']), folder])
+    shutil.move(os.path.join(mod_folder, 'vpk.vpk'),
+                os.path.join(mod_folder, 'mods_tf_{name}_{item_name}.vpk'.format(name=mod.name, item_name=item_name)))
+    shutil.rmtree(folder)
+
+
+def rename_copy(ext_list, dest_format):
+    for extension in ext_list:
+        for mod_path, replacement_path in dest_format.items():
+            to_rename = mod_path.format(ext=extension)
+            rename_dest = replacement_path.format(ext=extension)
+
+            dest_directory = os.path.dirname(rename_dest)
+            if not os.path.exists(dest_directory):
+                os.makedirs(dest_directory)
+
+            shutil.copyfile(to_rename, rename_dest)
+
+
+def backpack_icon(output_folder, input_folder, backpack_extensions, image_inventory):
+    model_material_copy = os.path.abspath(os.path.join(output_folder, "materials/models/workshop/"))
+    backpack_material_copy = os.path.abspath(os.path.join(output_folder, "materials/backpack/workshop/"))
+
+    model_workshop_materials = os.path.abspath(os.path.join(input_folder, "materials/models/workshop/"))
+    backpack_workshop_materials = os.path.abspath(os.path.join(input_folder, "materials/backpack/workshop/"))
+    shutil.copytree(model_workshop_materials, model_material_copy)
+    shutil.copytree(backpack_workshop_materials, backpack_material_copy)
+
+    for extension in backpack_extensions:
+        os.remove(image_inventory.format(ext=extension))
+
+
+def package(mod, replacement):
+    model_extensions = [
+        ".mdl",
+        ".dx80.vtx",
+        ".dx90.vtx",
+        ".sw.vtx",
+        ".vvd"
+    ]
+    backpack_extensions = [
+        ".vmt",
+        "_large.vmt"
+    ]
+    mod_all_class = False
+    replacement_all_class = False
+
+    if len(mod.class_model) > 1:
+        mod_all_class = True
+
+    if len(replacement.class_model) > 1:
+        replacement_all_class = True
+
+    item_name = replacement.item_name.replace(" ", "_").lower()
+    item_name = ''.join(char for char in item_name if char.isalnum() or char == '_')
+
+    mod_folder = os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'],
+                              "{mod_id}".format(mod_id=mod.id, mod_name=mod.name))
+    input_folder = os.path.join(mod_folder, 'game')
+    output_folder = os.path.join(mod_folder, 'vpk')
+
+    model_player = {}
+
+    for class_model in mod.class_model:
+        replacement_class_model = replacement.class_model[class_model.class_name]
+        model_path = class_model.model_path.replace(".mdl", "{ext}")
+        replacement_model_path = replacement_class_model.model_path.replace(".mdl", "{ext}")
+        model_path = os.path.abspath(os.path.join(input_folder, model_path))
+        replacement_model_path = os.path.abspath(os.path.join(output_folder, replacement_model_path))
+        model_player[model_path] = replacement_model_path
+
+    image_inventory = {}
+
+    image_inventory_mod = os.path.abspath(os.path.join(input_folder, "materials/", mod.image_inventory + "{ext}"))
+    image_inventory_replacement = os.path.abspath(
+        os.path.join(output_folder, "materials/", replacement.image_inventory + "{ext}")
+    )
+    image_inventory[image_inventory_mod] = image_inventory_replacement
+
+    image_inventory_remove = os.path.abspath(os.path.join(output_folder, "materials/", mod.image_inventory + "{ext}"))
+
+    backpack_icon(output_folder, input_folder, backpack_extensions, image_inventory_remove)
+    rename_copy(backpack_extensions, image_inventory)
+    if mod_all_class or replacement_all_class:
+        rename_copy(model_extensions, model_player)
+    else:
+        rename_copy(model_extensions, model_player)
+
+    vpk_package(mod, item_name, output_folder, mod_folder)

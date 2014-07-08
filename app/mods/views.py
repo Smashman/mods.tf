@@ -2,7 +2,8 @@ from flask import Blueprint, send_from_directory, abort, render_template, reques
 from app import db, workshopzips
 from flask.ext.uploads import UploadNotAllowed
 from flask.ext.login import current_user, login_required
-from ..utils.utils import extract_and_image
+from ..utils.utils import extract_and_image, package
+from ..tf2.models import TF2Item
 from models import Mod
 
 mods = Blueprint("mods", __name__, url_prefix="/mods")
@@ -27,15 +28,18 @@ def mod_upload():
     return render_template('mods/upload.html')
 
 
-@mods.route('/images/<string:name>_<int:img_id>/')  # TODO: Consider better methods of doing this
-def mod_image(name, img_id):
-    print name
-    print img_id
-    if '..' in name or name.startswith('/'):
-        abort(404)
-    return send_from_directory(current_app.config['MOD_IMAGE_FOLDER'].format(name), 'img_'+str(img_id)+'.jpg',
+@mods.route('/images/<int:mod_id>/')  # TODO: Consider better methods of doing this
+def mod_image(mod_id):
+    return send_from_directory(current_app.config['OUTPUT_FOLDER_LOCATION'] + '/' + str(mod_id), 'backpack_icon_large.png',
                                as_attachment=True)
 
+
+@mods.route('/package/<int:mod_id>_<int:defindex>')
+def package_mod(mod_id, defindex):
+    mod = Mod.query.get_or_404(mod_id)
+    replacement = TF2Item.query.get_or_404(defindex)
+    package(mod, replacement)
+    # TODO: Actually return a view.
 
 @mods.route('/<int:mod_id>/settings/')
 def mod_settings(mod_id):
