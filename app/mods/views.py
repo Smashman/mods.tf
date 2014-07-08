@@ -1,4 +1,4 @@
-from flask import Blueprint, send_from_directory, abort, render_template, request, flash, redirect, url_for
+from flask import Blueprint, send_from_directory, abort, render_template, request, flash, redirect, url_for, current_app
 from app import db, workshopzips
 from flask.ext.uploads import UploadNotAllowed
 from flask.ext.login import current_user, login_required
@@ -27,13 +27,14 @@ def mod_upload():
     return render_template('mods/upload.html')
 
 
-@mods.route('/images/<string:name>_<int:img_id>/')
+@mods.route('/images/<string:name>_<int:img_id>/')  # TODO: Consider better methods of doing this
 def mod_image(name, img_id):
     print name
     print img_id
     if '..' in name or name.startswith('/'):
         abort(404)
-    return send_from_directory('/home/ben/Documents/mod_files/'+name, 'img_'+str(img_id)+'.jpg', as_attachment=True)
+    return send_from_directory(current_app.config['MOD_IMAGE_FOLDER'].format(name), 'img_'+str(img_id)+'.jpg',
+                               as_attachment=True)
 
 
 @mods.route('/<int:mod_id>/settings/')
