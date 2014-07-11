@@ -33,12 +33,14 @@ import views
 # Blueprints
 from app.users.views import users as users_blueprint
 from app.mods.views import mods as mods_blueprint
+from app.tf2.views import tf2 as tf2_blueprint
 
 # TF2 Schema
 from app.tf2.models import TF2Item, TF2EquipRegion, TF2BodyGroup
 
 app.register_blueprint(users_blueprint)
 app.register_blueprint(mods_blueprint)
+app.register_blueprint(tf2_blueprint)
 
 # Assets
 from assets import assets

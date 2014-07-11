@@ -34,12 +34,17 @@ def mod_image(mod_id):
                                as_attachment=True)
 
 
+@mods.route('/download/')
+def download():
+    return render_template('mods/download.html')
+
+
 @mods.route('/package/<int:mod_id>_<int:defindex>')
 def package_mod(mod_id, defindex):
     mod = Mod.query.get_or_404(mod_id)
     replacement = TF2Item.query.get_or_404(defindex)
     package(mod, replacement)
-    # TODO: Actually return a view.
+    return render_template('mods/packaged.html')
 
 @mods.route('/<int:mod_id>/settings/')
 def mod_settings(mod_id):

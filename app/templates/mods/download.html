@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block scripts %}
+    {{ super() }}
+    <script>
+        var tf2_api = "{{ url_for("tf2.api") }}";
+    </script>
+    {% assets "download_js" %}
+        <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endblock %}
+{% block content %}
+    <input class="search" />
+    <input type="button" class="submit" value="submit">
+    <div class="results">
+
+    </div>
+{% endblock %}

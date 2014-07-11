@@ -28,9 +28,9 @@ $mods_tf-mods-info-transition: 0.2s
     position: absolute
     width: 100%
     bottom: 0
-    margin-bottom: -3.5em
+    margin-bottom: -4em
     background-color: transparentize($mods_tf-orange, 0.7)
-    padding: 10px
+    padding: 0.8em
     +transition(margin-bottom $mods_tf-mods-info-transition ease, background $mods_tf-mods-info-transition ease)
     
     & .name
@@ -54,17 +54,15 @@ $mods_tf-mods-info-transition: 0.2s
 
   & .spacer
     height: 2px
-    margin: 8px 0
+    margin: 0.5em 0
     +transition(background-color $mods_tf-mods-info-transition ease)
 
   &.large
     font-size: 18px
     & img
       max-width: 480px
-    & .info
-      padding: 15px
-      & .name
-        font-size: golden-ratio(18px, 1)
+    & .name
+      font-size: golden-ratio(18px, 1)
     & .mod_class
       +size(80px)
       +position(absolute, 10px 10px null null)

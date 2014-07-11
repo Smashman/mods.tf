@@ -6,10 +6,12 @@
     {% assets "main_css" %}
         <link href="{{ ASSET_URL }}" rel="stylesheet">
     {% endassets %}
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    {% assets "main_js" %}
-        <script src="{{ ASSET_URL }}"></script>
-    {% endassets %}
+    {% block scripts %}
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        {% assets "main_js" %}
+            <script src="{{ ASSET_URL }}"></script>
+        {% endassets %}
+    {% endblock %}
 </head>
 <body>
     {% include "header.html" %}

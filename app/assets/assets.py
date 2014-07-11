@@ -16,6 +16,11 @@ bundles = {
         'js/main.js',
         output='../static/js/main.js',
         filters='jsmin'
+    ),
+    'download_js': Bundle(
+        'js/download.js',
+        output='../static/js/download.js',
+        filters='jsmin'
     )
 }
 

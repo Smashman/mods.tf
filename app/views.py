@@ -1,20 +1,12 @@
 from . import app, db
 from flask import render_template, url_for
-from tf2.models import TF2Item, TF2ClassModel
 from mods.models import Mod
 
 
 @app.route('/')
 def index():
-    mods = Mod.query.filter(Mod.visibility == "Pu").all()
+    mods = Mod.query.filter(Mod.visibility == "Pu").filter(Mod.enabled == True).all()
     return render_template('index.html', mods=mods)
-
-
-@app.route('/beards/<string:class_name>')
-def beards(class_name):
-    beards_query = TF2Item.query.filter(~TF2Item.class_model.any(TF2ClassModel.class_name!=class_name))\
-        .filter(TF2Item.equip_regions.any(equip_region='beard')).all()
-    return render_template('beard_test.html', beards=beards_query)
 
 
 @app.errorhandler(401)  # Unauthorized
