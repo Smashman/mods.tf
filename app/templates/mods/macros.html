@@ -2,7 +2,7 @@
     {% if mod.class_model | length > 1 %}
         {% set mod_class = "all_class" %}
     {% else %}
-        {% set mod_class = mod.class_model[0].class_name %}
+        {% set mod_class = mod.class_model.itervalues().next().class_name %}
     {% endif %}
     <a href="{{ url_for('mods.mod_page', mod_id=mod.id) }}" class="mod {{ mod.size }}">
         <div class="mod_class {{ mod_class }}" title="{{ mod.mod_class | capitalize }}"></div>

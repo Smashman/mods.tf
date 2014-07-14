@@ -5,7 +5,7 @@ $(function(){
         $.ajax({
             url: tf2_api,
             type: "POST",
-            data: { item_name: search_data, page: page }
+            data: { search_data: search_data, page: page, mod_id: mod_id }
         }).done(function(results){
             console.log(results);
             insert_div.empty();
@@ -15,24 +15,28 @@ $(function(){
             else {
                 insert_div.text("No results!");
             }
-        }).fail(function(response) {
+        }).fail(function() {
             insert_div.empty();
             insert_div.text("Fail!");
         });
     }
-    $(".submit").click(function(){
+    $("#item_search").submit(function(event){
+        event.preventDefault();
         page = 1;
-        search_data = $(".search").val();
-        if (search_data.length < 3){
-            insert_div.text("More char than 2!");
-        }
-        else {
-            call_api(search_data, page);
-        }
+        search_data = {
+            item_name: $("#item_name").val(),
+            class_name: $("#class_name").val(),
+            bodygroup: $("#bodygroup").val(),
+            equip_region: $("#equip_region").val()
+        };
+        call_api(search_data, page);
     });
     $(document).on("click", ".next", function(){
-        console.log("click")
         page++;
+        call_api(search_data, page);
+    });
+    $(document).on("click", ".prev", function(){
+        page--;
         call_api(search_data, page);
     });
 });

@@ -87,13 +87,13 @@ class TF2Item(db.Model):
     # Relationships
     equip_regions = db.relationship('TF2EquipRegion', secondary=schema_equipregion, backref=db.backref('tf2_item',
                                                                                                        lazy="dynamic"),
-                                    lazy="joined")
+                                    lazy="subquery")
     bodygroups = db.relationship('TF2BodyGroup', secondary=schema_bodygroup, backref=db.backref('tf2_item',
                                                                                                 lazy="dynamic"),
-                                 lazy="joined")
+                                 lazy="subquery")
     class_model = db.relationship('TF2ClassModel', backref=db.backref('tf2_item'),
                                   collection_class=attribute_mapped_collection('class_name'),
-                                  lazy="joined", cascade='all')
+                                  lazy="subquery", cascade='all')
 
     __mapper_args__ = {
         "order_by": [db.asc(defindex)]

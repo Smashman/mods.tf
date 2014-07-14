@@ -1,6 +1,6 @@
 from app import db
-from app.models import get_or_create
 import datetime
+from sqlalchemy.orm.collections import attribute_mapped_collection
 
 mod_author = db.Table(
     "mod_author",
@@ -54,16 +54,17 @@ class Mod(db.Model):
     enabled = db.Column(db.Boolean, default=True)
 
     authors = db.relationship('User', secondary=mod_author, backref=db.backref('mod',
-                                                                               lazy="dynamic"), lazy="joined")
+                                                                               lazy="dynamic"), lazy="subquery")
 
     equip_regions = db.relationship('TF2EquipRegion', secondary=mod_equipregion, backref=db.backref('mod',
                                                                                                     lazy="dynamic"),
-                                    lazy="joined")
+                                    lazy="subquery")
     bodygroups = db.relationship('TF2BodyGroup', secondary=mod_bodygroup, backref=db.backref('mod',
                                                                                              lazy="dynamic"),
-                                 lazy="joined")
+                                 lazy="subquery")
     class_model = db.relationship('ModClassModel', backref=db.backref('mod'),
-                                  lazy="joined", cascade='all')
+                                  collection_class=attribute_mapped_collection('class_name'),
+                                  lazy="subquery", cascade='all')
 
     __mapper_args__ = {
         "order_by": [db.asc(id)]

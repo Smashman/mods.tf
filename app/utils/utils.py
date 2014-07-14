@@ -168,7 +168,7 @@ def extract_and_image(zip_in, db_record):
                 db_record.equip_regions.append(TF2EquipRegion.query.get(er))
         if class_models:
             for class_name, model in class_models.items():
-                db_record.class_model.append(get_or_create(db.session, ModClassModel, mod_id=mod_id,
+                db_record.class_model[class_name] = (get_or_create(db.session, ModClassModel, mod_id=mod_id,
                                                            class_name=class_name, model_path=model))
 
         # And we're fin
@@ -178,9 +178,11 @@ def extract_and_image(zip_in, db_record):
 
 def vpk_package(mod, item_name, folder, mod_folder):
     subprocess.call([os.path.abspath(current_app.config['VPK_BINARY_PATH']), folder])
+    file_name = 'mods_tf_{name}_{item_name}.vpk'.format(name=mod.name, item_name=item_name)
     shutil.move(os.path.join(mod_folder, 'vpk.vpk'),
-                os.path.join(mod_folder, 'mods_tf_{name}_{item_name}.vpk'.format(name=mod.name, item_name=item_name)))
+                os.path.join(mod_folder, file_name))
     shutil.rmtree(folder)
+    return file_name
 
 
 def rename_copy(ext_list, dest_format):
@@ -238,16 +240,22 @@ def package(mod, replacement):
     input_folder = os.path.join(mod_folder, 'game')
     output_folder = os.path.join(mod_folder, 'vpk')
 
+    if os.path.exists(output_folder):
+        shutil.rmtree(output_folder)
+
     model_player = {}
 
-    for class_model in mod.class_model:
-        replacement_class_model = replacement.class_model[class_model.class_name]
-        model_path = class_model.model_path.replace(".mdl", "{ext}")
-        replacement_model_path = replacement_class_model.model_path.replace(".mdl", "{ext}")
-        model_path = os.path.abspath(os.path.join(input_folder, model_path))
-        replacement_model_path = os.path.abspath(os.path.join(output_folder, replacement_model_path))
-        model_player[model_path] = replacement_model_path
-
+    for class_name, class_model in replacement.class_model.items():
+        try:
+            mod_class_model = mod.class_model[class_model.class_name]
+            model_path = class_model.model_path.replace(".mdl", "{ext}")
+            mod_model_path = mod_class_model.model_path.replace(".mdl", "{ext}")
+            model_path = os.path.abspath(os.path.join(output_folder, model_path))
+            mod_model_path = os.path.abspath(os.path.join(input_folder, mod_model_path))
+            model_player[mod_model_path] = model_path
+        except KeyError:
+            pass
+    print model_player
     image_inventory = {}
 
     image_inventory_mod = os.path.abspath(os.path.join(input_folder, "materials/", mod.image_inventory + "{ext}"))
@@ -265,4 +273,5 @@ def package(mod, replacement):
     else:
         rename_copy(model_extensions, model_player)
 
-    vpk_package(mod, item_name, output_folder, mod_folder)
+    file_name = vpk_package(mod, item_name, output_folder, mod_folder)
+    return file_name
