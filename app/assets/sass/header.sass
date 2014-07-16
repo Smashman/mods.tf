@@ -11,13 +11,9 @@
   @for $bg_num from 0 to $number_of_backgrounds
     &.bg_#{$bg_num}
       background: url('../images/header/bg_#{$bg_num}.png') no-repeat center
-
   & .steam_block
-    background: darken($mods_tf-background-color, 4%)
     float: right
-    &:hover
-      background: darken($mods_tf-background-color, 8%)
-      color: inherit
+    width: initial
 
     & .dropdown-arrow
       display: none

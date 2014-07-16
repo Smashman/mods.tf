@@ -1,9 +1,9 @@
 from flask.ext.wtf import Form
-from wtforms import TextField, SelectField
-from wtforms.validators import Required
+from wtforms import TextField, SelectMultipleField
+from wtforms import widgets
 
 class ItemSearch(Form):
-    item_name = TextField('Item name:', validators=[Required()])
-    class_name = SelectField('Class:')
-    equip_region = SelectField('Equip region:')
-    bodygroup = SelectField('Bodygroup:')
+    item_name = TextField('Item name:')
+    classes = SelectMultipleField('Class:')
+    equip_regions = SelectMultipleField('Equip region:')
+    bodygroups = SelectMultipleField('Bodygroup:')

@@ -20,7 +20,7 @@ $mods_tf-mods-info-transition: 0.2s
   font-size: 14px
   overflow: hidden
   background: darken($mods_tf-background-color, 5%)
-  border: 2px solid darken($mods_tf-orange, 25%)
+  border: 2px solid darken($mods_tf-orange, 15%)
   &:hover
     color: inherit
 
@@ -100,9 +100,20 @@ $mods_tf-mods-info-transition: 0.2s
         font-size: .7em
         display: block
         font-weight: normal
+
 .mod_wall
   height: 720px
   overflow: hidden
 
 #item_search
   color: black
+
+.sidebar
+  width: 200px
+  float: right
+
+  & .authors
+    & .steam_block
+      margin-bottom: 4px
+      &:last-of-type
+        margin-bottom: initial

@@ -4,18 +4,19 @@ from os.path import abspath, join
 
 bundles = {
     'main_css': Bundle(
-        'lib/normalize-css/normalize.css',
         Bundle(
             'sass/main.sass',
             filters='sass',
             depends='sass/*.sass'
         ),
-        output='../static/css/main.css',
+        output='../static/css/main.css'
     ),
     'main_js': Bundle(
-        'js/main.js',
-        output='../static/js/main.js',
-        filters='jsmin'
+        Bundle(
+            'js/main.js',
+            filters='jsmin'
+        ),
+        output='../static/js/main.js'
     ),
     'download_js': Bundle(
         'js/download.js',

@@ -1,9 +1,11 @@
-{% macro header_steam_block(user_info) -%}
+{% macro steam_block(user_info, header=False) -%}
     <a class="steam_block" href="{{ url_for('users.user_page', user_id=user_info.account_id) }}">
     {%- if user_info.avatar_small -%}
         <div class="iconholder"><img src="{{ user_info.avatar_small }}"/></div>
     {%- endif -%}
     <div class="name">{{ user_info.name }}</div>
-    <div class="dropdown-arrow"></div>
+    {%- if header -%}
+        <div class="dropdown-arrow"></div>
+    {%- endif -%}
     </a>
 {%- endmacro %}

@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% import "mods/macros.html" as mod_macros %}
+{% block content %}
+    <h1>{{ mod.pretty_name }}</h1>
+    <img src="{{ url_for('.image', mod_id=mod.id) }}" />
+    <div class="sidebar">
+        <div class="authors">
+            <span>Authors:</span>
+            {{ mod_macros.author_list(mod.authors) }}
+        </div>
+        {%- if mod.bodygroups | length > 0 -%}
+            <div class="bodygroups">
+                <span>Bodygroups: </span>
+                {%- for bodygroup in mod.bodygroups -%}
+                    <a href="{{ url_for('.search', bodygroup=bodygroup.bodygroup) }}">{{ bodygroup }}</a>{{ ", " if not loop.last }}
+                {%- endfor -%}
+            </div>
+        {%- endif -%}
+        <div class="equip_regions">
+            <span>Equip region: </span>
+            {%- for equip_region in mod.equip_regions -%}
+                <a href="{{ url_for('.search', equip_region=equip_region.equip_region) }}">{{ equip_region }}</a>{{ ", " if not loop.last }}
+            {%- endfor -%}
+        </div>
+    </div>
+    <a href="{{ url_for('.download', mod_id=mod.id) }}">Download</a>
+{% endblock %}

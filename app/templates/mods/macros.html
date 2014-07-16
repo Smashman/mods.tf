@@ -1,17 +1,14 @@
-{% macro mod_block(mod) -%}
+{% import "macros.html" as macros %}
+{%- macro mod_block(mod) -%}
     {% if mod.class_model | length > 1 %}
-        {% set mod_class = "all_class" %}
+        {% set mod_class = "all-class" %}
     {% else %}
         {% set mod_class = mod.class_model.itervalues().next().class_name %}
     {% endif %}
-    <a href="{{ url_for('mods.mod_page', mod_id=mod.id) }}" class="mod {{ mod.size }}">
-        <div class="mod_class {{ mod_class }}" title="{{ mod.mod_class | capitalize }}"></div>
+    <a href="{{ url_for('mods.page', mod_id=mod.id) }}" class="mod {{ mod.size }}">
+        <div class="mod_class {{ mod_class }}" title="{{ mod_class | capitalize }}"></div>
         <div class="info">
-            <div class="authors">
-                {%- for author in mod.authors -%}
-                    {{ author.name }}
-                {%- endfor -%}
-            </div>
+            <div class="authors">{{ mod.authors | join(', ') }}</div>
             <div class="name">{{ mod.pretty_name }}</div>
             <div class="spacer"></div>
             <div class="stats">
@@ -21,6 +18,11 @@
             </ul>
             </div>
         </div>
-        <img src="{{ url_for('mods.mod_image', mod_id=mod.id) }}" />
+        <img src="{{ url_for('mods.image', mod_id=mod.id) }}" />
     </a>
-{%- endmacro %}
+{%- endmacro -%}
+{%- macro author_list(authors) -%}
+    {%- for author in authors -%}
+        {{ macros.steam_block(author) }}
+    {%- endfor -%}
+{%- endmacro -%}

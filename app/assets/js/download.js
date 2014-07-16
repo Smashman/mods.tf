@@ -1,11 +1,15 @@
 $(function(){
     var page, search_data;
     var insert_div = $(".results");
+    var search_form = $("#item_search");
+    var bodygroups = $("#bodygroups");
+    var classes = $("#classes");
+    var equip_regions = $("#equip_regions");
     function call_api(search_data, page){
         $.ajax({
             url: tf2_api,
             type: "POST",
-            data: { search_data: search_data, page: page, mod_id: mod_id }
+            data: { search_data: search_data, page: page, mod_id: mod_id, bodygroups: search_data["bodygroups"] }
         }).done(function(results){
             console.log(results);
             insert_div.empty();
@@ -20,15 +24,16 @@ $(function(){
             insert_div.text("Fail!");
         });
     }
-    $("#item_search").submit(function(event){
+    search_form.submit(function(event){
         event.preventDefault();
         page = 1;
         search_data = {
             item_name: $("#item_name").val(),
-            class_name: $("#class_name").val(),
-            bodygroup: $("#bodygroup").val(),
-            equip_region: $("#equip_region").val()
+            classes: classes.val(),
+            bodygroups: bodygroups.val(),
+            equip_regions: equip_regions.val()
         };
+        console.log(search_data);
         call_api(search_data, page);
     });
     $(document).on("click", ".next", function(){
@@ -39,4 +44,5 @@ $(function(){
         page--;
         call_api(search_data, page);
     });
+    search_form.submit();
 });

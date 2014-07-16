@@ -1,14 +1,17 @@
 .steam_block
+  background: darken($mods_tf-background-color, 4%)
   position: relative
   float: left
   padding: 8px
   border-radius: 4px
   text-align: left
+  width: 100%
+  height: 56px
 
   & div
     display: inline-block
     position: relative
-    line-height: 36px
+    line-height: 40px
     overflow: hidden
 
   & .iconholder
@@ -24,7 +27,6 @@
     text-overflow: ellipsis
     max-width: 160px
     padding-left: 5px
-
-.steam_login
-  float: right
-  margin-top: 7px
+  &:hover
+    background: darken($mods_tf-background-color, 8%)
+    color: inherit

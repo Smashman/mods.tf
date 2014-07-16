@@ -3,6 +3,6 @@
     "private": true,
     "dependencies": {
         "bourbon": "~4.0.0",
-        "normalize-css": "~3.0.1"
+        "normalize-scss": "~3.0.1"
     }
 }
