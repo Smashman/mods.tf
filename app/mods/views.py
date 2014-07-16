@@ -67,7 +67,7 @@ def image(mod_id):
 @mods.route('/<int:mod_id>/download/')
 def download(mod_id):
     mod = Mod.query.get_or_404(mod_id)
-    if mod.enabled is False or mod.enabled != "Pu":
+    if mod.enabled is False or mod.visibility != "Pu":
         abort(404)
     classes = mod.class_model
 
