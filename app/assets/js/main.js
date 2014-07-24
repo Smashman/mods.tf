@@ -18,5 +18,17 @@ $(function(){
     $(document).click(function(){
         header_steam.removeClass("active");
     });
-
 });
+
+function multipleSelect_three() {
+    classes = $("#classes");
+    var available_classes = classes.children().length;
+    if (available_classes > 3){
+    if (available_classes == 9) allSelected = "All classes selected"; else allSelected = "All available classes selected";
+    classes.multipleSelect({allSelected: "All classes selected", placeholder: "No classes selected"});
+    } else {
+        classes.multipleSelect({allSelected: false, placeholder: "No classes selected", selectAll: false});
+    }
+    $("#bodygroups").multipleSelect({placeholder: "No bodygroup", selectAll: false});
+    $("#equip_regions").multipleSelect({placeholder: "No equip region", filter: true, selectAll: false});
+}

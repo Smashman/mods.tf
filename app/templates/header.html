@@ -1,17 +1,19 @@
 {% import "macros.html" as macros %}
 <div class="header bg_{{ range(5) | random }} cf">
     <div class="container">
-        {% if current_user.is_authenticated() %}
+        {%- if current_user.is_authenticated() -%}
             {{ macros.steam_block(current_user, True) }}
             <ul class="dropdown-menu">
+                {%- if current_user.is_uploader() -%}
+                    <li><a href="{{ url_for('mods.upload') }}">Upload mod</a></li>
+                    <li class="spacer"></li>
+                {%- endif -%}
                 <li><a href="{{ url_for('users.user_page', user_id=current_user.account_id) }}">Profile</a></li>
-                <li><a href="{{ url_for('users.user_settings', user_id=current_user.account_id) }}">Settings</a></li>
-                <li class="spacer"></li>
                 <li><a href="{{ url_for('users.logout') }}">Logout</a></li>
             </ul>
-        {% else %}
+        {%- else -%}
             <a class="steam_login" href="{{ url_for("users.login") }}"><img src="{{ url_for('static', filename='images/sits_large_noborder.png') }}" alt="Sign in with Steam"/></a>
-        {% endif %}
+        {%- endif -%}
         <a class="logo" href="{{ url_for('index') }}"></a>
     </div>
 </div>

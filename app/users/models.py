@@ -54,6 +54,12 @@ class User(db.Model):
     def is_authenticated(self):
         return True
 
+    def is_admin(self):
+        return True if self.user_class > 1 else False
+
+    def is_uploader(self):
+        return True if self.user_class > 0 else False
+
     @property
     def steam_id(self):
-        return self.id + 76561197960265728
+        return self.account_id + 76561197960265728

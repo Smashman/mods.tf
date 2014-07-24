@@ -9,3 +9,12 @@
     {%- endif -%}
     </a>
 {%- endmacro %}
+{%- macro form_field(field, placeholder, disabled) -%}
+        <div>{{ field.label }}&nbsp;{{ field(placeholder=placeholder) }}
+        {%- if field.errors -%}
+            {%- for error in field.errors -%}
+                <span>{{ error }}</span>
+            {%- endfor -%}
+        {%- endif -%}
+    </div>
+{%- endmacro -%}

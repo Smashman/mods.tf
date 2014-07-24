@@ -3,7 +3,7 @@ import steam
 import zipfile
 import shutil
 import subprocess
-from flask import flash, current_app, redirect, url_for
+from flask import flash, current_app
 from PIL import Image
 from io import BytesIO
 from werkzeug.utils import secure_filename
@@ -169,7 +169,7 @@ def extract_and_image(zip_in, db_record):
         if class_models:
             for class_name, model in class_models.items():
                 db_record.class_model[class_name] = (get_or_create(db.session, ModClassModel, mod_id=mod_id,
-                                                           class_name=class_name, model_path=model))
+                                                                   class_name=class_name, model_path=model))
 
         # And we're fin
         print "Done: {}".format(db_record.zip_file)
@@ -178,11 +178,11 @@ def extract_and_image(zip_in, db_record):
 
 def vpk_package(mod, item_name, folder, mod_folder):
     subprocess.call([os.path.abspath(current_app.config['VPK_BINARY_PATH']), folder])
-    file_name = 'mods_tf_{name}_{item_name}.vpk'.format(name=mod.name, item_name=item_name)
+    filename = 'mods_tf_{name}_{item_name}.vpk'.format(name=mod.name, item_name=item_name)
     shutil.move(os.path.join(mod_folder, 'vpk.vpk'),
-                os.path.join(mod_folder, file_name))
+                os.path.join(mod_folder, filename))
     shutil.rmtree(folder)
-    return file_name
+    return filename
 
 
 def rename_copy(ext_list, dest_format):
@@ -212,7 +212,7 @@ def backpack_icon(output_folder, input_folder, backpack_extensions, image_invent
 
 
 def package_mod_to_item(mod, replacement):
-    print mod, replacement
+    print "Packaging mod {} as {}.".format(mod.pretty_name, replacement.item_name)
     model_extensions = [
         ".mdl",
         ".dx80.vtx",
@@ -256,7 +256,6 @@ def package_mod_to_item(mod, replacement):
             model_player[mod_model_path] = model_path
         except KeyError:
             pass
-    print model_player
     image_inventory = {}
 
     image_inventory_mod = os.path.abspath(os.path.join(input_folder, "materials/", mod.image_inventory + "{ext}"))

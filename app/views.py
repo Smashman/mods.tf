@@ -1,11 +1,13 @@
 from . import app, db
 from flask import render_template, url_for
-from mods.models import Mod
+from mods.models import Mod, PackageDownload, ModPackage
 
 
 @app.route('/')
 def index():
     mods = Mod.query.filter(Mod.visibility == "Pu").filter(Mod.enabled == True).all()
+    for mod in mods:
+        mod.downloads = PackageDownload.query.outerjoin(ModPackage).filter(ModPackage.mod_id == mod.id).count()
     return render_template('index.html', mods=mods)
 
 

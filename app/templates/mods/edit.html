@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% import "macros.html" as macros %}
+{% block scripts %}
+    {{ super() }}
+    {% assets "edit_js" %}
+        <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endblock %}
+{% block content %}
+    <h1>Settings for {{ mod.pretty_name }}</h1>
+    <form method=POST id="edit_form" >
+        {{ edit_form.hidden_tag() }}
+        {{ macros.form_field(edit_form.pretty_name) }}
+        {{ macros.form_field(edit_form.workshop_id) }}
+        {{ macros.form_field(edit_form.package_format) }}
+        {{ macros.form_field(edit_form.equip_regions) }}
+        {{ macros.form_field(edit_form.bodygroups) }}
+        {{ edit_form.publish }}{{ edit_form.hide }}
+    </form>
+
+    <iframe></iframe>
+{% endblock %}

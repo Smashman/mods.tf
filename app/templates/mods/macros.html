@@ -1,14 +1,18 @@
 {% import "macros.html" as macros %}
 {%- macro mod_block(mod) -%}
     {% if mod.class_model | length > 1 %}
-        {% set mod_class = "all-class" %}
+        {% set mod_class = "multi-class" %}
     {% else %}
         {% set mod_class = mod.class_model.itervalues().next().class_name %}
     {% endif %}
     <a href="{{ url_for('mods.page', mod_id=mod.id) }}" class="mod {{ mod.size }}">
         <div class="mod_class {{ mod_class }}" title="{{ mod_class | capitalize }}"></div>
         <div class="info">
-            <div class="authors">{{ mod.authors | join(', ') }}</div>
+            <div class="authors">
+                {%- for author in mod.authors -%}
+                    {{ author.name }}{{ ", " if not loop.last }}
+                {%- endfor -%}
+            </div>
             <div class="name">{{ mod.pretty_name }}</div>
             <div class="spacer"></div>
             <div class="stats">

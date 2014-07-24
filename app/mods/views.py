@@ -1,12 +1,14 @@
 from flask import Blueprint, send_from_directory, abort, render_template, request, flash, redirect, url_for,\
     current_app
-from app import db, workshopzips
+from app import db, workshopzips, modimages
 from flask.ext.uploads import UploadNotAllowed
 from flask.ext.login import current_user, login_required
 from ..utils.utils import extract_and_image, package_mod_to_item
 from ..tf2.models import TF2Item, TF2BodyGroup, TF2EquipRegion, TF2Class
-from models import Mod, ModClassModel
-from forms import ItemSearch
+from models import Mod, ModPackage, PackageDownload
+from forms import ItemSearch, EditMod
+import datetime
+import os
 
 mods = Blueprint("mods", __name__, url_prefix="/mods")
 
@@ -19,14 +21,84 @@ def page(mod_id):
     return render_template('mods/page.html', mod=mod)
 
 
-@mods.route('/<int:mod_id>/settings/')
-def settings(mod_id):
+@mods.route('/<int:mod_id>/edit/', methods=['GET', 'POST'])
+def edit(mod_id):
     mod = Mod.query.get_or_404(mod_id)
-    return render_template('construction.html', title="{} settings page - Under construction".format(mod.pretty_name))
+    edit_form = EditMod()
+
+    equip_regions = TF2EquipRegion.query.all()
+    bodygroups = TF2BodyGroup.query.all()
+
+    package_formats = [("vpk", "VPK")]
+
+    edit_form.package_format.choices = package_formats
+    edit_form.equip_regions.choices = [(equip_region.equip_region,
+                                        equip_region.full_name or equip_region.equip_region.capitalize())
+                                       for equip_region in equip_regions]
+    edit_form.bodygroups.choices = [(bodygroup.bodygroup,
+                                     bodygroup.full_name or bodygroup.bodygroup.capitalize())
+                                    for bodygroup in bodygroups]
+
+    if edit_form.workshop_id.data == "":
+        edit_form.workshop_id.data = None
+
+    if edit_form.validate_on_submit():
+        mod.pretty_name = edit_form.pretty_name.data
+        workshop_id = edit_form.workshop_id.data
+        if workshop_id:
+            try:
+                if "http://steamcommunity.com/sharedfiles/filedetails/" in workshop_id:
+                    from urlparse import urlparse, parse_qs
+                    workshop_id = parse_qs(urlparse(workshop_id).query).get("id")[0]
+                    int(workshop_id)
+                elif not int(workshop_id) > 0:
+                    edit_form.workshop_id.errors.append("Not a valid workshop ID.")
+                    workshop_id = None
+            except (ValueError, TypeError):
+                    edit_form.workshop_id.errors.append("Not a valid workshop ID.")
+                    workshop_id = None
+            mod.workshop_id = workshop_id
+
+        mod.package_format = edit_form.package_format.data
+
+        mod.bodygroups = []
+        mod.equip_regions = []
+
+        for bodygroup in edit_form.bodygroups.data:
+            mod.bodygroups.append(TF2BodyGroup.query.get(bodygroup))
+
+        for equip_region in edit_form.equip_regions.data:
+            mod.equip_regions.append(TF2EquipRegion.query.get(equip_region))
+        print edit_form.publish.data, edit_form.hide.data
+        if edit_form.publish.data:
+            mod.visibility = "Pu"
+        elif edit_form.hide.data:
+            mod.visibility = "H"
+
+        db.session.add(mod)
+        db.session.commit()
+
+    edit_form.pretty_name.data = mod.pretty_name
+    edit_form.workshop_id.data = mod.workshop_id
+    edit_form.equip_regions.data = [equip_region.equip_region for equip_region in mod.equip_regions]
+    edit_form.bodygroups.data = [bodygroup.bodygroup for bodygroup in mod.bodygroups]
+
+    """if request.method == 'POST' and 'mod_image' in request.files:
+        try:
+            filename = modimages.save(request.files['mod_image'])
+            print filename
+        except UploadNotAllowed:
+            flash("Only images can be uploaded.", "danger")
+        <form method=POST enctype=multipart/form-data>
+            <input type=file name=mod_image>
+            <input type="submit" value="Submit">
+        </form>"""
+    return render_template('mods/edit.html', mod=mod, edit_form=edit_form)
 
 
 @mods.route('/search/')
-def search():
+@mods.route('/search/page/<int:page>/')
+def search(page=1):
     equip_region = request.args.get('equip_region')
     bodygroup = request.args.get('bodygroup')
     mods = enabled_mods
@@ -34,13 +106,15 @@ def search():
         mods = mods.filter(Mod.equip_regions.any(TF2EquipRegion.equip_region == equip_region))
     if bodygroup:
         mods = mods.filter(Mod.bodygroups.any(TF2BodyGroup.bodygroup == bodygroup))
-    mods = mods.paginate(1, 30)
+    mods = mods.paginate(page, 30)
     return render_template('mods/search.html', mods=mods)
 
 
 @mods.route('/upload/', methods=['GET', 'POST'])
 @login_required
 def upload():
+    if not current_user.is_uploader():
+        abort(403)
     if request.method == 'POST' and 'workshop_zip' in request.files:
         try:
             filename = workshopzips.save(request.files['workshop_zip'])
@@ -51,16 +125,19 @@ def upload():
             if result:
                 db.session.add(result)
                 db.session.commit()
-                return redirect(url_for('mods.mod_settings', mod_id=result.id))
+                flash("Hooray! {mod.pretty_name} has been uploaded and is almost ready to download. "
+                      "Please check over the mod information and hit \"Publish!\", when you're satisfied."
+                      "".format(mod=result), "success")
+                return redirect(url_for('.edit', mod_id=result.id))
         except UploadNotAllowed:
             flash("Only zips can be uploaded.", "danger")
     return render_template('mods/upload.html')
 
 
-@mods.route('/images/<int:mod_id>/')  # TODO: Consider better methods of doing this
+@mods.route('/<int:mod_id>/images/')  # TODO: Consider better methods of doing this
 def image(mod_id):
-    print(mod_id)
-    return send_from_directory(current_app.config['OUTPUT_FOLDER_LOCATION'] + '/' + str(mod_id), 'backpack_icon_large.png',
+    return send_from_directory(os.path.abspath(os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'], str(mod_id))),
+                               'backpack_icon_large.png',
                                as_attachment=True)
 
 
@@ -72,12 +149,10 @@ def download(mod_id):
     classes = mod.class_model
 
     item_search = ItemSearch()
-    any_choice = [(0, "Any")]
 
     class_choices = [(_class.class_name, _class.class_name.capitalize()) for key, _class in classes.items()]
     class_choices.sort()
     item_search.classes.data = [_class for _class in classes]
-    item_search.bodygroups.data = ["0"]
     item_search.bodygroups.data = [bodygroup.bodygroup for bodygroup in mod.bodygroups]
     item_search.equip_regions.data = [equip_region.equip_region for equip_region in mod.equip_regions]
 
@@ -85,16 +160,45 @@ def download(mod_id):
     bodygroups = TF2BodyGroup.query.all()
 
     item_search.classes.choices = class_choices
-    item_search.equip_regions.choices = any_choice + [(equip_region.equip_region, equip_region.full_name or equip_region.equip_region.capitalize()) for equip_region in equip_regions]
-    item_search.bodygroups.choices = any_choice + [(bodygroup.bodygroup, bodygroup.full_name or bodygroup.bodygroup.capitalize()) for bodygroup in bodygroups]
+    item_search.equip_regions.choices = [(equip_region.equip_region, equip_region.full_name or equip_region.equip_region.capitalize()) for equip_region in equip_regions]
+    item_search.bodygroups.choices = [(bodygroup.bodygroup, bodygroup.full_name or bodygroup.bodygroup.capitalize()) for bodygroup in bodygroups]
 
     return render_template('mods/download.html', item_search=item_search, mod_id=mod_id)
 
 
-@mods.route('/<int:mod_id>/package/<int:defindex>/')
+@mods.route('/<int:mod_id>/download/<int:defindex>/')
 def package(mod_id, defindex):
-    mod = Mod.query.get_or_404(mod_id)
-    replacement = TF2Item.query.get_or_404(defindex)
-    file_name = package_mod_to_item(mod, replacement)
-    return render_template('mods/packaged.html', mod=mod, replacement=replacement,
-                           download_url=file_name)
+    mod_package = ModPackage.query.filter_by(mod_id=mod_id, defindex=defindex).first()
+    print mod_package
+    if not mod_package:
+        mod = Mod.query.get_or_404(mod_id)
+        print mod
+        replacement = TF2Item.query.get_or_404(defindex)
+        print replacement
+        filename = package_mod_to_item(mod, replacement)
+        long_date = False
+        if datetime.datetime.utcnow() < mod.uploaded + datetime.timedelta(weeks=4):
+            long_date = True
+        mod_package = ModPackage(mod.id, replacement.defindex, filename, long_date)
+        db.session.add(mod_package)
+        db.session.commit()
+    elif datetime.datetime.utcnow() > mod_package.expire_date:
+        mod = mod_package.mod
+        replacement = mod_package.replacement
+        print "expired"
+        long_date = False
+        if datetime.datetime.utcnow() < mod.uploaded + datetime.timedelta(weeks=4):
+            long_date = True
+        filename = package_mod_to_item(mod, replacement)
+        mod_package.update_expire(long_date)
+        db.session.add(mod_package)
+        db.session.commit()
+    else:
+        mod = mod_package.mod
+        filename = mod_package.filename
+    download_record = PackageDownload(mod_package.id, current_user.account_id)
+    db.session.add(download_record)
+    db.session.commit()
+    return send_from_directory(os.path.abspath(os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'], str(mod.id))),
+                               filename,
+                               as_attachment=True)

@@ -10,9 +10,9 @@
     {% endassets %}
 {% endblock %}
 {% block content %}
-    <form id="item_search">
+    <form id="item_search" method="POST">
         {{ item_search.hidden_tag() }}
-        {{ item_search.item_name(placeholder="Search...") }}
+        {{ item_search.item_name(placeholder="Filter by name...") }}
         {{ item_search.classes }}
         {{ item_search.equip_regions }}
         {{ item_search.bodygroups }}

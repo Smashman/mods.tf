@@ -8,6 +8,7 @@ mod_author = db.Table(
     db.Column('user_id', db.Integer, db.ForeignKey('users.account_id'))
 )
 
+
 class ModClassModel(db.Model):
     __tablename__ = "mod_classmodel"
     mod_id = db.Column(db.Integer, db.ForeignKey('mods.id'), primary_key=True)
@@ -24,6 +25,54 @@ class ModClassModel(db.Model):
     def __repr__(self):
         return "{} ({})".format(self.class_name, self.mod_id)
 
+
+class ModPackage(db.Model):
+    __tablename__ = "mod_package"
+    id = db.Column(db.Integer, primary_key=True)
+    mod_id = db.Column(db.Integer, db.ForeignKey('mods.id'), nullable=False)
+    defindex = db.Column(db.Integer, db.ForeignKey('tf2_schema.defindex'), nullable=False)
+    filename = db.Column(db.String(256), nullable=False)
+    expire_date = db.Column(db.DateTime, default=datetime.datetime.utcnow() + datetime.timedelta(days=2), nullable=False)
+
+    mod = db.relationship("Mod", backref="package")
+    replacement = db.relationship("TF2Item", backref="package")
+
+    def __init__(self, mod_id=None, defindex=None, filename=None, long_date=False):
+        self.mod_id = mod_id
+        self.defindex = defindex
+        self.filename = filename
+        if long_date:
+            self.expire_date = datetime.datetime.utcnow() + datetime.timedelta(days=7)
+
+    def update_expire(self, long_date=False):
+        if long_date:
+            self.expire_date = datetime.datetime.utcnow() + datetime.timedelta(days=7)
+        else:
+            self.expire_date = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+
+    def __repr__(self):
+        return "{} replacing {}".format(self.mod_id, self.defindex)
+
+
+class PackageDownload(db.Model):
+    __tablename__ = "package_download"
+    id = db.Column(db.Integer, primary_key=True)
+    package_id = db.Column(db.Integer, db.ForeignKey('mod_package.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.account_id'))
+    downloaded = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+
+    user = db.relationship("User", backref="download")
+    package = db.relationship("ModPackage", backref="download")
+
+    def __init__(self, package_id=None, user_id=None):
+        self.package_id = package_id
+        self.user_id = user_id
+
+    def __repr__(self):
+        return "Download record for package: {} -> {} by user: {}".format(self.package.mod.pretty_name,
+                                                                          self.package.replacement.item_name,
+                                                                          self.user.name)
+
 mod_bodygroup = db.Table(
     "mod_bodygroup",
     db.Column('mod_id', db.Integer, db.ForeignKey('mods.id')),
@@ -35,6 +84,7 @@ mod_equipregion = db.Table(
     db.Column('mod_id', db.Integer, db.ForeignKey('mods.id')),
     db.Column('equip_region', db.String(64), db.ForeignKey('tf2_equip_regions.equip_region'))
 )
+
 
 class Mod(db.Model):
     __tablename__ = "mods"
@@ -49,7 +99,7 @@ class Mod(db.Model):
     manifest_steamid = db.Column(db.Integer)
     item_slot = db.Column(db.String(64))
     image_inventory = db.Column(db.String(256))
-    uploaded = db.Column(db.DateTime, default=datetime.datetime.now)
+    uploaded = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     visibility = db.Column(db.Enum('H', 'Pu', 'Pr', name='visibility_types'), default='H')  # Hidden, Public, Private
     enabled = db.Column(db.Boolean, default=True)
 
@@ -67,7 +117,7 @@ class Mod(db.Model):
                                   lazy="subquery", cascade='all')
 
     __mapper_args__ = {
-        "order_by": [db.asc(id)]
+        "order_by": [db.asc(uploaded)]
     }
 
     def __repr__(self):

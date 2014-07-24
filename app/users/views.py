@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, flash, redirect, request, url_for,
 from app import oid, steam, db, login_manager
 from models import User, AnonymousUser
 from flask.ext.login import login_user, logout_user, current_user, login_required
+from ..mods.models import Mod
 
 users = Blueprint("users", __name__, url_prefix="/users")
 
@@ -63,9 +64,6 @@ def logout():
 
 @users.route('/<int:user_id>/')
 def user_page(user_id):
-    return render_template('construction.html', title="Under Construction")
-
-
-@users.route('/<int:user_id>/settings/')
-def user_settings(user_id):
-    return render_template('construction.html', title="Under Construction")
+    user = User.query.get(user_id)
+    mods = Mod.query.filter(Mod.authors.any(User.account_id == user.account_id))
+    return render_template('users/page.html', user=user, mods=mods)

@@ -7,6 +7,7 @@ $alerts: (success: #518F3F, info: #3F799B, warning: #C28A2E, danger: #A63E38)
   border-radius: 4px
 
   & .close
+    display: none
     padding: 0
     cursor: pointer
     background: transparent
@@ -23,6 +24,8 @@ $alerts: (success: #518F3F, info: #3F799B, warning: #C28A2E, danger: #A63E38)
     line-height: 1
     &:hover
       opacity: 0.5
+    body.js &
+      display: block
     
 
   @each $alert-type, $alert-color in $alerts

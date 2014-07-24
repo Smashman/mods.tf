@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>{{ user.name }}</h1>
+    {%- for mod in mods -%}
+        {{ mod.pretty_name }}
+    {%- endfor -%}
+    <div><a href="{{ url_for('.logout') }}">Logout</a></div>
+{% endblock %}

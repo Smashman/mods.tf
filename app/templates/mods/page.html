@@ -1,9 +1,8 @@
 {% extends "layout.html" %}
 {% import "mods/macros.html" as mod_macros %}
 {% block content %}
-    <h1>{{ mod.pretty_name }}</h1>
-    <img src="{{ url_for('.image', mod_id=mod.id) }}" />
     <div class="sidebar">
+        <div class="backpack_image"><img src="{{ url_for('.image', mod_id=mod.id) }}" /></div>
         <div class="authors">
             <span>Authors:</span>
             {{ mod_macros.author_list(mod.authors) }}
@@ -23,5 +22,14 @@
             {%- endfor -%}
         </div>
     </div>
-    <a href="{{ url_for('.download', mod_id=mod.id) }}">Download</a>
+    <h1>{{ mod.pretty_name }}</h1>
+    <ul>
+        <li><a href="{{ url_for('.download', mod_id=mod.id) }}">Download to replace item</a></li>
+        {%- if mod.workshop_id -%}
+            <li><a href="//steamcommunity.com/sharedfiles/filedetails/?id={{ mod.workshop_id }}" target="_blank">View on Steam Workshop</a></li>
+        {%- endif -%}
+        {%- if current_user in mod.authors or current_user.is_admin() -%}
+            <li><a href="{{ url_for(".edit", mod_id=mod.id) }}">Edit mod</a></li>
+        {%- endif -%}
+    </ul>
 {% endblock %}

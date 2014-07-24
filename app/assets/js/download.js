@@ -5,6 +5,7 @@ $(function(){
     var bodygroups = $("#bodygroups");
     var classes = $("#classes");
     var equip_regions = $("#equip_regions");
+    var item_name = $("#item_name");
     function call_api(search_data, page){
         $.ajax({
             url: tf2_api,
@@ -28,7 +29,7 @@ $(function(){
         event.preventDefault();
         page = 1;
         search_data = {
-            item_name: $("#item_name").val(),
+            item_name: item_name.val(),
             classes: classes.val(),
             bodygroups: bodygroups.val(),
             equip_regions: equip_regions.val()
@@ -45,4 +46,5 @@ $(function(){
         call_api(search_data, page);
     });
     search_form.submit();
+    multipleSelect_three();
 });

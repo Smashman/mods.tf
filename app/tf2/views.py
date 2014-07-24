@@ -7,21 +7,25 @@ from .. import db
 
 tf2 = Blueprint("tf2", __name__, url_prefix="/tf2")
 
+
 def item_search(item_name, classes, bodygroups, equip_regions, mod_id, page):
     wildcards = ["%", "_"]
+    no_items = {"items": []}
     if request.method != 'POST' or any([w in item_name for w in wildcards]):
-        return {"items":[]}
+        return no_items
     items_query = TF2Item.query.filter(TF2Item.item_name.contains(item_name))
-    for class_name in classes:
-        items_query = items_query.filter(TF2Item.class_model.any(TF2ClassModel.class_name == class_name))
-    sq = db.session.query(TF2ClassModel.defindex, func.count(TF2ClassModel).label("class_count")).group_by(TF2ClassModel.defindex).subquery()
-    items_query = items_query.join(sq, TF2Item.defindex == sq.c.defindex)
-    if len(classes) == 9:
-        pass
-    elif len(classes) > 1:
-        items_query = items_query.filter(sq.c.class_count == 9)
-    else:
-        items_query = items_query.filter(sq.c.class_count == 1)
+    if len(classes) > 0:
+        for class_name in classes:
+            items_query = items_query.filter(TF2Item.class_model.any(TF2ClassModel.class_name == class_name))
+        sq = db.session.query(TF2ClassModel.defindex, func.count(TF2ClassModel).label("class_count")).group_by(TF2ClassModel.defindex).subquery()
+        items_query = items_query.join(sq, TF2Item.defindex == sq.c.defindex)
+        if len(classes) == 9:
+            pass
+        elif len(classes) > 1:
+            items_query = items_query.filter(sq.c.class_count == 9)
+        else:
+            items_query = items_query.filter(sq.c.class_count == 1)
+    else: return no_items
     if bodygroups:
         for bodygroup in bodygroups:
             if bodygroup != "0":
@@ -35,11 +39,12 @@ def item_search(item_name, classes, bodygroups, equip_regions, mod_id, page):
     for item in items_query.items:
         items.append(u"<a class=\"test\" href=\"{url}\" title=\"{item.item_name}\"><img src=\"{item.image_url}\" /></a>".format(item=item, url=url_for('mods.package', mod_id=mod_id, defindex=item.defindex)))
     if items_query.has_next:
-        items.append(u"<div class=\"next\"><img src=\"http://media.steampowered.com/apps/440/icons/wikicap.cd511140da7a50a2a9cf9f83bd58a12e4652d5ca.png\" /></div>")
+        items.append(u"<a class=\"next\"><img src=\"http://media.steampowered.com/apps/440/icons/wikicap.cd511140da7a50a2a9cf9f83bd58a12e4652d5ca.png\" /></a>")
     if items_query.has_prev:
-        items.insert(0, u"<div class=\"prev\"><img src=\"http://media.steampowered.com/apps/440/icons/wikicap.cd511140da7a50a2a9cf9f83bd58a12e4652d5ca.png\" /></div>")
+        items.insert(0, u"<a class=\"prev\"><img src=\"http://media.steampowered.com/apps/440/icons/wikicap.cd511140da7a50a2a9cf9f83bd58a12e4652d5ca.png\" /></a>")
     items_dict = {"items": items}
     return items_dict
+
 
 @tf2.route('/api/', methods=['POST'])
 @login_required

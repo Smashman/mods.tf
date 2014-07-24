@@ -13,4 +13,5 @@ The website source for mods.tf, powered by Flask - currently in the development 
 * ```bower install```
 * Set-up ```instance/settings.py``` based on ```instance/settings_example.py``` template.
 * ```alembic upgrade head```
-* ```run.py```
+* ```python manage.py update_tf2_items```
+* ```python manage.py runserver```
