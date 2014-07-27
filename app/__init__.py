@@ -4,6 +4,7 @@ from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
 from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
 from flask.ext.markdown import Markdown
+from raven.contrib.flask import Sentry
 import steam
 
 app = Flask(__name__, instance_relative_config=True)
@@ -22,6 +23,7 @@ oid = OpenID(app)
 workshopzips = UploadSet('workshopZips', 'zip')
 modimages = UploadSet('modImages', IMAGES)
 markdown = Markdown(app, safe_mode="escape")
+sentry = Sentry(app)
 
 # Setup steamodd
 steam.api.key.set(app.config['STEAM_API_KEY'])
