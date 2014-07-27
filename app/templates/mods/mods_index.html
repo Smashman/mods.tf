@@ -1,6 +1,6 @@
-{% import 'mods/macros.html' as macros %}
+{% from 'mods/macros.html' import mod_block %}
 <div class="mod_wall">
 {% for mod in mods %}
-        {{ macros.mod_block(mod) }}
+        {{ mod_block(mod) }}
 {% endfor %}
 </div>

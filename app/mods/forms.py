@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import TextField, SelectField, SelectMultipleField, SubmitField
+from wtforms import TextField, SelectField, SelectMultipleField, SubmitField, TextAreaField
 from wtforms.validators import Required, Length
 
 
@@ -11,11 +11,11 @@ class ItemSearch(Form):
 
 
 class EditMod(Form):
-    pretty_name = TextField('Pretty name:', validators=[Required()])
+    pretty_name = TextField('Name:', validators=[Required()])
     workshop_id = TextField('Workshop ID:')
+    description = TextAreaField('Description:')
     package_format = SelectField("Package format:", validators=[Required()])
     #license = SelectField("License:")
     equip_regions = SelectMultipleField("Equip regions:")
     bodygroups = SelectMultipleField("Bodygroups:")
-    publish = SubmitField("Save and Publish!")
-    hide = SubmitField("Save and hide mod")
+    publish = SubmitField("Save")

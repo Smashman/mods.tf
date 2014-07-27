@@ -1,0 +1,7 @@
+{% from 'macros.html' import pagination %}
+{% block content %}
+    {{ pagination(items, "mods.page", {"mod_id": mod_id, "_anchor": "results"}) }}
+    {%- for item in items.items -%}
+        <a class="item" href="{{ url_for('mods.package', mod_id=mod_id, defindex=item.defindex) }}" title="{{ "The " if item.proper_name }}{{ item.item_name }} ({{ item.downloads }} downloads)"><img src="{{ item.image_url }}" /></a>
+    {%- endfor -%}
+{% endblock %}

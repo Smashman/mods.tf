@@ -1,35 +1,96 @@
 {% extends "layout.html" %}
-{% import "mods/macros.html" as mod_macros %}
+{% from "mods/macros.html" import author_list %}
+{% if mod.class_model | length > 1 %}
+    {% set mod_class = "multi-class" %}
+{% else %}
+    {% set mod_class = mod.class_model.itervalues().next().class_name %}
+{% endif %}
+{% block scripts %}
+    {{ super() }}
+    <script>
+        var tf2_api = "{{ url_for("tf2.api") }}";
+        var mod_id  = {{ mod_id }};
+        var page = {{ page }};
+    </script>
+    {% assets "download_js" %}
+        <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endblock %}
 {% block content %}
-    <div class="sidebar">
-        <div class="backpack_image"><img src="{{ url_for('.image', mod_id=mod.id) }}" /></div>
-        <div class="authors">
-            <span>Authors:</span>
-            {{ mod_macros.author_list(mod.authors) }}
+    <div class="sidebar cf">
+        <div class="sidebar-left">
+            <div class="backpack_image">
+                <img src="{{ url_for('.image', mod_id=mod.id, type=0) }}" />
+            </div>
+            <div class="mod-name">{{ mod.pretty_name }}</div>
         </div>
-        {%- if mod.bodygroups | length > 0 -%}
-            <div class="bodygroups">
-                <span>Bodygroups: </span>
-                {%- for bodygroup in mod.bodygroups -%}
-                    <a href="{{ url_for('.search', bodygroup=bodygroup.bodygroup) }}">{{ bodygroup }}</a>{{ ", " if not loop.last }}
+        <div class="sidebar-right">
+            <div class="authors cf">
+                <div class="mod-stat-title">An item created by:</div>
+                {{ author_list(mod.authors) }}
+            </div>
+            <div><span class="mod-stat-title">Downloads: </span>
+                <span class="mod-stat">{{ mod.downloads | default(0) | format_thousands}}</span>
+            </div>
+            <div><span class="mod-stat-title">Replacements: </span>
+                <span class="mod-stat">{{ mod.replacements | default(0) | format_thousands }}+</span>
+            </div>
+            <div><span class="mod-stat-title">Class: </span>
+                {%- for key, class in mod.class_model.items() -%}
+                    <a href="{{ url_for('.search', class=class.class_name) }}">{{ class.class_name | capitalize }}</a>{{ ", " if not loop.last }}
                 {%- endfor -%}
             </div>
-        {%- endif -%}
-        <div class="equip_regions">
-            <span>Equip region: </span>
-            {%- for equip_region in mod.equip_regions -%}
-                <a href="{{ url_for('.search', equip_region=equip_region.equip_region) }}">{{ equip_region }}</a>{{ ", " if not loop.last }}
-            {%- endfor -%}
+            {%- if mod.bodygroups | length > 0 -%}
+                <div class="bodygroups">
+                    <span class="mod-stat-title">Bodygroups: </span>
+                    {%- for bodygroup in mod.bodygroups -%}
+                        <a href="{{ url_for('.search', bodygroup=bodygroup.bodygroup) }}">{{ bodygroup }}</a>{{ ", " if not loop.last }}
+                    {%- endfor -%}
+                </div>
+            {%- endif -%}
+            <div class="equip_regions">
+                <span class="mod-stat-title">Equip region: </span>
+                {%- for equip_region in mod.equip_regions -%}
+                    <a href="{{ url_for('.search', equip_region=equip_region.equip_region) }}">{{ equip_region }}</a>{{ ", " if not loop.last }}
+                {%- endfor -%}
+            </div>
+            {%- if mod.workshop_id -%}
+                <a href="//steamcommunity.com/sharedfiles/filedetails/?id={{ mod.workshop_id }}" target="_blank" title="View on Steam Workshop" class="workshop"><img src="{{ url_for('static', filename='images/workshop.png') }}"/></a>
+            {%- endif -%}
+            {%- if current_user in mod.authors or current_user.is_admin() -%}
+                <div class="owner_controls">
+                    <a href="{{ url_for(".edit", mod_id=mod.id) }}">Edit mod</a>
+                </div>
+            {%- endif -%}
         </div>
     </div>
-    <h1>{{ mod.pretty_name }}</h1>
-    <ul>
-        <li><a href="{{ url_for('.download', mod_id=mod.id) }}">Download to replace item</a></li>
-        {%- if mod.workshop_id -%}
-            <li><a href="//steamcommunity.com/sharedfiles/filedetails/?id={{ mod.workshop_id }}" target="_blank">View on Steam Workshop</a></li>
+    <div class="mod-left">
+        {%- if mod.description -%}
+            <div class="mod-description">
+                {{ mod.description | markdown }}
+            </div>
         {%- endif -%}
-        {%- if current_user in mod.authors or current_user.is_admin() -%}
-            <li><a href="{{ url_for(".edit", mod_id=mod.id) }}">Edit mod</a></li>
+        {%- if current_user.is_authenticated() -%}
+            <div class="item-search">
+                <span>Choose an item to replace:</span>
+                <form id="item_search" method="POST">
+                    {{ item_search.hidden_tag() }}
+                    {{ item_search.item_name(placeholder="Filter by name...", class="input-default") }}
+                    {{ item_search.classes }}
+                    {{ item_search.equip_regions }}
+                    {{ item_search.bodygroups }}
+                    <input type="submit" class="submit input-default" value="Submit">
+                </form>
+                <div id="results">
+                    {%- if item_results -%}
+                        {{ item_results | safe }}
+                    {%- else -%}
+                        This item cannot be repackaged at this time.
+                    {%- endif -%}
+                </div>
+            </div>
+        {%- else -%}
+            <div><a href="{{ url_for("users.login") }}">Login via Steam</a> to repackage and download this mod.</div>
         {%- endif -%}
-    </ul>
+    </div>
 {% endblock %}

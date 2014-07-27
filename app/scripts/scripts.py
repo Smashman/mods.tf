@@ -117,7 +117,7 @@ def update_tf2_items():
                             if model_player_per_class:
                                 class_model = model_player_per_class.get(tf2_class)
                             elif model_player:
-                                class_model = model_player
+                                continue
                             else:
                                 continue
                             class_and_model = {tf2_class: class_model}

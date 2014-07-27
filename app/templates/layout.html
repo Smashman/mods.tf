@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>mods.tf{{ " - " if title }}{{ title }}</title>
+    <title>{{ title }}{{ " - " if title }}mods.tf</title>
     {% assets "main_css" %}
         <link href="{{ ASSET_URL }}" rel="stylesheet">
     {% endassets %}
@@ -15,7 +15,7 @@
 </head>
 <body>
     {% include "header.html" %}
-    <div class="container cf">
+    <div class="container cf" id="content">
         {% for category, message in get_flashed_messages(with_categories=true) %}
             <div class="flash alert {{ 'alert-' + category if category != 'message' else 'alert-info'}}">
             <button type="button" class="close">×</button>
@@ -25,5 +25,11 @@
         {% block content %}
         {% endblock %}
     </div>
+    <footer>
+		<div class="container cf">
+			<span id="created_container">mods.tf was created by <a target="_blank" href="http://steamcommunity.com/id/smashman2004">Ben 'smash.mn' Williams</a>.</span>
+            <div class="pull-right">If you like mods.tf, please consider <a target="_blank" href="http://steamcommunity.com/workshop/suggestserviceproviders/?appid=440">recommending it as a service provider on the Workshop</a></div>
+		</div>
+	</footer>
 </body>
 </html>

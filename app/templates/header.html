@@ -1,8 +1,8 @@
-{% import "macros.html" as macros %}
+{% from "macros.html" import steam_block %}
 <div class="header bg_{{ range(5) | random }} cf">
     <div class="container">
         {%- if current_user.is_authenticated() -%}
-            {{ macros.steam_block(current_user, True) }}
+            {{ steam_block(current_user, True) }}
             <ul class="dropdown-menu">
                 {%- if current_user.is_uploader() -%}
                     <li><a href="{{ url_for('mods.upload') }}">Upload mod</a></li>

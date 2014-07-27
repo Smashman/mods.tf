@@ -13,6 +13,7 @@
 $mods_tf-mods-info-transition: 0.2s
 
 +font-face("Neris SemiBold", "../fonts/neris-semibold/Neris-SemiBold-webfont")
++font-face("Neris Black", "../fonts/neris-black/Neris-Black-webfont")
 
 .mod
   position: relative
@@ -20,7 +21,8 @@ $mods_tf-mods-info-transition: 0.2s
   font-size: 14px
   overflow: hidden
   background: darken($mods_tf-background-color, 5%)
-  border: 2px solid darken($mods_tf-orange, 15%)
+  border: 2px solid darken($mods_tf-highlight, 15%)
+  color: $mods_tf-text-color
   &:hover
     color: inherit
 
@@ -29,7 +31,7 @@ $mods_tf-mods-info-transition: 0.2s
     width: 100%
     bottom: 0
     margin-bottom: -4em
-    background-color: transparentize($mods_tf-orange, 0.7)
+    background-color: transparentize($mods_tf-highlight, 0.7)
     padding: 0.8em
     +transition(margin-bottom $mods_tf-mods-info-transition ease, background $mods_tf-mods-info-transition ease)
     
@@ -50,7 +52,7 @@ $mods_tf-mods-info-transition: 0.2s
 
   & img
     display: block
-    max-width: 240px
+    max-width: 236px
 
   & .spacer
     height: 2px
@@ -70,9 +72,9 @@ $mods_tf-mods-info-transition: 0.2s
 
   &:hover > .info
     margin-bottom: 0px
-    background-color: desaturate(darken(transparentize($mods_tf-orange, 0.2), 25%), 25%)
+    background-color: desaturate(darken(transparentize($mods_tf-highlight, 0.2), 25%), 25%)
     & .spacer
-      background-color: $mods_tf-orange
+      background-color: $mods_tf-highlight
   & .stats
     overflow: auto
     ul
@@ -81,11 +83,11 @@ $mods_tf-mods-info-transition: 0.2s
       padding: 0
     & li
       display: inline
-      color: $mods_tf-orange
+      color: $mods_tf-highlight
       font-weight: 800
       font-size: 1.2em
       float: left
-      border-right: 1px solid transparentize($mods_tf-orange, .8)
+      border-right: 1px solid transparentize($mods_tf-highlight, .8)
       line-height: 1.1em
       padding: 0 .7em 0 .7em
 
@@ -105,15 +107,120 @@ $mods_tf-mods-info-transition: 0.2s
   height: 720px
   overflow: hidden
 
-.sidebar
-  width: 200px
-  float: right
+.mod-left
+  overflow: hidden
+  & .owner_controls
+    margin-bottom: 1em
 
-  & .backpack_image img
+.mod-description-title, .mod-description
+  background: darken($mods_tf-background-color, 2%)
+
+.mod-description
+  border-radius: 8px
+  padding: 8px
+  border-left: 1px solid $mods_tf-highlight
+  border-bottom: 1px solid $mods_tf-highlight
+  margin-bottom: 1em
+  & *:first-child
+    margin-top: 0
+  & *:last-child
+    margin-bottom: 0
+  & img
     max-width: 100%
+
+$mods_tf-triangle-color: mix(darken($mods_tf-background-color, 4%), desaturate($mods_tf-highlight, 15%), 60%)
+
+.sidebar
+  width: auto
+  text-align: left
+  padding: 15px
+  margin-bottom: 1em
+  border-bottom: 2px solid $mods_tf-highlight
+
+  & .sidebar-left, & .sidebar-right
+    float: left
+    width: 50%
+
+  .mod-stat-title
+    font-weight: bold
+
+  .mod-stat
+    font-size: 2em
+
+  & > div
+    margin-bottom: 4px
+
+  & .mod-name
+    font-family: "Neris Black", $mods_tf-fonts
+    font-size: 3em
+    text-align: center
+
+  & .backpack_image
+    width: 300px
+    position: relative
+    z-index: -1
+    margin: -30px auto -30px auto
+
+    & img
+      max-width: 100%
 
   & .authors
     & .steam_block
+      width: 200px
       margin-bottom: 4px
       &:last-of-type
         margin-bottom: initial
+
+  @media (min-width: 1240px)
+    float: right
+    width: 400px
+    margin-bottom: 1em
+    border-bottom: 0
+    border-left: 2px solid $mods_tf-highlight
+    margin-left: 15px
+    text-align: right
+
+    & .mod-name
+      text-align: right
+
+    & .sidebar-left, & .sidebar-right
+      width: auto
+      float: none
+
+    & .backpack_image
+      width: 368px
+      margin: -80px 0 -80px 0
+
+    & .authors
+      & .steam_block
+        float: right
+
+#results
+  margin-top: 0.5em
+  background: darken($mods_tf-background-color, 3%)
+  border-radius: 5px
+  border-bottom: 1px solid $mods_tf-highlight
+  margin-bottom: 1em
+  padding: 8px
+  text-align: center
+  & .item
+    margin: 5px
+    overflow: hidden
+    display: inline-block
+    +size(128px 86px)
+    & img
+      margin: -23px 0 -23px 0
+
+#item_search
+  display: none
+  body.js &
+    display: block
+  &.ms-open
+    min-height: 300px
+
+.item-search
+  min-height: 300px
+  margin-bottom: 1em
+
+.workshop
+  display: inline-block

@@ -6,7 +6,16 @@ import datetime
 class AnonymousUser(AnonymousUserMixin):
     user_class = 0
 
-    def update_steam(self):
+    @staticmethod
+    def update_steam():
+        return False
+
+    @staticmethod
+    def is_admin():
+        return False
+
+    @staticmethod
+    def is_uploader():
         return False
 
 
@@ -48,10 +57,12 @@ class User(db.Model):
     def is_active(self):
         return self.enabled
 
-    def is_anonymous(self):
+    @staticmethod
+    def is_anonymous():
         return False
 
-    def is_authenticated(self):
+    @staticmethod
+    def is_authenticated():
         return True
 
     def is_admin(self):

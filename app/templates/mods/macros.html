@@ -1,4 +1,4 @@
-{% import "macros.html" as macros %}
+{% from "macros.html" import steam_block %}
 {%- macro mod_block(mod) -%}
     {% if mod.class_model | length > 1 %}
         {% set mod_class = "multi-class" %}
@@ -17,16 +17,16 @@
             <div class="spacer"></div>
             <div class="stats">
             <ul>
-                <li>{{ mod.downloads | default("0") }}<span>Downloads</span></li>
-                <li>{{ mod.replacements | default("0") }}<span>Replacements</span></li>
+                <li>{{ mod.downloads | default(0) | format_thousands}}<span>Downloads</span></li>
+                <li>{{ mod.replacements | default(0) | format_thousands }}+<span>Replacements</span></li>
             </ul>
             </div>
         </div>
-        <img src="{{ url_for('mods.image', mod_id=mod.id) }}" />
+        <img src="{{ url_for('mods.image', mod_id=mod.id, type=0) }}" />
     </a>
 {%- endmacro -%}
 {%- macro author_list(authors) -%}
     {%- for author in authors -%}
-        {{ macros.steam_block(author) }}
+        {{ steam_block(author) }}
     {%- endfor -%}
 {%- endmacro -%}

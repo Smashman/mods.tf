@@ -1,22 +1,27 @@
 {% extends "layout.html" %}
-{% import "macros.html" as macros %}
+{% from "macros.html" import form_field %}
 {% block scripts %}
     {{ super() }}
     {% assets "edit_js" %}
         <script src="{{ ASSET_URL }}"></script>
+        <script>
+            var tf2_api = "{{ url_for("tf2.api_count") }}";
+            var classes = {{ classes | safe }};
+        </script>
     {% endassets %}
 {% endblock %}
 {% block content %}
-    <h1>Settings for {{ mod.pretty_name }}</h1>
+    Settings for {{ mod.pretty_name }}
     <form method=POST id="edit_form" >
         {{ edit_form.hidden_tag() }}
-        {{ macros.form_field(edit_form.pretty_name) }}
-        {{ macros.form_field(edit_form.workshop_id) }}
-        {{ macros.form_field(edit_form.package_format) }}
-        {{ macros.form_field(edit_form.equip_regions) }}
-        {{ macros.form_field(edit_form.bodygroups) }}
-        {{ edit_form.publish }}{{ edit_form.hide }}
+        {{ form_field(edit_form.pretty_name) }}
+        {{ form_field(edit_form.workshop_id) }}
+        {{ form_field(edit_form.description, rows=5, placeholder="Markdown can be used in this area.") }}
+        {{ form_field(edit_form.equip_regions) }}
+        {{ form_field(edit_form.bodygroups) }}
+        <div class="form-row offset" id="item-count">The current settings return <span>{{ count | default(0) }}</span> compatible items.</div>
+        {{ form_field(edit_form.package_format) }}
+        <div class="form-row offset">{{ edit_form.publish(class="input-default") }}</div>
     </form>
-
-    <iframe></iframe>
+    <a href="{{ url_for('mods.page', mod_id=mod.id) }}">Return to the '{{ mod.pretty_name }}' page</a>
 {% endblock %}

@@ -5,17 +5,27 @@ from mods.models import Mod, PackageDownload, ModPackage
 
 @app.route('/')
 def index():
-    mods = Mod.query.filter(Mod.visibility == "Pu").filter(Mod.enabled == True).all()
+    mods = Mod.query.filter(Mod.visibility == "Pu").filter(Mod.enabled == True).limit(21).all()
     for mod in mods:
         mod.downloads = PackageDownload.query.outerjoin(ModPackage).filter(ModPackage.mod_id == mod.id).count()
+        from tf2.views import item_search
+        item_query = item_search(
+            classes=[_class.class_name for key, _class in mod.class_model.items()],
+            bodygroups=[bodygroup.bodygroup for bodygroup in mod.bodygroups],
+            equip_regions=[equip_region.equip_region for equip_region in mod.equip_regions]
+        )
+        mod.replacements = item_query.count()
     return render_template('index.html', mods=mods)
 
 
 @app.errorhandler(401)  # Unauthorized
 @app.errorhandler(403)  # Forbidden
 @app.errorhandler(404)  # Not Found
+@app.errorhandler(405)  # Method not allowed
 @app.errorhandler(500)  # Internal server error.
 def internal_error(error):
+    if error.code == 405:
+        error.code = 404
     error_descriptions = {
         401: {"quote": "\"No way!\" &dash; Scout",
               "description": "You are not authorised to access this page. "
@@ -42,5 +52,6 @@ def internal_error(error):
         error_description = error_descriptions.get(error.code)
         error.quote = error_description.get("quote") or None
         error.description = error_description.get("description") or None
+
     title = "{} {}".format(error.code, error.name)
     return render_template("error.html", error=error, title=title), error.code

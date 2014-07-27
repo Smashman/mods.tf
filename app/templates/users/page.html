@@ -1,8 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>{{ user.name }}</h1>
-    {%- for mod in mods -%}
-        {{ mod.pretty_name }}
-    {%- endfor -%}
-    <div><a href="{{ url_for('.logout') }}">Logout</a></div>
+    {{ user.name }}
+    <div><a href="{{ user.profile_url }}" target="_blank">Steam</a></div>
+    {%- if current_user.account_id == user.account_id -%}
+        {%- if current_user.is_uploader() -%}
+            <div><a href="{{ url_for('mods.upload') }}">Upload a mod</a></div>
+        {%- endif -%}
+        <div><a href="{{ url_for('.logout') }}">Logout</a></div>
+    {%- endif -%}
+
+    Items
+    <ul>
+        {%- for mod in mods.items -%}
+            <li><a href="{{ url_for('mods.page',mod_id=mod.id) }}">{{ mod.pretty_name }}</a></li>
+        {%- endfor -%}
+    </ul>
+
 {% endblock %}

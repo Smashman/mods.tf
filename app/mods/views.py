@@ -5,10 +5,12 @@ from flask.ext.uploads import UploadNotAllowed
 from flask.ext.login import current_user, login_required
 from ..utils.utils import extract_and_image, package_mod_to_item
 from ..tf2.models import TF2Item, TF2BodyGroup, TF2EquipRegion, TF2Class
-from models import Mod, ModPackage, PackageDownload
+from ..tf2.views import item_search
+from models import Mod, ModPackage, PackageDownload, ModImage
 from forms import ItemSearch, EditMod
 import datetime
 import os
+import json
 
 mods = Blueprint("mods", __name__, url_prefix="/mods")
 
@@ -16,14 +18,47 @@ enabled_mods = Mod.query.filter(Mod.visibility == "Pu").filter(Mod.enabled == Tr
 
 
 @mods.route('/<int:mod_id>/')
-def page(mod_id):
+@mods.route('/<int:mod_id>/page/<int:page>/')
+def page(mod_id, page=1):
     mod = Mod.query.get_or_404(mod_id)
-    return render_template('mods/page.html', mod=mod)
+    mod.downloads = PackageDownload.query.outerjoin(ModPackage).filter(ModPackage.mod_id == mod.id).count()
+    from ..tf2.views import item_search, format_query
+    item_query = item_search(
+        classes=[_class for _class in mod.class_model],
+        bodygroups=[bodygroup.bodygroup for bodygroup in mod.bodygroups],
+        equip_regions=[equip_region.equip_region for equip_region in mod.equip_regions]
+    )
+    item_results = format_query(item_query, mod.id, page)
+    mod.replacements = item_query.count()
+
+    classes = mod.class_model
+
+    item_search_form = ItemSearch()
+
+    class_choices = [(_class.class_name, _class.class_name.capitalize()) for key, _class in classes.items()]
+    class_choices.sort()
+    item_search_form.classes.data = [_class for _class in classes]
+    item_search_form.bodygroups.data = [bodygroup.bodygroup for bodygroup in mod.bodygroups]
+    item_search_form.equip_regions.data = [equip_region.equip_region for equip_region in mod.equip_regions]
+
+    equip_regions = TF2EquipRegion.query.all()
+    bodygroups = TF2BodyGroup.query.all()
+
+    item_search_form.classes.choices = class_choices
+    item_search_form.equip_regions.choices = [(equip_region.equip_region, equip_region.full_name or equip_region.equip_region.capitalize()) for equip_region in equip_regions]
+    item_search_form.bodygroups.choices = [(bodygroup.bodygroup, bodygroup.full_name or bodygroup.bodygroup.capitalize()) for bodygroup in bodygroups]
+
+    return render_template('mods/page.html', mod=mod, item_search=item_search_form, mod_id=mod.id,
+                           item_results=item_results.get('items'), page=page, title=mod.pretty_name)
 
 
 @mods.route('/<int:mod_id>/edit/', methods=['GET', 'POST'])
+@login_required
 def edit(mod_id):
     mod = Mod.query.get_or_404(mod_id)
+    print current_user.is_admin()
+    if not current_user.is_admin() and not current_user in mod.authors:
+        return abort(403)
     edit_form = EditMod()
 
     equip_regions = TF2EquipRegion.query.all()
@@ -39,11 +74,15 @@ def edit(mod_id):
                                      bodygroup.full_name or bodygroup.bodygroup.capitalize())
                                     for bodygroup in bodygroups]
 
+    if mod.visibility != "Pu":
+        edit_form.publish.label.text += " and Publish!"
+
     if edit_form.workshop_id.data == "":
         edit_form.workshop_id.data = None
 
     if edit_form.validate_on_submit():
         mod.pretty_name = edit_form.pretty_name.data
+        mod.description = edit_form.description.data
         workshop_id = edit_form.workshop_id.data
         if workshop_id:
             try:
@@ -69,19 +108,29 @@ def edit(mod_id):
 
         for equip_region in edit_form.equip_regions.data:
             mod.equip_regions.append(TF2EquipRegion.query.get(equip_region))
-        print edit_form.publish.data, edit_form.hide.data
         if edit_form.publish.data:
             mod.visibility = "Pu"
-        elif edit_form.hide.data:
-            mod.visibility = "H"
 
         db.session.add(mod)
         db.session.commit()
+        flash("Save successful.", "success")
+        return redirect(url_for("mods.page", mod_id=mod.id))
+
+    classes = [_class for _class in mod.class_model]
 
     edit_form.pretty_name.data = mod.pretty_name
     edit_form.workshop_id.data = mod.workshop_id
+    edit_form.description.data = mod.description
     edit_form.equip_regions.data = [equip_region.equip_region for equip_region in mod.equip_regions]
     edit_form.bodygroups.data = [bodygroup.bodygroup for bodygroup in mod.bodygroups]
+
+    classes_array = json.dumps(classes)
+
+    count = item_search(
+        classes=classes,
+        bodygroups=[bodygroup.bodygroup for bodygroup in mod.bodygroups],
+        equip_regions=[equip_region.equip_region for equip_region in mod.equip_regions]
+    ).count()
 
     """if request.method == 'POST' and 'mod_image' in request.files:
         try:
@@ -93,7 +142,7 @@ def edit(mod_id):
             <input type=file name=mod_image>
             <input type="submit" value="Submit">
         </form>"""
-    return render_template('mods/edit.html', mod=mod, edit_form=edit_form)
+    return render_template('mods/edit.html', mod=mod, edit_form=edit_form, classes=classes_array, count=count)
 
 
 @mods.route('/search/')
@@ -134,47 +183,21 @@ def upload():
     return render_template('mods/upload.html')
 
 
-@mods.route('/<int:mod_id>/images/')  # TODO: Consider better methods of doing this
-def image(mod_id):
+@mods.route('/<int:mod_id>/images/<int:type>/')  # TODO: Consider better methods of doing this
+def image(mod_id, type):
+    image = ModImage.query.filter_by(mod_id=mod_id, type=type).first()
     return send_from_directory(os.path.abspath(os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'], str(mod_id))),
-                               'backpack_icon_large.png',
+                               image.filename,
                                as_attachment=True)
 
 
-@mods.route('/<int:mod_id>/download/')
-def download(mod_id):
-    mod = Mod.query.get_or_404(mod_id)
-    if mod.enabled is False or mod.visibility != "Pu":
-        abort(404)
-    classes = mod.class_model
-
-    item_search = ItemSearch()
-
-    class_choices = [(_class.class_name, _class.class_name.capitalize()) for key, _class in classes.items()]
-    class_choices.sort()
-    item_search.classes.data = [_class for _class in classes]
-    item_search.bodygroups.data = [bodygroup.bodygroup for bodygroup in mod.bodygroups]
-    item_search.equip_regions.data = [equip_region.equip_region for equip_region in mod.equip_regions]
-
-    equip_regions = TF2EquipRegion.query.all()
-    bodygroups = TF2BodyGroup.query.all()
-
-    item_search.classes.choices = class_choices
-    item_search.equip_regions.choices = [(equip_region.equip_region, equip_region.full_name or equip_region.equip_region.capitalize()) for equip_region in equip_regions]
-    item_search.bodygroups.choices = [(bodygroup.bodygroup, bodygroup.full_name or bodygroup.bodygroup.capitalize()) for bodygroup in bodygroups]
-
-    return render_template('mods/download.html', item_search=item_search, mod_id=mod_id)
-
-
 @mods.route('/<int:mod_id>/download/<int:defindex>/')
+@login_required
 def package(mod_id, defindex):
     mod_package = ModPackage.query.filter_by(mod_id=mod_id, defindex=defindex).first()
-    print mod_package
     if not mod_package:
         mod = Mod.query.get_or_404(mod_id)
-        print mod
         replacement = TF2Item.query.get_or_404(defindex)
-        print replacement
         filename = package_mod_to_item(mod, replacement)
         long_date = False
         if datetime.datetime.utcnow() < mod.uploaded + datetime.timedelta(weeks=4):
@@ -185,7 +208,6 @@ def package(mod_id, defindex):
     elif datetime.datetime.utcnow() > mod_package.expire_date:
         mod = mod_package.mod
         replacement = mod_package.replacement
-        print "expired"
         long_date = False
         if datetime.datetime.utcnow() < mod.uploaded + datetime.timedelta(weeks=4):
             long_date = True

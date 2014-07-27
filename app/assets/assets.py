@@ -8,8 +8,8 @@ bundles = {
         'lib/multiple-select/multiple-select.css',
         Bundle(
             'sass/main.sass',
-            filters='sass',
-            depends='sass/*.sass'
+            depends='sass/*.sass',
+            filters='sass'
         ),
         output='../static/css/main.css'
     ),
@@ -26,7 +26,7 @@ bundles = {
     ),
     'edit_js': Bundle(
         'js/edit.js',
-        output='../static/js/download.js',
+        output='../static/js/edit.js',
         filters='jsmin'
     )
 }

@@ -8,7 +8,7 @@ from PIL import Image
 from io import BytesIO
 from werkzeug.utils import secure_filename
 from ..tf2.models import all_classes, TF2BodyGroup, TF2EquipRegion
-from ..mods.models import ModClassModel
+from ..mods.models import ModClassModel, ModImage
 from ..models import get_or_create
 from app import db
 
@@ -85,8 +85,8 @@ def extract_and_image(zip_in, db_record):
         # Do extractings
         print "Extracting."
         safe_name = secure_filename(name)
-        filename_name = "{mod_id}".format(mod_id=mod_id)
-        zip_open.extractall(os.path.join(output_folder, filename_name), to_extract)
+        folder_name = "{mod_id}".format(mod_id=mod_id)
+        zip_open.extractall(os.path.join(output_folder, folder_name), to_extract)
 
         if icon:
             # Load the icon into a byte stream
@@ -96,7 +96,11 @@ def extract_and_image(zip_in, db_record):
 
             # Save the image as a PNG
             print "Saving large PNG image"
-            img.save(os.path.join(output_folder, filename_name, "backpack_icon_large.png"))
+            filename = "backpack_icon_large.png"
+            img.save(os.path.join(output_folder, folder_name, filename))
+            backpack_icon_large = ModImage(filename, db_record.id, 0)
+            db.session.add(backpack_icon_large)
+
 
             # Resize the image to make a thumbnail
             print "Resizing image"
@@ -104,7 +108,10 @@ def extract_and_image(zip_in, db_record):
 
             # Save the thumbnail
             print "Saving small PNG image"
-            img.save(os.path.join(output_folder, filename_name, "backpack_icon.png"))
+            filename = "backpack_icon.png"
+            img.save(os.path.join(output_folder, folder_name, filename))
+            backpack_icon = ModImage(filename, db_record.id, 1)
+            db.session.add(backpack_icon)
 
         # Fetch desired item info from manifest
 

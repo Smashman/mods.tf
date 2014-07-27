@@ -2,8 +2,8 @@
 @import ../lib/normalize-scss/_normalize
 
 $mods_tf-text-color: #e6e6e6
-$mods_tf-background-color: #312e29
-$mods_tf-orange: #f3732d
+$mods_tf-background-color: #312e29 //#2a2a2a - Dota color
+$mods_tf-highlight: #f3732d //#A63E38 - Dota color
 $mods_tf-fonts: Neris Light, Helvetica Neue, Helvetica, Arial, sans-serif
 $mods_tf-classes: multi-class scout soldier pyro demoman heavy engineer medic sniper spy
 $mods_tf-container-widths: 760 1000 1240 1480 1720
@@ -22,6 +22,11 @@ html, body
 
 .cf
   +clearfix
+
+.cf-right
+  clear: right
+  &:before, &:after
+    clear: right
 
 body
   color: $mods_tf-text-color
@@ -46,15 +51,32 @@ body
     @media (min-width: #{$mods_tf-container-width}px)
       width: #{$mods_tf-container-width}px
 
+$mods_tf-footer-height: 50
+
+#content
+  height: auto
+  min-height: calc(100% - 139px)
+  padding-bottom: #{$mods_tf-footer-height}px
+  //margin-bottom: 1em
+
+footer
+  clear: both
+  position: relative
+  z-index: 1
+  margin-top: -#{$mods_tf-footer-height}px
+  background: darken($mods_tf-background-color, 4%)
+  border-top: 1px solid transparentize($mods_tf-highlight, 0.4)
+  line-height: #{$mods_tf-footer-height - 1}px
+
 a
-  color: $mods_tf-text-color
+  color: mix($mods_tf-highlight, $mods_tf-text-color, 60%)
   text-decoration: none
 
   .error_description &
     text-decoration: underline
 
   &:hover
-    color: darken($mods_tf-text-color,15%)
+    color: $mods_tf-text-color
 
 .center
   text-align: center
@@ -63,30 +85,74 @@ a
   font-size: 1.5em
   margin-top: 0.8em
 
-.ms-choice
+.ms-choice > div
+  +triangle(10px, darken($mods_tf-text-color, 10%), down)
+  +transition(transform 0.2s ease-in-out)
+  margin-top: 10px
+  margin-right: 8px
+  &.open
+    +transform(rotate(180deg))
+
+input[type=text].input-default, textarea.input-default, select.input-default, .ms-choice
+  border: 0
+  padding: 3px
+  border-radius: 2px
   background: lighten($mods_tf-background-color, 15%)
-  border: 1px darken($mods_tf-orange, 10%) solid
   color: $mods_tf-text-color
-  & > div
-    +triangle(10px, darken($mods_tf-text-color, 10%), down)
-    +transition(transform 0.2s ease-in-out)
-    margin-top: 10px
-    margin-right: 8px
-    &.open
-      +transform(rotate(180deg))
+  resize: none
+  &:disabled
+    border: 1px desaturate(darken($mods_tf-highlight, 10%), 55%) solid
+    background: desaturate(lighten($mods_tf-background-color, 15%), 4%)
+  &:focus
+    border: 1px solid $mods_tf-highlight
+    padding: 2px
 
-form
-  input[type=text], select
-    border: 1px darken($mods_tf-orange, 10%) solid
-    padding: 5px
-    border-radius: 5px
-    background: lighten($mods_tf-background-color, 15%)
-    &:disabled
-      border: 1px desaturate(darken($mods_tf-orange, 10%), 55%) solid
-      background: desaturate(lighten($mods_tf-background-color, 15%), 4%)
+input[type=submit].input-default
+  border: 0
+  padding: 3px 6px
+  background-color: darken($mods_tf-highlight, 15%)
+  border-radius: 2px
+  &:hover
+    background-color: darken($mods_tf-highlight, 8%)
 
+.form-row
+  margin-bottom: 5px
+  +clearfix
+  & > label
+    float: left
+    width: 20%
+    font-weight: bold
+    display: inline-block
+    padding-right: 1em
+    text-align: right
+  & .input
+    float: left
+    width: 80%
+    padding-left: 1em
+    position: relative
+    & > *
+      width: 100%
+    &.select:before
+      content: " "
+      +size(28px 28px)
+      +position(absolute, null 0px null null)
+      border-radius: 2px
+      pointer-events: none
+      background-color: lighten($mods_tf-background-color, 15%)
+    &.select:after
+      content: " "
+      +position(absolute, 10px 8px null null)
+      +triangle(10px, darken($mods_tf-text-color, 10%), down)
+      +transition(transform 0.2s ease-in-out)
+  &.offset
+    margin-left: 20%
+    padding-left: 1em
+
+.pull-right
+  float: right
 
 @import alerts.sass
 @import steam.sass
 @import header.sass
 @import mods.sass
+@import pagination.sass

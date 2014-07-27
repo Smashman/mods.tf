@@ -9,6 +9,20 @@ mod_author = db.Table(
 )
 
 
+class ModImage(db.Model):
+    __tablename__ = "mod_image"
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(256), nullable=False)
+    mod_id = db.Column(db.Integer, db.ForeignKey('mods.id'), nullable=False)
+    uploaded = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    type = db.Column(db.Integer, default=0)
+
+    def __init__(self, filename=None, mod_id=None, _type=None):
+        self.filename = filename
+        self.mod_id = mod_id
+        self.type = _type
+
+
 class ModClassModel(db.Model):
     __tablename__ = "mod_classmodel"
     mod_id = db.Column(db.Integer, db.ForeignKey('mods.id'), primary_key=True)
@@ -91,10 +105,11 @@ class Mod(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(256))
     pretty_name = db.Column(db.String(256))
+    description = db.Column(db.Text())
     zip_file = db.Column(db.String(256))
     workshop_id = db.Column(db.Integer)
+    app = db.Column(db.Integer, default=440)
     package_format = db.Column(db.Enum('VPK', 'ZIP', name='package_types'), default='VPK')
-    split_class = db.Column(db.Boolean, default=True)
     license = db.Column(db.String(16))  # Ought to be Enum.
     manifest_steamid = db.Column(db.Integer)
     item_slot = db.Column(db.String(64))

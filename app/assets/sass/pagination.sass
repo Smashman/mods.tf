@@ -1,0 +1,44 @@
+.pagination
+  text-align: left
+  margin-bottom: 0.5em
+  padding: 0.3em 0 0.5em 0
+  border-bottom: 1px solid $mods_tf-highlight
+  & ul
+    margin: 0
+    list-style: none
+    display: inline-block
+    padding-left: 0
+    border-radius: 4px
+    & li
+      display: block
+      float: left
+      &:first-child a
+        border-bottom-left-radius: 3px
+        border-top-left-radius: 3px
+      &:last-child a
+        border-bottom-right-radius: 3px
+        border-top-right-radius: 3px
+      & a
+        cursor: pointer
+        padding: 5px 10px
+        background: lighten($mods_tf-background-color, 15%)
+        color: $mods_tf-text-color
+        &:hover
+          background: lighten($mods_tf-background-color, 13%)
+          color: darken($mods_tf-background-color, 3%)
+        &.next
+          border-right: 1px solid lighten($mods_tf-background-color, 8%)
+
+
+      &.active a, &.disabled a
+        cursor: default
+      &.active a
+        background: mix(lighten($mods_tf-background-color, 15%), $mods_tf-highlight, 35%)
+        color: $mods_tf-text-color
+      &.disabled a
+        background: lighten($mods_tf-background-color, 8%)
+        color: darken($mods_tf-text-color, 25%)
+  & .meta
+    display: inline
+    float: right
+    color: lighten($mods_tf-background-color, 15%)

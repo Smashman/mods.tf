@@ -20,15 +20,22 @@ $(function(){
     });
 });
 
-function multipleSelect_three() {
-    classes = $("#classes");
+function multipleSelect_three(edit, get_count) {
+    var classes = $("#classes");
+    var shared_options = {};
+    if (edit) {
+        $.extend(shared_options, {onClose: function(){
+            get_count();
+        }})
+    }
     var available_classes = classes.children().length;
     if (available_classes > 3){
     if (available_classes == 9) allSelected = "All classes selected"; else allSelected = "All available classes selected";
-    classes.multipleSelect({allSelected: "All classes selected", placeholder: "No classes selected"});
+        classes.multipleSelect($.extend({allSelected: allSelected, placeholder: "No classes selected"}, shared_options));
     } else {
-        classes.multipleSelect({allSelected: false, placeholder: "No classes selected", selectAll: false});
+        classes.multipleSelect($.extend({allSelected: false, placeholder: "No classes selected", selectAll: false}, shared_options));
     }
-    $("#bodygroups").multipleSelect({placeholder: "No bodygroup", selectAll: false});
-    $("#equip_regions").multipleSelect({placeholder: "No equip region", filter: true, selectAll: false});
+    console.log($.extend({placeholder: "No bodygroup"}, shared_options));
+    $("#bodygroups").multipleSelect($.extend({placeholder: "No bodygroup", selectAll: false}, shared_options));
+    $("#equip_regions").multipleSelect($.extend({placeholder: "No equip region", filter: true, selectAll: false}, shared_options));
 }
