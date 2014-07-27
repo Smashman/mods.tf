@@ -142,7 +142,8 @@ def edit(mod_id):
             <input type=file name=mod_image>
             <input type="submit" value="Submit">
         </form>"""
-    return render_template('mods/edit.html', mod=mod, edit_form=edit_form, classes=classes_array, count=count)
+    return render_template('mods/edit.html', mod=mod, edit_form=edit_form, classes=classes_array, count=count,
+                           title="Editing " + mod.pretty_name)
 
 
 @mods.route('/search/')
@@ -156,7 +157,8 @@ def search(page=1):
     if bodygroup:
         mods = mods.filter(Mod.bodygroups.any(TF2BodyGroup.bodygroup == bodygroup))
     mods = mods.paginate(page, 30)
-    return render_template('mods/search.html', mods=mods)
+    return render_template('mods/search.html', mods=mods,
+                           title="Search")
 
 
 @mods.route('/upload/', methods=['GET', 'POST'])
@@ -180,7 +182,7 @@ def upload():
                 return redirect(url_for('.edit', mod_id=result.id))
         except UploadNotAllowed:
             flash("Only zips can be uploaded.", "danger")
-    return render_template('mods/upload.html')
+    return render_template('mods/upload.html', title="Search")
 
 
 @mods.route('/<int:mod_id>/images/<int:type>/')  # TODO: Consider better methods of doing this
