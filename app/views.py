@@ -5,7 +5,7 @@ from mods.models import Mod, PackageDownload, ModPackage
 
 @app.route('/')
 def index():
-    mods = Mod.query.filter(Mod.visibility == "Pu").filter(Mod.enabled == True).limit(18).all()
+    mods = Mod.query.filter_by(visibility="Pu", enabled=True, completed=True).limit(18).all()
     for mod in mods:
         mod.downloads = PackageDownload.query.outerjoin(ModPackage).filter(ModPackage.mod_id == mod.id).count()
         from tf2.views import item_search

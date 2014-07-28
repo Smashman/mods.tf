@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "mods/macros.html" import author_list %}
+{% from "mods/macros.html" import author_list, readable_visibility %}
 {% if mod.class_model | length > 1 %}
     {% set mod_class = "multi-class" %}
 {% else %}
@@ -59,7 +59,8 @@
             {%- endif -%}
             {%- if current_user in mod.authors or current_user.is_admin() -%}
                 <div class="owner_controls">
-                    <a href="{{ url_for(".edit", mod_id=mod.id) }}">Edit mod</a>
+                    <div>Visibility: {{ readable_visibility(mod.visibility) }}</div>
+                    <div><a href="{{ url_for(".edit", mod_id=mod.id) }}">Edit mod</a></div>
                 </div>
             {%- endif -%}
         </div>

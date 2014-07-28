@@ -30,3 +30,12 @@
         {{ steam_block(author) }}
     {%- endfor -%}
 {%- endmacro -%}
+{%- macro readable_visibility(visibility) -%}
+    {%- if visibility == "H" -%}
+        Hidden
+    {%- elif visibility == "Pu" -%}
+        Public
+    {%- else -%}
+        Unknown
+    {%- endif -%}
+{%- endmacro -%}

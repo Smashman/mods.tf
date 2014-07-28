@@ -1,10 +1,10 @@
 from flask import Blueprint, send_from_directory, abort, render_template, request, flash, redirect, url_for,\
     current_app
-from app import db, workshopzips, modimages
+from app import db, workshopzips, sentry
 from flask.ext.uploads import UploadNotAllowed
 from flask.ext.login import current_user, login_required
 from ..utils.utils import extract_and_image, package_mod_to_item
-from ..tf2.models import TF2Item, TF2BodyGroup, TF2EquipRegion, TF2Class
+from ..tf2.models import TF2Item, TF2BodyGroup, TF2EquipRegion
 from ..tf2.views import item_search
 from models import Mod, ModPackage, PackageDownload, ModImage
 from forms import ItemSearch, EditMod
@@ -21,7 +21,9 @@ enabled_mods = Mod.query.filter(Mod.visibility == "Pu").filter(Mod.enabled == Tr
 @mods.route('/<int:mod_id>/page/<int:page>/')
 def page(mod_id, page=1):
     mod = Mod.query.get_or_404(mod_id)
-    if mod.visibility != "Pu":
+    if mod.completed is False or mod.enabled is False:
+        abort(404)
+    if mod.visibility != "Pu" and current_user not in mod.authors:
         abort(404)
     mod.downloads = PackageDownload.query.outerjoin(ModPackage).filter(ModPackage.mod_id == mod.id).count()
     from ..tf2.views import item_search, format_query
@@ -144,7 +146,7 @@ def edit(mod_id):
             <input type="submit" value="Submit">
         </form>"""
     return render_template('mods/edit.html', mod=mod, edit_form=edit_form, classes=classes_array, count=count,
-                           title="Editing " + mod.pretty_name)
+                           title=u"Editing {}".format(mod.pretty_name))
 
 
 @mods.route('/search/')
@@ -177,13 +179,15 @@ def upload():
             if result:
                 db.session.add(result)
                 db.session.commit()
-                flash("Hooray! {mod.pretty_name} has been uploaded and is almost ready to download. "
+                flash(u"Hooray! {mod.pretty_name} has been uploaded and is almost ready to download. "
                       "Please check over the mod information and hit \"Publish!\", when you're satisfied."
                       "".format(mod=result), "success")
                 return redirect(url_for('.edit', mod_id=result.id))
         except UploadNotAllowed:
             flash("Only zips can be uploaded.", "danger")
-        except ValueError:
+        except ValueError as ve:
+            print ve
+            sentry.captureException()
             flash("Please select a file to upload.", "danger")
     return render_template('mods/upload.html', title="Upload a mod")
 

@@ -181,6 +181,7 @@ def extract_and_image(zip_in, db_record):
 
         # And we're fin
         print "Done: {}".format(db_record.zip_file)
+        db_record.completed = True
         return db_record
 
 
@@ -227,7 +228,7 @@ def backpack_icon(output_folder, input_folder, backpack_extensions, image_invent
 
 
 def package_mod_to_item(mod, replacement):
-    print "Packaging mod {} as {}.".format(mod.pretty_name, replacement.item_name)
+    print u"Packaging mod {} as {}.".format(mod.pretty_name, replacement.item_name)
     model_extensions = [
         ".mdl",
         ".dx80.vtx",

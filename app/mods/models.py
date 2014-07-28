@@ -88,7 +88,7 @@ class PackageDownload(db.Model):
         self.user_id = user_id
 
     def __repr__(self):
-        return "Download record for package: {} -> {} by user: {}".format(self.package.mod.pretty_name,
+        return u"Download record for package: {} -> {} by user: {}".format(self.package.mod.pretty_name,
                                                                           self.package.replacement.item_name,
                                                                           self.user.name)
 
@@ -121,6 +121,7 @@ class Mod(db.Model):
     image_inventory = db.Column(db.String(256))
     uploaded = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     visibility = db.Column(db.Enum('H', 'Pu', 'Pr', name='visibility_types'), default='H')  # Hidden, Public, Private
+    completed = db.Column(db.Boolean, default=False)
     enabled = db.Column(db.Boolean, default=True)
 
     authors = db.relationship('User', secondary="mod_author", backref=db.backref('mod',

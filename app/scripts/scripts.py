@@ -156,5 +156,5 @@ def delete_expired_packages():
         if package.expire_date < datetime.datetime.utcnow():
             package_path = os.path.abspath(os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'],
                                                         str(package.mod_id), package.filename))
-            print "Deleting package where {} replaces {}.".format(package.mod.pretty_name, package.replacement.item_name)
+            print u"Deleting package where {} replaces {}.".format(package.mod.pretty_name, package.replacement.item_name)
             os.remove(package_path)

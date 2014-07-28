@@ -10,9 +10,17 @@
     {%- endif -%}
 
     {%- if mods -%}
-        Items
+        Mods
         <ul>
             {%- for mod in mods.items -%}
+                <li><a href="{{ url_for('mods.page',mod_id=mod.id) }}">{{ mod.pretty_name }}</a></li>
+            {%- endfor -%}
+        </ul>
+    {%- endif -%}
+    {%- if hidden_mods -%}
+        Hidden Mods
+        <ul>
+            {%- for mod in hidden_mods.items -%}
                 <li><a href="{{ url_for('mods.page',mod_id=mod.id) }}">{{ mod.pretty_name }}</a></li>
             {%- endfor -%}
         </ul>
