@@ -182,7 +182,7 @@ def upload():
                 return redirect(url_for('.edit', mod_id=result.id))
         except UploadNotAllowed:
             flash("Only zips can be uploaded.", "danger")
-    return render_template('mods/upload.html', title="Search")
+    return render_template('mods/upload.html', title="Upload a mod")
 
 
 @mods.route('/<int:mod_id>/images/<int:type>/')  # TODO: Consider better methods of doing this

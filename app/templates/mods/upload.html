@@ -1,7 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
-    <form method=POST enctype=multipart/form-data>
-        <input type=file name=workshop_zip>
-        <input class="input-default" type="submit" value="Submit">
+    <form method=POST enctype=multipart/form-data class="upload-form">
+        <div id="file-picker">
+            <span>Browse for a <span class="gold_star">gold star</span> zip</span>
+            <input type=file name=workshop_zip>
+        </div>
+        <input class="input-default" type="submit" value="Upload">
     </form>
 {% endblock %}

@@ -26,5 +26,15 @@ def delete_expired_packages():
     _delete_expired_packages()
 
 
+@manager.command
+def test():
+    from app.mods.models import Mod
+    from app.tf2.models import TF2Item
+    from app.utils.utils import package_mod_to_item
+
+    mod = Mod.query.get(12)
+    replacement = TF2Item.query.get(260)
+    package_mod_to_item(mod, replacement)
+
 if __name__ == "__main__":
     manager.run()

@@ -224,3 +224,28 @@ $mods_tf-triangle-color: mix(darken($mods_tf-background-color, 4%), desaturate($
 
 .workshop
   display: inline-block
+
+.upload-form
+  text-align: center
+  #file-picker
+    font-size: 4em
+    overflow: hidden
+    width: 400px
+    position: relative
+    padding: 0.2em
+    margin: auto
+    border: 2px solid $mods_tf-highlight
+    border-radius: 1em
+    .gold_star
+      color: #F7DA1B
+    input[type=file]
+      top: 0
+      right: 0
+      position: absolute
+      font-size: 200px
+      opacity: 0
+      filter: alpha(opacity=0)
+      -moz-opacity: 0
+  input[type=submit]
+    font-size: 4em
+    margin-top: 0.5em
