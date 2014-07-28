@@ -9,11 +9,13 @@
         <div><a href="{{ url_for('.logout') }}">Logout</a></div>
     {%- endif -%}
 
-    Items
-    <ul>
-        {%- for mod in mods.items -%}
-            <li><a href="{{ url_for('mods.page',mod_id=mod.id) }}">{{ mod.pretty_name }}</a></li>
-        {%- endfor -%}
-    </ul>
+    {%- if mods -%}
+        Items
+        <ul>
+            {%- for mod in mods.items -%}
+                <li><a href="{{ url_for('mods.page',mod_id=mod.id) }}">{{ mod.pretty_name }}</a></li>
+            {%- endfor -%}
+        </ul>
+    {%- endif -%}
 
 {% endblock %}

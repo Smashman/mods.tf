@@ -15,7 +15,7 @@
     <form method=POST id="edit_form" >
         {{ edit_form.hidden_tag() }}
         {{ form_field(edit_form.pretty_name) }}
-        {{ form_field(edit_form.workshop_id) }}
+        {{ form_field(edit_form.workshop_id, placeholder="Paste a link to the item on the Steam Workshop.") }}
         {{ form_field(edit_form.description, rows=5, placeholder="Markdown can be used in this area.") }}
         {{ form_field(edit_form.equip_regions) }}
         {{ form_field(edit_form.bodygroups) }}

@@ -21,6 +21,8 @@ enabled_mods = Mod.query.filter(Mod.visibility == "Pu").filter(Mod.enabled == Tr
 @mods.route('/<int:mod_id>/page/<int:page>/')
 def page(mod_id, page=1):
     mod = Mod.query.get_or_404(mod_id)
+    if mod.visibility != "Pu":
+        abort(404)
     mod.downloads = PackageDownload.query.outerjoin(ModPackage).filter(ModPackage.mod_id == mod.id).count()
     from ..tf2.views import item_search, format_query
     item_query = item_search(
