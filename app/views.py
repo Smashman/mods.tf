@@ -24,8 +24,6 @@ def index():
 @app.errorhandler(405)  # Method not allowed
 @app.errorhandler(500)  # Internal server error.
 def internal_error(error):
-    if error.code == 405:
-        error.code = 404
     error_descriptions = {
         401: {"quote": "\"No way!\" &dash; Scout",
               "description": "You are not authorised to access this page. "
@@ -39,6 +37,8 @@ def internal_error(error):
     return_to_main_menu = " Please return to <a href=\"{}\">the main page</a>.".format(url_for('index'))
     return_to_main_menu_list = [403, 404, 500]
     try:
+        if error.code == 405:
+            error.code = 404
         error_description = error_descriptions.get(error.code)
         error.quote = error_description.get("quote") or None
         error.description = error_description.get("description") or error.description
