@@ -1,11 +1,11 @@
 {% from "macros.html" import steam_block %}
-{%- macro mod_block(mod) -%}
+{%- macro mod_block(mod, large) -%}
     {% if mod.class_model | length > 1 %}
         {% set mod_class = "multi-class" %}
     {% else %}
         {% set mod_class = mod.class_model.itervalues().next().class_name %}
     {% endif %}
-    <a href="{{ url_for('mods.page', mod_id=mod.id) }}" class="mod {{ mod.size }}">
+    <a href="{{ url_for('mods.page', mod_id=mod.id) }}" class="mod{{ " large" if large }}">
         <div class="mod_class {{ mod_class }}" title="{{ mod_class | capitalize }}"></div>
         <div class="info">
             <div class="authors">

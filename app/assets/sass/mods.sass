@@ -62,7 +62,7 @@ $mods_tf-mods-info-transition: 0.2s
   &.large
     font-size: 18px
     & img
-      max-width: 480px
+      max-width: 476px
     & .name
       font-size: golden-ratio(18px, 1)
     & .mod_class
@@ -166,8 +166,12 @@ $mods_tf-triangle-color: mix(darken($mods_tf-background-color, 4%), desaturate($
 
   & .authors
     & .steam_block
-      width: 200px
+      min-width: 200px
+      width: auto
+      max-width: 100%
       margin-bottom: 4px
+      & > .name
+        max-width: 250px
       &:last-of-type
         margin-bottom: initial
 
@@ -215,11 +219,9 @@ $mods_tf-triangle-color: mix(darken($mods_tf-background-color, 4%), desaturate($
   display: none
   body.js &
     display: block
-  &.ms-open
-    min-height: 300px
 
 .item-search
-  min-height: 300px
+  min-height: 320px
   margin-bottom: 1em
 
 .workshop

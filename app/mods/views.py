@@ -148,16 +148,16 @@ def edit(mod_id):
 @mods.route('/search/')
 @mods.route('/search/page/<int:page>/')
 def search(page=1):
-    equip_region = request.args.get('equip_region')
-    bodygroup = request.args.get('bodygroup')
-    mods = enabled_mods
-    if equip_region:
-        mods = mods.filter(Mod.equip_regions.any(TF2EquipRegion.equip_region == equip_region))
-    if bodygroup:
-        mods = mods.filter(Mod.bodygroups.any(TF2BodyGroup.bodygroup == bodygroup))
-    mods = mods.paginate(page, 30)
-    return render_template('mods/search.html', mods=mods,
-                           title="Search")
+    #equip_region = request.args.get('equip_region')
+    #bodygroup = request.args.get('bodygroup')
+    #mods = enabled_mods
+    #if equip_region:
+        #mods = mods.filter(Mod.equip_regions.any(TF2EquipRegion.equip_region == equip_region))
+    #if bodygroup:
+        #mods = mods.filter(Mod.bodygroups.any(TF2BodyGroup.bodygroup == bodygroup))
+    #mods = mods.paginate(page, 30)
+    #return render_template('mods/search.html', mods=mods, title="Search")
+    return render_template('construction.html', mods=mods, title="Under construction")
 
 
 @mods.route('/upload/', methods=['GET', 'POST'])

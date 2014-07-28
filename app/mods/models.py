@@ -2,11 +2,16 @@ from app import db
 import datetime
 from sqlalchemy.orm.collections import attribute_mapped_collection
 
-mod_author = db.Table(
-    "mod_author",
-    db.Column('mod_id', db.Integer, db.ForeignKey('mods.id')),
-    db.Column('user_id', db.Integer, db.ForeignKey('users.account_id'))
-)
+
+class ModAuthor(db.Model):
+    __tablename__ = "mod_author"
+    mod_id = db.Column(db.Integer, db.ForeignKey('mods.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.account_id'), primary_key=True)
+    order = db.Column(db.Integer, default=0, nullable=False)
+
+    __mapper_args__ = {
+        "order_by": [db.asc(order)]
+    }
 
 
 class ModImage(db.Model):
@@ -118,8 +123,9 @@ class Mod(db.Model):
     visibility = db.Column(db.Enum('H', 'Pu', 'Pr', name='visibility_types'), default='H')  # Hidden, Public, Private
     enabled = db.Column(db.Boolean, default=True)
 
-    authors = db.relationship('User', secondary=mod_author, backref=db.backref('mod',
-                                                                               lazy="dynamic"), lazy="subquery")
+    authors = db.relationship('User', secondary="mod_author", backref=db.backref('mod',
+                                                                                 lazy="dynamic"), lazy="subquery",
+                              order_by="ModAuthor.order")
 
     equip_regions = db.relationship('TF2EquipRegion', secondary=mod_equipregion, backref=db.backref('mod',
                                                                                                     lazy="dynamic"),
@@ -132,7 +138,7 @@ class Mod(db.Model):
                                   lazy="subquery", cascade='all')
 
     __mapper_args__ = {
-        "order_by": [db.asc(uploaded)]
+        "order_by": [db.desc(uploaded)]
     }
 
     def __repr__(self):
