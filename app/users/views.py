@@ -65,6 +65,6 @@ def logout():
 @users.route('/<int:user_id>/')
 @users.route('/<int:user_id>/page/<int:page>/')
 def user_page(user_id, page=1):
-    user = User.query.get(user_id)
+    user = User.query.get_or_404(user_id)
     mods = Mod.query.filter(Mod.authors.any(User.account_id == user.account_id)).paginate(page, 50)
     return render_template('users/page.html', user=user, mods=mods, title=user.name)
