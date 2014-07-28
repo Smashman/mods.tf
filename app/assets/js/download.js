@@ -13,7 +13,6 @@ $(function(){
             type: "POST",
             data: { search_data: search_data, page: page, mod_id: mod_id, bodygroups: search_data["bodygroups"] }
         }).done(function(results){
-            console.log(results);
             insert_div.empty();
             if (results.status) {
                 insert_div.text(results.status);
@@ -45,7 +44,6 @@ $(function(){
     });
     $(document).on("click", ".next, .prev", function(){
         var element = $(this);
-        console.log(element);
         if (!element.parent().hasClass("disabled")) {
             if (element.hasClass("next")){
                 page++;
@@ -54,13 +52,11 @@ $(function(){
             }
             call_api(search_data, page);
         }
-        console.log(page);
     });
     $(document).on("click", ".pagination .page", function(){
         page = $(this).text();
         call_api(search_data, page);
     });
-    console.log(description);
     multipleSelect_three();
     $(".next, .prev, .pagination .page").removeAttr("href");
 });

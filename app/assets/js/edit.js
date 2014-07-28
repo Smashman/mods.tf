@@ -7,7 +7,6 @@ $(function() {
             type: "POST",
             data: { search_data: search_data, page: 1, bodygroups: search_data["bodygroups"] }
         }).done(function(results) {
-                console.log("abnhas");
                 $("#item-count span").text(results.count);
             }
         );

@@ -35,7 +35,6 @@ function multipleSelect_three(edit, get_count) {
     } else {
         classes.multipleSelect($.extend({allSelected: false, placeholder: "No classes selected", selectAll: false}, shared_options));
     }
-    console.log($.extend({placeholder: "No bodygroup"}, shared_options));
     $("#bodygroups").multipleSelect($.extend({placeholder: "No bodygroup", selectAll: false}, shared_options));
     $("#equip_regions").multipleSelect($.extend({placeholder: "No equip region", filter: true, selectAll: false}, shared_options));
 }

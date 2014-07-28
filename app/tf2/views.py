@@ -63,7 +63,6 @@ def api():
     equip_regions = form_values.getlist("search_data[equip_regions][]")
     mod_id = form_values.get("mod_id")
     page = request.form.get('page')
-    print page
     if len(classes) < 1:
         return Response(json.dumps({"status": "No classes selected, please select a class to search.", "count": 0}),  mimetype='application/json')
     if not page.isnumeric():
@@ -86,7 +85,6 @@ def api_count():
     bodygroups = form_values.getlist("search_data[bodygroups][]")
     equip_regions = form_values.getlist("search_data[equip_regions][]")
     page = request.form.get('page')
-    print page
     if len(classes) < 1:
         return Response(json.dumps({"status": "No classes selected, please select a class to search.", "count": 0}),  mimetype='application/json')
     if not page.isnumeric():

@@ -56,7 +56,6 @@ def page(mod_id, page=1):
 @login_required
 def edit(mod_id):
     mod = Mod.query.get_or_404(mod_id)
-    print current_user.is_admin()
     if not current_user.is_admin() and not current_user in mod.authors:
         return abort(403)
     edit_form = EditMod()
@@ -182,6 +181,8 @@ def upload():
                 return redirect(url_for('.edit', mod_id=result.id))
         except UploadNotAllowed:
             flash("Only zips can be uploaded.", "danger")
+        except ValueError:
+            flash("Please select a file to upload.", "danger")
     return render_template('mods/upload.html', title="Upload a mod")
 
 

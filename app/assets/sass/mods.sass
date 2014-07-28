@@ -232,20 +232,21 @@ $mods_tf-triangle-color: mix(darken($mods_tf-background-color, 4%), desaturate($
     overflow: hidden
     width: 400px
     position: relative
-    padding: 0.2em
+    padding: 0.2em 0.2em 1em
     margin: auto
     border: 2px solid $mods_tf-highlight
     background-color: darken($mods_tf-background-color, 3%)
+    border-radius: 2px
     .gold_star
       color: #F7DA1B
     input[type=file]
       top: 0
       right: 0
       position: absolute
-      font-size: 200px
-      opacity: 0
-      filter: alpha(opacity=0)
-      -moz-opacity: 0
+      font-size: initial
+      height: 100%
+      width: 100%
+      padding: 52% 20px 20px
   input[type=submit]
     font-size: 4em
     margin-top: 0.5em
