@@ -68,6 +68,6 @@ def user_page(user_id, page=1):
     user = User.query.get_or_404(user_id)
     mods = Mod.query.filter(Mod.authors.any(User.account_id == user.account_id)).filter_by(visibility="Pu", enabled=True, completed=True).paginate(page, 50)
     hidden_mods = None
-    if user == current_user:
+    if user == current_user or current_user.is_admin():
         hidden_mods = Mod.query.filter(Mod.authors.any(User.account_id == user.account_id)).filter_by(visibility="H", enabled=True, completed=True).paginate(page, 10)
     return render_template('users/page.html', user=user, mods=mods, hidden_mods=hidden_mods, title=user.name)

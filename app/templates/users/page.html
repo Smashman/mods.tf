@@ -9,7 +9,7 @@
         <div><a href="{{ url_for('.logout') }}">Logout</a></div>
     {%- endif -%}
 
-    {%- if mods -%}
+    {%- if mods.items | length > 0 -%}
         Mods
         <ul>
             {%- for mod in mods.items -%}
@@ -17,7 +17,7 @@
             {%- endfor -%}
         </ul>
     {%- endif -%}
-    {%- if hidden_mods -%}
+    {%- if hidden_mods.items | length > 0 -%}
         Hidden Mods
         <ul>
             {%- for mod in hidden_mods.items -%}
