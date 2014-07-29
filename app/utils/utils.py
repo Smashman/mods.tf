@@ -102,7 +102,6 @@ def extract_and_image(zip_in, db_record):
             backpack_icon_large = ModImage(filename, db_record.id, 0)
             db.session.add(backpack_icon_large)
 
-
             # Resize the image to make a thumbnail
             print "Resizing image"
             img.thumbnail((128, 128), Image.ANTIALIAS)
@@ -185,12 +184,9 @@ def extract_and_image(zip_in, db_record):
         return db_record
 
 
-def vpk_package(mod, item_name, folder, mod_folder):
-    print "VPK packaging"
-    print "VPK location: {}".format(current_app.config['VPK_BINARY_PATH'])
-    print "Folder dest: {}".format(folder)
+def vpk_package(mod_name, item_name, folder, mod_folder):
     subprocess.call([os.path.abspath(current_app.config['VPK_BINARY_PATH']), folder])
-    filename = 'mods_tf_{name}_{item_name}.vpk'.format(name=mod.name, item_name=item_name)
+    filename = 'mods_tf_{name}_{item_name}.vpk'.format(name=mod_name, item_name=item_name)
     shutil.move(os.path.join(mod_folder, 'vpk.vpk'),
                 os.path.join(mod_folder, filename))
     shutil.rmtree(folder)
@@ -200,8 +196,6 @@ def vpk_package(mod, item_name, folder, mod_folder):
 def rename_copy(ext_list, dest_format):
     for extension in ext_list:
         for mod_path, replacement_path in dest_format.items():
-            print "Mod path:"+mod_path.format(ext=extension)
-            print "Replacement path:" + replacement_path.format(ext=extension)
             to_rename = mod_path.format(ext=extension)
             rename_dest = replacement_path.format(ext=extension)
 
@@ -213,11 +207,9 @@ def rename_copy(ext_list, dest_format):
 
 
 def backpack_icon(output_folder, input_folder, backpack_extensions, image_inventory):
-    print os.path.abspath(os.path.join(output_folder, "materials/models/workshop/"))
     model_material_copy = os.path.abspath(os.path.join(output_folder, "materials/models/workshop/"))
     backpack_material_copy = os.path.abspath(os.path.join(output_folder, "materials/backpack/workshop/"))
 
-    print os.path.abspath(os.path.join(output_folder, "materials/models/workshop/"))
     model_workshop_materials = os.path.abspath(os.path.join(input_folder, "materials/models/workshop/"))
     backpack_workshop_materials = os.path.abspath(os.path.join(input_folder, "materials/backpack/workshop/"))
     shutil.copytree(model_workshop_materials, model_material_copy)
@@ -245,19 +237,18 @@ def package_mod_to_item(mod, replacement):
 
     if len(mod.class_model) > 1:
         mod_all_class = True
-        print "Mod is mutli-class"
 
     if len(replacement.class_model) > 1:
         replacement_all_class = True
-        print "Replacement is multi-class"
 
-    item_name = replacement.item_name.replace(" ", "_").lower()
-    item_name = ''.join(char for char in item_name if char.isalnum() or char == '_')
-    print "Item name is {}".format(item_name)
+    mod_name = mod.pretty_name
+    if mod_name.startswith("The "):
+        mod_name = mod_name[4:]
+    mod_name = secure_filename(mod_name).lower()
+    item_name = secure_filename(replacement.item_name).lower()
 
     mod_folder = os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'],
                               "{mod_id}".format(mod_id=mod.id, mod_name=mod.name))
-    print "mod_folder is {}".format(mod_folder)
     input_folder = os.path.join(mod_folder, 'game')
     output_folder = os.path.join(mod_folder, 'vpk')
 
@@ -293,5 +284,5 @@ def package_mod_to_item(mod, replacement):
     else:
         rename_copy(model_extensions, model_player)
 
-    file_name = vpk_package(mod, item_name, output_folder, mod_folder)
+    file_name = vpk_package(mod_name, item_name, output_folder, mod_folder)
     return file_name
