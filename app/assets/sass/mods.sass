@@ -111,8 +111,6 @@ $mods_tf-mods-info-transition: 0.2s
 
 .mod-left
   overflow: hidden
-  & .owner_controls
-    margin-bottom: 1em
 
 .mod-description-title, .mod-description
   background: darken($mods_tf-background-color, 2%)
@@ -134,16 +132,23 @@ $mods_tf-mods-info-transition: 0.2s
 
 $mods_tf-triangle-color: mix(darken($mods_tf-background-color, 4%), desaturate($mods_tf-highlight, 15%), 60%)
 
-.sidebar
+#sidebar
   width: auto
   text-align: left
   padding: 15px
   margin-bottom: 1em
   border-bottom: 2px solid $mods_tf-highlight
 
-  & .sidebar-left, & .sidebar-right
+  & .sidebar
     float: left
-    width: 50%
+    padding: 0.5em
+    & > div
+      margin-bottom: 4px
+
+    &.left
+      width: 55%
+    &.right
+      width: 45%
 
   .mod-stat-title
     font-weight: bold
@@ -151,64 +156,64 @@ $mods_tf-triangle-color: mix(darken($mods_tf-background-color, 4%), desaturate($
   .mod-stat
     font-size: 2em
 
-  & > div
-    margin-bottom: 4px
-
   & .mod-name
     font-family: "Neris Black", $mods_tf-fonts
     font-size: 3em
     text-align: center
+    overflow: hidden
+    text-overflow: ellipsis
 
   & .backpack_image
-    width: 300px
     position: relative
-    z-index: -1
-    margin: -30px auto -30px auto
-
+    width: 100%
+    overflow: hidden
+    &:before
+      content: ""
+      display: block
+      padding-top: 64%
     & img
-      max-width: 100%
+      position:  absolute
+      top: -28%
+      left: 0
+      width: 100%
 
   & .authors
+    min-width: 200px
+    width: 80%
     & .steam_block
-      min-width: 200px
-      width: auto
-      max-width: 100%
+      width: 100%
       margin-bottom: 4px
-      & > .name
-        max-width: 250px
       &:last-of-type
         margin-bottom: initial
+  & .workshop
+    display: block
 
   @media (min-width: 1240px)
     float: right
     width: 400px
-    margin-bottom: 1em
+    margin-bottom: 0
     border-bottom: 0
-    border-left: 2px solid $mods_tf-highlight
-    margin-left: 15px
-    text-align: right
-
-    & .mod-name
-      text-align: right
-
-    & .sidebar-left, & .sidebar-right
-      width: auto
-      float: none
-
-    & .backpack_image
-      width: 368px
-      margin: -80px 0 -80px 0
+    margin-left: 1em
+    border-right: 2px solid $mods_tf-highlight
+    border-top-right-radius: 1em
 
     & .authors
-      & .steam_block
-        float: right
+      margin: auto
+
+    & .sidebar
+      width: auto
+      float: none
+      padding: 0
+      &.left, &.right
+        width: auto
+    & .workshop
+      text-align: center
 
 #results
   margin-top: 0.5em
   background: darken($mods_tf-background-color, 3%)
   border-radius: 5px
   border-bottom: 1px solid $mods_tf-highlight
-  margin-bottom: 1em
   padding: 8px
   text-align: center
   & .item
@@ -226,10 +231,6 @@ $mods_tf-triangle-color: mix(darken($mods_tf-background-color, 4%), desaturate($
 
 .item-search
   min-height: 320px
-  margin-bottom: 1em
-
-.workshop
-  display: inline-block
 
 .upload-form
   text-align: center

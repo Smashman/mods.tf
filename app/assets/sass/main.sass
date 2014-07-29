@@ -51,13 +51,12 @@ body
     @media (min-width: #{$mods_tf-container-width}px)
       width: #{$mods_tf-container-width}px
 
-$mods_tf-footer-height: 50
+$mods_tf-footer-height: 70
 
 #content
   height: auto
   min-height: calc(100% - 139px)
-  padding-bottom: #{$mods_tf-footer-height}px
-  //margin-bottom: 1em
+  padding-bottom: calc(#{$mods_tf-footer-height}px + 1em)
 
 footer
   clear: both
@@ -66,7 +65,16 @@ footer
   margin-top: -#{$mods_tf-footer-height}px
   background: darken($mods_tf-background-color, 4%)
   border-top: 1px solid transparentize($mods_tf-highlight, 0.4)
-  line-height: #{$mods_tf-footer-height - 1}px
+  line-height: #{$mods_tf-footer-height / 2 - 1}px
+
+  & .recommend
+    float: right
+
+  & .valve
+    line-height: 35px
+    float: left
+    width: 100%
+    text-align: center
 
 a
   color: mix($mods_tf-highlight, $mods_tf-text-color, 60%)
@@ -150,9 +158,6 @@ input[type=submit].input-default
   &.offset
     margin-left: 20%
     padding-left: 1em
-
-.pull-right
-  float: right
 
 @import alerts.sass
 @import steam.sass

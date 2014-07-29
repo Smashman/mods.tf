@@ -17,19 +17,25 @@
     {% endassets %}
 {% endblock %}
 {% block content %}
-    <div class="sidebar cf">
-        <div class="sidebar-left">
+    <div id="sidebar" class="cf">
+        <div class="sidebar left">
             <div class="backpack_image">
                 <img src="{{ url_for('.image', mod_id=mod.id, type=0) }}" />
             </div>
             <div class="mod-name">{{ mod.pretty_name }}</div>
         </div>
-        <div class="sidebar-right">
+        <div class="sidebar right">
             <div class="authors cf">
-                <div class="mod-stat-title">An item created by:</div>
+                <span class="mod-stat-title">An item created by:</span>
                 {{ author_list(mod.authors) }}
             </div>
-            <div><span class="mod-stat-title">Downloads: </span>
+            {%- if mod.workshop_id -%}
+                <div class="workshop">
+                    <a href="//steamcommunity.com/sharedfiles/filedetails/?id={{ mod.workshop_id }}" target="_blank" title="View on Steam Workshop"><img src="{{ url_for('static', filename='images/workshop.png') }}"/></a>
+                </div>
+            {%- endif -%}
+            <div>
+                <span class="mod-stat-title">Downloads: </span>
                 <span class="mod-stat">{{ mod.downloads | default(0) | format_thousands}}</span>
             </div>
             <div><span class="mod-stat-title">Replacements: </span>
@@ -54,9 +60,6 @@
                     <a href="{{ url_for('.search', equip_region=equip_region.equip_region) }}">{{ equip_region }}</a>{{ ", " if not loop.last }}
                 {%- endfor -%}
             </div>
-            {%- if mod.workshop_id -%}
-                <a href="//steamcommunity.com/sharedfiles/filedetails/?id={{ mod.workshop_id }}" target="_blank" title="View on Steam Workshop" class="workshop"><img src="{{ url_for('static', filename='images/workshop.png') }}"/></a>
-            {%- endif -%}
             {%- if current_user in mod.authors or current_user.is_admin() -%}
                 <div class="owner_controls">
                     <div>Visibility: {{ readable_visibility(mod.visibility) }}</div>
