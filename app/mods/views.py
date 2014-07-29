@@ -23,8 +23,8 @@ def page(mod_id, page=1):
     mod = Mod.query.get_or_404(mod_id)
     if mod.completed is False or mod.enabled is False:
         abort(404)
-    if mod.visibility != "Pu" and current_user not in mod.authors:
-        abort(404)
+    elif mod.visibility != "Pu" and current_user not in mod.authors and not current_user.is_admin():
+        abort(403)
     mod.downloads = PackageDownload.query.outerjoin(ModPackage).filter(ModPackage.mod_id == mod.id).count()
     from ..tf2.views import item_search, format_query
     item_query = item_search(
@@ -60,8 +60,10 @@ def page(mod_id, page=1):
 @login_required
 def edit(mod_id):
     mod = Mod.query.get_or_404(mod_id)
-    if not current_user.is_admin() and not current_user in mod.authors:
-        return abort(403)
+    if mod.completed is False or mod.enabled is False:
+        abort(404)
+    elif mod.visibility != "Pu" and current_user not in mod.authors and not current_user.is_admin():
+        abort(403)
     edit_form = EditMod()
 
     equip_regions = TF2EquipRegion.query.all()
