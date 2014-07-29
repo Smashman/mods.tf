@@ -172,25 +172,28 @@ def upload():
     if not current_user.is_uploader():
         abort(403)
     if request.method == 'POST' and 'workshop_zip' in request.files:
-        try:
-            filename = workshopzips.save(request.files['workshop_zip'])
-            mod_info = Mod(zip_file=filename, author=current_user)
-            db.session.add(mod_info)
-            db.session.commit()
-            result = extract_and_image(filename, mod_info)
-            if result:
-                db.session.add(result)
-                db.session.commit()
-                flash(u"Hooray! {mod.pretty_name} has been uploaded and is almost ready to download. "
-                      "Please check over the mod information and hit \"Publish!\", when you're satisfied."
-                      "".format(mod=result), "success")
-                return redirect(url_for('.edit', mod_id=result.id))
-        except UploadNotAllowed:
-            flash("Only zips can be uploaded.", "danger")
-        except ValueError as ve:
-            print ve
-            sentry.captureException()
+        filename = None
+        workshop_zip = request.files['workshop_zip']
+        workshop_zip.seek(0, os.SEEK_END)
+        if workshop_zip.tell() == 0:
             flash("Please select a file to upload.", "danger")
+            return redirect(url_for('.upload'))
+        workshop_zip.seek(0)
+        try:
+            filename = workshopzips.save(workshop_zip)
+        except UploadNotAllowed:
+            flash("Please upload a gold star zip file.", "danger")
+        mod_info = Mod(zip_file=filename, author=current_user)
+        db.session.add(mod_info)
+        db.session.commit()
+        result = extract_and_image(filename, mod_info)
+        if result:
+            db.session.add(result)
+            db.session.commit()
+            flash(u"Hooray! {mod.pretty_name} has been uploaded and is almost ready to download. "
+                  "Please check over the mod information and hit \"Publish!\", when you're satisfied."
+                  "".format(mod=result), "success")
+            return redirect(url_for('.edit', mod_id=result.id))
     return render_template('mods/upload.html', title="Upload a mod")
 
 
