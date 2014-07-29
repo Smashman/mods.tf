@@ -3,7 +3,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
 from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
-from flask.ext.markdown import Markdown
+from flask.ext.misaka import Misaka
 from raven.contrib.flask import Sentry
 import steam
 
@@ -22,7 +22,7 @@ login_manager = LoginManager(app)
 oid = OpenID(app)
 workshopzips = UploadSet('workshopZips', 'zip')
 modimages = UploadSet('modImages', IMAGES)
-markdown = Markdown(app, safe_mode="escape")
+markdown = Misaka(app, escape=True, wrap=True)
 sentry = Sentry(app)
 
 # Setup steamodd
