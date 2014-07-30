@@ -8,7 +8,7 @@ from ..tf2.models import TF2Item, TF2BodyGroup, TF2EquipRegion
 from ..tf2.views import item_search
 from models import Mod, ModPackage, PackageDownload, ModImage
 from forms import ItemSearch, EditMod
-from functions import check_mod_permissions
+from functions import check_mod_permissions, check_edit_permissions
 import datetime
 import os
 import json
@@ -58,7 +58,7 @@ def page(mod_id, page=1):
 @login_required
 def edit(mod_id):
     mod = Mod.query.get_or_404(mod_id)
-    check_mod_permissions(mod)
+    check_edit_permissions(mod)
     edit_form = EditMod()
 
     equip_regions = TF2EquipRegion.query.all()
