@@ -13,6 +13,8 @@ login_manager.anonymous_user = AnonymousUser
 @login_manager.user_loader
 def load_user(user_id):
     _user = User.query.get(user_id)
+    if _user:
+        _user.update_last_seen()
     if _user and _user.enabled is False:
         logout_user()
         flash("You have been banned from using this website.", "danger")

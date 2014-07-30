@@ -71,6 +71,12 @@ class User(db.Model):
     def is_uploader(self):
         return True if self.user_class > 0 else False
 
+    def update_last_seen(self):
+        # Called every page load for current_user
+        self.last_seen = datetime.datetime.utcnow()
+        db.session.add(self)
+        db.session.commit()
+
     @property
     def steam_id(self):
         return self.account_id + 76561197960265728
