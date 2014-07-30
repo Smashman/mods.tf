@@ -226,6 +226,7 @@ def package(mod_id, defindex):
         if datetime.datetime.utcnow() < mod.uploaded + datetime.timedelta(weeks=4):
             long_date = True
         filename = package_mod_to_item(mod, replacement)
+        mod_package.filename = filename
         mod_package.update_expire(long_date)
         db.session.add(mod_package)
         db.session.commit()

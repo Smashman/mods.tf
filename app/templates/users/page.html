@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
     {{ user.name }}
-    <div><a href="{{ user.profile_url }}" target="_blank">Steam</a></div>
+    <div><a href="{{ user.perma_profile_url }}" target="_blank">Steam</a></div>
     {%- if current_user.account_id == user.account_id -%}
         {%- if current_user.is_uploader() -%}
             <div><a href="{{ url_for('mods.upload') }}">Upload a mod</a></div>

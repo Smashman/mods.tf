@@ -80,3 +80,7 @@ class User(db.Model):
     @property
     def steam_id(self):
         return self.account_id + 76561197960265728
+
+    @property
+    def perma_profile_url(self):
+        return "http://steamcommunity.com/profiles/{}".format(self.steam_id)
