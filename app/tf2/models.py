@@ -100,7 +100,7 @@ class TF2Item(db.Model):
     }
 
     def __repr__(self):
-        return "{} (defindex: {})".format(self.item_name, self.defindex)
+        return u"{} (defindex: {})".format(self.item_name, self.defindex)
 
     def __init__(self, defindex=None, item_name=None, proper_name=None, item_slot=None, image_url=None,
                  image_url_large=None, image_inventory=None, class_model=None, _equip_regions=None, _bodygroups=None):

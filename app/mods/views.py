@@ -1,6 +1,6 @@
 from flask import Blueprint, send_from_directory, abort, render_template, request, flash, redirect, url_for,\
     current_app
-from app import db, workshopzips, sentry
+from app import db, workshopzips
 from flask.ext.uploads import UploadNotAllowed
 from flask.ext.login import current_user, login_required
 from ..utils.utils import extract_and_image, package_mod_to_item
@@ -8,6 +8,7 @@ from ..tf2.models import TF2Item, TF2BodyGroup, TF2EquipRegion
 from ..tf2.views import item_search
 from models import Mod, ModPackage, PackageDownload, ModImage
 from forms import ItemSearch, EditMod
+from functions import check_mod_permissions
 import datetime
 import os
 import json
@@ -21,10 +22,7 @@ enabled_mods = Mod.query.filter(Mod.visibility == "Pu").filter(Mod.enabled == Tr
 @mods.route('/<int:mod_id>/page/<int:page>/')
 def page(mod_id, page=1):
     mod = Mod.query.get_or_404(mod_id)
-    if mod.completed is False or mod.enabled is False:
-        abort(404)
-    elif mod.visibility != "Pu" and current_user not in mod.authors and not current_user.is_admin():
-        abort(403)
+    check_mod_permissions(mod)
     mod.downloads = PackageDownload.query.outerjoin(ModPackage).filter(ModPackage.mod_id == mod.id).count()
     from ..tf2.views import item_search, format_query
     item_query = item_search(
@@ -60,10 +58,7 @@ def page(mod_id, page=1):
 @login_required
 def edit(mod_id):
     mod = Mod.query.get_or_404(mod_id)
-    if mod.completed is False or mod.enabled is False:
-        abort(404)
-    elif mod.visibility != "Pu" and current_user not in mod.authors and not current_user.is_admin():
-        abort(403)
+    check_mod_permissions(mod)
     edit_form = EditMod()
 
     equip_regions = TF2EquipRegion.query.all()
@@ -199,6 +194,8 @@ def upload():
 
 @mods.route('/<int:mod_id>/images/<int:type>/')  # TODO: Consider better methods of doing this
 def image(mod_id, type):
+    mod = Mod.query.get_or_404(mod_id)
+    print check_mod_permissions(mod)
     image = ModImage.query.filter_by(mod_id=mod_id, type=type).first()
     return send_from_directory(os.path.abspath(os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'], str(mod_id))),
                                image.filename,

@@ -42,7 +42,7 @@ class ModClassModel(db.Model):
         self.model_path = model_path
 
     def __repr__(self):
-        return "{} ({})".format(self.class_name, self.mod_id)
+        return u"{} ({})".format(self.class_name, self.mod_id)
 
 
 class ModPackage(db.Model):
@@ -70,7 +70,7 @@ class ModPackage(db.Model):
             self.expire_date = datetime.datetime.utcnow() + datetime.timedelta(days=2)
 
     def __repr__(self):
-        return "{} replacing {}".format(self.mod_id, self.defindex)
+        return u"{} replacing {}".format(self.mod_id, self.defindex)
 
 
 class PackageDownload(db.Model):
@@ -143,7 +143,7 @@ class Mod(db.Model):
     }
 
     def __repr__(self):
-        return "{} (id: {})".format(self.pretty_name, self.id)
+        return u"{} (id: {})".format(self.pretty_name, self.id)
 
     def __init__(self, zip_file=None, author=None):
         self.zip_file = zip_file
