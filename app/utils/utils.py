@@ -220,7 +220,6 @@ def backpack_icon(output_folder, input_folder, backpack_extensions, image_invent
 
 
 def package_mod_to_item(mod, replacement):
-    print u"Packaging mod {} as {}.".format(mod.pretty_name, replacement.item_name)
     model_extensions = [
         ".mdl",
         ".dx80.vtx",
