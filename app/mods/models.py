@@ -121,7 +121,7 @@ class Mod(db.Model):
     image_inventory = db.Column(db.String(256))
     uploaded = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     visibility = db.Column(db.Enum('H', 'Pu', 'Pr', name='visibility_types'), default='H')  # Hidden, Public, Private
-    completed = db.Column(db.Boolean, default=False)
+    completed = db.Column(db.Boolean, default=False, nullable=False)
     enabled = db.Column(db.Boolean, default=True)
 
     authors = db.relationship('User', secondary="mod_author", backref=db.backref('mod',

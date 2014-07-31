@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app, g
-from app import oid, steam, db, login_manager
+from app import oid, db, login_manager
 from models import User, AnonymousUser
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from ..mods.models import Mod
@@ -38,15 +38,16 @@ def create_or_login(resp):
     new_user = False
 
     if not _user:
-        steam_info = steam.user.profile(steam_id)
-        _user = User(account_id, steam_info)
+        _user = User(account_id)
         new_user = True
         db.session.add(_user)
         db.session.commit()
 
     login_attempt = login_user(_user, remember=True)
-    if login_attempt is True and new_user:
+    if login_attempt is True and new_user and _user.profile_url:
         flash(u"Welcome to mods.tf, {}!".format(_user.name), "success")
+    elif login_attempt is True and new_user and not _user.profile_url:
+        flash(u"Welcome to mods.tf! Unfortunately Steam is down and as such, you".format(_user.name), "success")
     elif login_attempt is True and not new_user:
         flash(u"Welcome back, {}.".format(_user.name), "success")
     elif not _user.is_active():
