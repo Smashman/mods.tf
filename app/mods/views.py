@@ -195,7 +195,7 @@ def upload():
 @mods.route('/<int:mod_id>/images/<int:type>/')  # TODO: Consider better methods of doing this
 def image(mod_id, type):
     mod = Mod.query.get_or_404(mod_id)
-    print check_mod_permissions(mod)
+    check_mod_permissions(mod)
     image = ModImage.query.filter_by(mod_id=mod_id, type=type).first()
     return send_from_directory(os.path.abspath(os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'], str(mod_id))),
                                image.filename,

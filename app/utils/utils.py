@@ -187,10 +187,8 @@ def extract_and_image(zip_in, db_record):
 def vpk_package(mod_name, item_name, folder, mod_folder):
     try:
         check_call([os.path.abspath(current_app.config['VPK_BINARY_PATH']), folder])
-    except CalledProcessError as cpe:
-        print u"Code:\t\t{cpe.returncode}\n" \
-              u"Output:\t\t{cpe.output}\n" \
-              u"Message:\t\t{cpe.message}".format(cpe=cpe)
+    except CalledProcessError:
+        sentry.captureException()
     filename = 'mods_tf_{name}_{item_name}.vpk'.format(name=mod_name, item_name=item_name)
     shutil.move(os.path.join(mod_folder, 'vpk.vpk'),
                 os.path.join(mod_folder, filename))
