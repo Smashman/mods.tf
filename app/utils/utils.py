@@ -2,7 +2,7 @@ import os
 import steam
 import zipfile
 import shutil
-import subprocess
+from subprocess import check_call, CalledProcessError
 from flask import flash, current_app
 from PIL import Image
 from io import BytesIO
@@ -10,7 +10,7 @@ from werkzeug.utils import secure_filename
 from ..tf2.models import all_classes, TF2BodyGroup, TF2EquipRegion
 from ..mods.models import ModClassModel, ModImage
 from ..models import get_or_create
-from app import db
+from app import db, sentry
 
 
 def list_from_vdf_dict(dictionary):
@@ -185,7 +185,13 @@ def extract_and_image(zip_in, db_record):
 
 
 def vpk_package(mod_name, item_name, folder, mod_folder):
-    subprocess.call([os.path.abspath(current_app.config['VPK_BINARY_PATH']), folder])
+    try:
+        check_call([os.path.abspath(current_app.config['VPK_BINARY_PATH']), folder])
+    except CalledProcessError as cpe:
+        additional_info = u"Code:\t\t{cpe.returncode}\n" \
+                          u"Output:\t\t{cpe.output}\n" \
+                          u"Message:\t\t{cpe.message}".format(cpe=cpe)
+        sentry.captureException(additional_info)
     filename = 'mods_tf_{name}_{item_name}.vpk'.format(name=mod_name, item_name=item_name)
     shutil.move(os.path.join(mod_folder, 'vpk.vpk'),
                 os.path.join(mod_folder, filename))
