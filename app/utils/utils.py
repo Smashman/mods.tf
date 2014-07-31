@@ -184,16 +184,12 @@ def extract_and_image(zip_in, db_record):
         return db_record
 
 
-def vpk_package(mod_name, item_name, folder, mod_folder):
+def vpk_package(folder):
     try:
         check_call([os.path.abspath(current_app.config['VPK_BINARY_PATH']), folder])
     except CalledProcessError:
         sentry.captureException()
-    filename = 'mods_tf_{name}_{item_name}.vpk'.format(name=mod_name, item_name=item_name)
-    shutil.move(os.path.join(mod_folder, 'vpk.vpk'),
-                os.path.join(mod_folder, filename))
     shutil.rmtree(folder)
-    return filename
 
 
 def rename_copy(ext_list, dest_format):
@@ -251,8 +247,11 @@ def package_mod_to_item(mod, replacement):
 
     mod_folder = os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'],
                               "{mod_id}".format(mod_id=mod.id, mod_name=mod.name))
+
+    package_name = 'mods_tf_{name}_{item_name}'.format(name=mod_name, item_name=item_name)
+
     input_folder = os.path.join(mod_folder, 'game')
-    output_folder = os.path.join(mod_folder, 'vpk')
+    output_folder = os.path.join(mod_folder, package_name)
 
     if os.path.exists(output_folder):
         shutil.rmtree(output_folder)
@@ -286,5 +285,5 @@ def package_mod_to_item(mod, replacement):
     else:
         rename_copy(model_extensions, model_player)
 
-    file_name = vpk_package(mod_name, item_name, output_folder, mod_folder)
-    return file_name
+    vpk_package(output_folder)
+    return package_name + ".vpk"
