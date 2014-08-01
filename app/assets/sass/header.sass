@@ -18,7 +18,7 @@
   & .steam_block
     float: right
     width: auto
-    & > .name
+    body.js & > .name
       max-width: calc(100% - 61px)
 
     & .dropdown-arrow
@@ -75,3 +75,29 @@
       @media (min-width: #{$mods_tf-container-width}px)
         $mods_tf-container-width: $mods_tf-container-width - 120
         width: #{$mods_tf-container-width}px
+
+  & #status
+    position: absolute
+    & .title
+      float: left
+      line-height: 56px
+      background: darken($mods_tf-background-color, 4%)
+      border-radius: 4px
+      padding: 0 8px
+      cursor: default
+      & span
+        color: $mods_tf-highlight
+        font-weight: bold
+      &:hover ~ .info
+        display: block
+    & .info
+      display: none
+      font-size: 0.9em
+      background: darken($mods_tf-background-color, 4%)
+      padding: 8px
+      position: absolute
+      top: 4em
+      right: 0
+      & span
+        color: $mods_tf-highlight
+        font-weight: bold
