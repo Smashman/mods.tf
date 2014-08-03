@@ -29,9 +29,10 @@ class User(db.Model):
     avatar_large = db.Column(db.String(128))
     joined = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
     last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
-    user_class = db.Column(db.Integer, default=0)
-    enabled = db.Column(db.Boolean, default=True)
     next_steam_check = db.Column(db.DateTime, default=datetime.datetime.utcnow() + datetime.timedelta(hours=4))
+    user_class = db.Column(db.Integer, default=0)
+    upload_credits = db.Column(db.Integer, default=0)
+    enabled = db.Column(db.Boolean, default=True)
 
     __mapper_args__ = {
         "order_by": [db.asc(joined)]
@@ -62,7 +63,7 @@ class User(db.Model):
         return True if self.user_class > 1 else False
 
     def is_uploader(self):
-        return True if self.user_class > 0 else False
+        return True if self.upload_credits > 0 or self.is_admin() else False
 
     def update_last_seen(self):
         # Called every page load for current_user

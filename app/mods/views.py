@@ -6,6 +6,7 @@ from flask.ext.login import current_user, login_required
 from ..utils.utils import extract_and_image, package_mod_to_item
 from ..tf2.models import TF2Item, TF2BodyGroup, TF2EquipRegion
 from ..tf2.views import item_search
+from ..users.models import User
 from models import Mod, ModPackage, PackageDownload, ModImage
 from forms import ItemSearch, EditMod
 from functions import check_mod_permissions, check_edit_permissions
@@ -183,6 +184,8 @@ def upload():
         db.session.commit()
         result = extract_and_image(filename, mod_info)
         if result:
+            current_user.upload_credits = User.upload_credits - 1
+            db.session.add(current_user)
             db.session.add(result)
             db.session.commit()
             flash(u"Hooray! {mod.pretty_name} has been uploaded and is almost ready to download. "

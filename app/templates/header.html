@@ -16,7 +16,7 @@
             {{ steam_block(current_user, True) }}
             <ul class="dropdown-menu">
                 {%- if current_user.is_uploader() -%}
-                    <li><a href="{{ url_for('mods.upload') }}">Upload mod</a></li>
+                    <li><a href="{{ url_for('mods.upload') }}">Upload mod<br />({{ current_user.upload_credits | default(0) }} credit{{ current_user.upload_credits | pluralize }})</a></li>
                     <li class="spacer"></li>
                 {%- endif -%}
                 <li><a href="{{ url_for('users.user_page', user_id=current_user.account_id) }}">Profile</a></li>

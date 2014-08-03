@@ -51,5 +51,6 @@ app.register_blueprint(tf2_blueprint)
 from assets import assets
 
 # Jinja2 Filters
-from filters import format_thousands
+from filters import format_thousands, pluralize
 app.add_template_filter(format_thousands)
+app.add_template_filter(pluralize)

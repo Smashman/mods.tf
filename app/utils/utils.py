@@ -71,7 +71,6 @@ def extract_and_image(zip_in, db_record):
     # Start extracting
     with zipfile.ZipFile(zip_filename) as zip_open:
         for infile in zip_open.namelist():
-            print infile
             # Only extract the contents of the game, materials or models folder
             allowed_extracts = ['game', 'materials', 'models']
             if '..' in infile or infile.startswith('/'):
