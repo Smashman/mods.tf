@@ -63,7 +63,7 @@ class User(db.Model):
         return True if self.user_class > 1 else False
 
     def is_uploader(self):
-        return True if self.upload_credits > 0 or self.is_admin() else False
+        return True if self.upload_credits > 0 or self.upload_credits == -1 or self.is_admin() else False
 
     def update_last_seen(self):
         # Called every page load for current_user

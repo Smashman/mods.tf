@@ -184,7 +184,8 @@ def upload():
         db.session.commit()
         result = extract_and_image(filename, mod_info)
         if result:
-            current_user.upload_credits = User.upload_credits - 1
+            if current_user.upload_credits != -1:
+                current_user.upload_credits = User.upload_credits - 1
             db.session.add(current_user)
             db.session.add(result)
             db.session.commit()
