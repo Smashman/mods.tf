@@ -108,6 +108,7 @@ $mods_tf-mods-info-transition: 0.2s
 .mod_wall
   height: 720px
   overflow: hidden
+  margin-bottom: 1em
 
 .mod-left
   overflow: hidden
@@ -257,3 +258,45 @@ $mods_tf-triangle-color: mix(darken($mods_tf-background-color, 4%), desaturate($
   input[type=submit]
     font-size: 4em
     margin-top: 0.5em
+
+.view_more
+  display: block
+  margin: 0 auto
+  width: 150px
+  text-align: center
+  border: 1px solid $mods_tf-highlight
+  padding: 0.35em
+  color: $mods_tf-text-color
+  background: desaturate(darken(transparentize($mods_tf-highlight, 0.2), 25%), 25%)
+  +transition(background $mods_tf-mods-info-transition ease)
+
+  &:hover
+    background: desaturate(darken(transparentize($mods_tf-highlight, 0.4), 25%), 25%)
+
+table.all_mod
+  width: 700px
+  margin: 0 auto
+  & th
+    padding: 0.5em
+  & tbody
+    border-right: 2px solid $mods_tf-highlight
+    border-left: 2px solid $mods_tf-highlight
+    border-bottom: 2px solid $mods_tf-highlight
+  & td
+    padding: 0.5em
+    border-bottom: 1px solid darken(desaturate($mods_tf-highlight, 25%), 15%)
+    background: darken($mods_tf-background-color, 2%)
+    & a
+      background: darken($mods_tf-background-color, 4%)
+      display: block
+      border-radius: 0.25em
+      color: $mods_tf-text-color
+      padding: 0 0.5em
+
+      &:hover
+        background: darken($mods_tf-background-color, 8%)
+        color: inherit
+
+      & > img
+        +size(128px)
+        vertical-align: middle

@@ -1,4 +1,14 @@
 {% extends "layout.html" %}
 {% block content %}
-    {% include "mods/mods_index.html" %}
+    {% from 'mods/macros.html' import mod_block %}
+    <div class="mod_wall cf">
+    {% for mod in mods %}
+        {% set large = False %}
+        {%- if loop.first -%}
+            {% set large = True %}
+        {%- endif -%}
+        {{ mod_block(mod, large) }}
+    {% endfor %}
+    </div>
+    <a class="view_more" href="{{ url_for('mods.all_mods') }}">View more...</a>
 {% endblock %}

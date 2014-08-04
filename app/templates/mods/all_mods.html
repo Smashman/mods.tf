@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% from 'macros.html' import pagination %}
+{% block content %}
+    <table class="all_mod">
+        <thead>
+            <tr>
+                <th>Mod</th>
+                <th>Downloads</th>
+                <th>Replacements</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%- for mod in mods.items -%}
+                <tr>
+                    <td><a href="{{ url_for('mods.page', mod_id=mod.id) }}"><img src="{{ url_for('mods.image', mod_id=mod.id, type=1) }}" /> {{ mod.pretty_name }}</a></td>
+                    <td>{{ mod.downloads | default(0) | format_thousands}}</td>
+                    <td>{{ mod.replacements | default(0) | format_thousands}}+</td>
+                </tr>
+            {%- endfor -%}
+        </tbody>
+    </table>
+    {{ pagination(mods, "mods.all_mods") }}
+{% endblock %}

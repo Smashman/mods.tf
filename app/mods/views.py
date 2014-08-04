@@ -16,7 +16,22 @@ import json
 
 mods = Blueprint("mods", __name__, url_prefix="/mods")
 
-enabled_mods = Mod.query.filter(Mod.visibility == "Pu").filter(Mod.enabled == True)
+enabled_mods = Mod.query.filter_by(visibility="Pu", completed=True, enabled=True)
+
+
+@mods.route('/')
+@mods.route('/page/<int:page>/')
+def all_mods(page=1):
+    _mods = enabled_mods.paginate(page, 20)
+    for mod in _mods.items:
+        mod.downloads = PackageDownload.query.outerjoin(ModPackage).filter(ModPackage.mod_id == mod.id).count()
+        item_query = item_search(
+            classes=[_class for _class in mod.class_model],
+            bodygroups=[bodygroup.bodygroup for bodygroup in mod.bodygroups],
+            equip_regions=[equip_region.equip_region for equip_region in mod.equip_regions]
+        )
+        mod.replacements = item_query.count()
+    return render_template('mods/all_mods.html', mods=_mods)
 
 
 @mods.route('/<int:mod_id>/')
