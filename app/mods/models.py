@@ -9,9 +9,15 @@ class ModAuthor(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.account_id'), primary_key=True)
     order = db.Column(db.Integer, default=0, nullable=False)
 
+    user = db.relationship("User", backref="author")
+    mod = db.relationship("Mod", backref="author")
+
     __mapper_args__ = {
         "order_by": [db.asc(order)]
     }
+
+    def __repr__(self):
+        return u"{user.name} is an author of mod {mod.pretty_name}".format(user=self.user, mod=self.mod)
 
 
 class ModImage(db.Model):

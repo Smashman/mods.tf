@@ -36,12 +36,22 @@ configure_uploads(app, [workshopzips, modimages])
 import views
 
 # Blueprints
-from app.tf2.views import tf2 as tf2_blueprint
-from app.users.views import users as users_blueprint
-from app.mods.views import mods as mods_blueprint
+from .tf2.views import tf2 as tf2_blueprint
+from .users.views import users as users_blueprint
+from .mods.views import mods as mods_blueprint
+
+# Admin
+from .users.models import User
+from .mods.models import ModAuthor
+from .admin.views import admin, AdminModelView, UserView
+
+admin.add_view(UserView(User, db.session))
+admin.add_view(AdminModelView(ModAuthor, db.session))
+
+admin.init_app(app)
 
 # TF2 Schema
-from app.tf2.models import TF2Item, TF2EquipRegion, TF2BodyGroup
+from .tf2.models import TF2Item, TF2EquipRegion, TF2BodyGroup
 
 app.register_blueprint(users_blueprint)
 app.register_blueprint(mods_blueprint)

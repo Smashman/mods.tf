@@ -1,0 +1,22 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Stat</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat_name, stat in stats.items() %}
+                <tr>
+                    <td>{{ stat_name | capitalize }}</td>
+                    <td>{{ stat | format_thousands }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ url_for('index') }}">Return</a>
+{% endblock %}
