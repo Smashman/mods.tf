@@ -1,6 +1,6 @@
 from flask.ext.login import current_user
 from flask.ext.admin import Admin, expose, AdminIndexView
-from flask.ext.admin.contrib.sqlamodel import ModelView
+from flask.ext.admin.contrib.sqla import ModelView
 from ..users.models import User
 from ..mods.models import Mod, ModPackage, PackageDownload
 
