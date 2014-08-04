@@ -1,6 +1,7 @@
 from flask.ext.login import current_user
 from flask.ext.admin import Admin, expose, AdminIndexView
 from flask.ext.admin.contrib.sqla import ModelView
+from jinja2 import Markup
 from ..users.models import User
 from ..mods.models import Mod, ModPackage, PackageDownload
 
@@ -28,6 +29,23 @@ class AdminIndex(Auth, AdminIndexView):
 
 
 class UserView(Auth, ModelView):
+    def show_avatar(self, context, model, name):
+        if not model.avatar_medium:
+            return ''
+
+        return Markup('<img src="{}">'.format(model.avatar_medium))
+
+    def profile_url(self, context, model, name):
+        if not model.profile_url:
+            return ''
+
+        return Markup('<a href="{0}" target="_blank">{0}</a>'.format(model.profile_url))
+
+    column_exclude_list = ['avatar_small', 'avatar_large']
+    column_formatters = {
+        'avatar_medium': show_avatar,
+        'profile_url': profile_url
+    }
     column_searchable_list = ('name', User.name)
 
 admin = Admin(name="mods.tf", index_view=AdminIndex())
