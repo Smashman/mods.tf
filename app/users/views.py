@@ -3,6 +3,7 @@ from app import oid, db, login_manager
 from models import User, AnonymousUser
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from ..mods.models import Mod
+from sqlalchemy.exc import IntegrityError
 
 users = Blueprint("users", __name__, url_prefix="/users")
 
@@ -41,17 +42,24 @@ def create_or_login(resp):
         _user = User(account_id)
         new_user = True
         db.session.add(_user)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            _user = User.query.get(account_id)
+
+    if not _user.is_active():
+        flash(u"Cannot log you in, {}. You are banned.".format(_user.name), "danger")
+        return redirect(oid.get_next_url())
 
     login_attempt = login_user(_user, remember=True)
     if login_attempt is True and new_user and _user.profile_url:
         flash(u"Welcome to mods.tf, {}!".format(_user.name), "success")
     elif login_attempt is True and new_user and not _user.profile_url:
-        flash(u"Welcome to mods.tf! Unfortunately Steam is down and as such, you".format(_user.name), "success")
+        flash(u"Welcome to mods.tf! Unfortunately were unable to fetch your Steam user data."
+              u"We will try again soon. For now you will be represented by your numerical ID, {}.".format(_user.name), "success")
     elif login_attempt is True and not new_user:
         flash(u"Welcome back, {}.".format(_user.name), "success")
-    elif not _user.is_active():
-        flash(u"Cannot log you in, {}. You are banned.".format(_user.name), "danger")
     else:
         flash(u"Error logging you in as {}, please try again later.".format(_user.name), "danger")
     return redirect(oid.get_next_url())

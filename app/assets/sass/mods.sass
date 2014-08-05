@@ -53,7 +53,7 @@ $mods_tf-mods-info-transition: 0.2s
 
   & img
     display: block
-    max-width: 236px
+    max-width: 100%
 
   & .spacer
     height: 2px
@@ -63,8 +63,6 @@ $mods_tf-mods-info-transition: 0.2s
   &.large
     font-size: 18px
     +size(480px)
-    & img
-      max-width: 476px
     & .name
       font-size: golden-ratio(18px, 1)
     & .mod_class
@@ -164,20 +162,6 @@ $mods_tf-triangle-color: mix(darken($mods_tf-background-color, 4%), desaturate($
     overflow: hidden
     text-overflow: ellipsis
 
-  & .backpack_image
-    position: relative
-    width: 100%
-    overflow: hidden
-    &:before
-      content: ""
-      display: block
-      padding-top: 64%
-    & img
-      position:  absolute
-      top: -28%
-      left: 0
-      width: 100%
-
   & .authors
     min-width: 200px
     width: 80%
@@ -259,23 +243,9 @@ $mods_tf-triangle-color: mix(darken($mods_tf-background-color, 4%), desaturate($
     font-size: 4em
     margin-top: 0.5em
 
-.view_more
-  display: block
-  margin: 0 auto
-  width: 150px
-  text-align: center
-  border: 1px solid $mods_tf-highlight
-  padding: 0.35em
-  color: $mods_tf-text-color
-  background: desaturate(darken(transparentize($mods_tf-highlight, 0.2), 25%), 25%)
-  +transition(background $mods_tf-mods-info-transition ease)
-
-  &:hover
-    background: desaturate(darken(transparentize($mods_tf-highlight, 0.4), 25%), 25%)
-
 table.all_mod
   width: 700px
-  margin: 0 auto
+  margin: 0 auto 1em
   & th
     padding: 0.5em
   & tbody
@@ -286,17 +256,8 @@ table.all_mod
     padding: 0.5em
     border-bottom: 1px solid darken(desaturate($mods_tf-highlight, 25%), 15%)
     background: darken($mods_tf-background-color, 2%)
-    & a
-      background: darken($mods_tf-background-color, 4%)
-      display: block
-      border-radius: 0.25em
-      color: $mods_tf-text-color
-      padding: 0 0.5em
 
-      &:hover
-        background: darken($mods_tf-background-color, 8%)
-        color: inherit
-
-      & > img
-        +size(128px)
-        vertical-align: middle
+  & .backpack_image
+    width: 128px
+    display: inline-block
+    vertical-align: middle

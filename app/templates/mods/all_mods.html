@@ -12,7 +12,7 @@
         <tbody>
             {%- for mod in mods.items -%}
                 <tr>
-                    <td><a href="{{ url_for('mods.page', mod_id=mod.id) }}"><img src="{{ url_for('mods.image', mod_id=mod.id, type=1) }}" /> {{ mod.pretty_name }}</a></td>
+                    <td><a class="small_item" href="{{ url_for('mods.page', mod_id=mod.id) }}"><div class="backpack_image"><img src="{{ url_for('mods.image', mod_id=mod.id, type=1) }}" /></div> {{ mod.pretty_name }}</a></td>
                     <td>{{ mod.downloads | default(0) | format_thousands}}</td>
                     <td>{{ mod.replacements | default(0) | format_thousands}}+</td>
                 </tr>

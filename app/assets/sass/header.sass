@@ -19,7 +19,11 @@
     float: right
     width: auto
     body.js & > .name
-      max-width: calc(100% - 61px)
+      $mods_tf-header-name-widths: 7em 15em 22em 30em 100%
+      @for $i from 1 through length($mods_tf-container-widths)
+        $width: nth($mods_tf-container-widths, $i)
+        @media (min-width: #{$width}px)
+          max-width: nth($mods_tf-header-name-widths, $i)
 
     & .dropdown-arrow
       display: none

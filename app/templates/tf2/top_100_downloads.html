@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+    <table class="all_mod">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Item</th>
+                <th>Downloads</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%- for item, count in items -%}
+                <tr>
+                    <td><span class="count_place">{{ loop.index }}.</span></td>
+                    <td><div class="small_item"><div class="backpack_image"><img src="{{ item.image_url }}" /></div> {{ item.item_name }}</div></td>
+                    <td>{{ count | default(0) | format_thousands}}</td>
+                </tr>
+            {%- endfor -%}
+        </tbody>
+    </table>
+{% endblock %}

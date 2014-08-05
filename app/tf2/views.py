@@ -5,6 +5,7 @@ from flask.ext.login import login_required
 from sqlalchemy import func
 import json
 from .. import db
+from sqlalchemy import desc
 
 tf2 = Blueprint("tf2", __name__, url_prefix="/tf2")
 
@@ -47,9 +48,10 @@ def format_query(items_query, mod_id, page):
     if count < 1:
         return {"status": "No items found matching these criteria.", "count": 0}
     for item in items_query.items:
-        item.downloads = PackageDownload.query.join(ModPackage).join(TF2Item).filter(TF2Item.defindex == item.defindex).count()
+        item.downloads = PackageDownload.query.join(ModPackage).join(TF2Item).filter(TF2Item.defindex == item.defindex)\
+            .filter(ModPackage.mod_id == mod_id).count()
 
-    items = render_template('tf2/items.html', items=items_query, mod_id=mod_id)
+    items = render_template('tf2/api_result.html', items=items_query, mod_id=mod_id)
     return {"items": items, "count": count}
 
 
@@ -62,7 +64,7 @@ def api():
     bodygroups = form_values.getlist("search_data[bodygroups][]")
     equip_regions = form_values.getlist("search_data[equip_regions][]")
     mod_id = form_values.get("mod_id")
-    page = request.form.get('page')
+    page = form_values.get('page')
     if len(classes) < 1:
         return Response(json.dumps({"status": "No classes selected, please select a class to search.", "count": 0}),  mimetype='application/json')
     if not page.isnumeric():
@@ -75,6 +77,7 @@ def api():
         return Response(json.dumps({"status": items_dict.get('status')}),  mimetype='application/json')
 
     return Response(json.dumps(items_dict),  mimetype='application/json')
+
 
 @tf2.route('/api/count/', methods=['POST'])
 @login_required
@@ -94,3 +97,12 @@ def api_count():
     items_dict = {"count": items_query.count()}
 
     return Response(json.dumps(items_dict),  mimetype='application/json')
+
+
+@tf2.route('/items/')
+def item_download_counts():
+    sq = db.session.query(ModPackage.defindex, func.count(PackageDownload).label("download_count"))\
+        .join(PackageDownload).group_by(ModPackage.defindex).subquery()
+    top_100_downloaded = db.session.query(TF2Item, "download_count").join(sq, TF2Item.defindex == sq.c.defindex)\
+        .order_by(desc("download_count")).limit(100).all()
+    return render_template('tf2/top_100_downloads.html', items=top_100_downloaded, title="Top {} replaced items".format(len(top_100_downloaded)))

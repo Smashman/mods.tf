@@ -3,7 +3,7 @@ import steam
 import zipfile
 import shutil
 from subprocess import check_call, CalledProcessError
-from flask import flash, current_app
+from flask import flash, current_app, abort
 from PIL import Image
 from io import BytesIO
 from werkzeug.utils import secure_filename
@@ -188,6 +188,7 @@ def vpk_package(folder):
         check_call([os.path.abspath(current_app.config['VPK_BINARY_PATH']), folder])
     except CalledProcessError:
         sentry.captureException()
+        abort(500)
     shutil.rmtree(folder)
 
 

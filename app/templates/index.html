@@ -10,5 +10,5 @@
         {{ mod_block(mod, large) }}
     {% endfor %}
     </div>
-    <a class="view_more" href="{{ url_for('mods.all_mods') }}">View more...</a>
+    <div class="button_block"><a href="{{ url_for('mods.all_mods') }}">View more...</a><a href="{{ url_for('tf2.item_download_counts') }}">Top replaced items...</a></div>
 {% endblock %}

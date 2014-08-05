@@ -159,8 +159,59 @@ input[type=submit].input-default
     margin-left: 20%
     padding-left: 1em
 
+.button_block
+  text-align: center
+  & a
+    margin-right: 1em
+    text-align: center
+    border: 1px solid $mods_tf-highlight
+    padding: 0.35em
+    color: $mods_tf-text-color
+    background: desaturate(darken(transparentize($mods_tf-highlight, 0.2), 25%), 25%)
+    +transition(background 0.2s ease)
+
+    &:hover
+      background: desaturate(darken(transparentize($mods_tf-highlight, 0.4), 25%), 25%)
+
+  & a:last-of-type
+    margin-right: 0
+
+.small_item
+  background: darken($mods_tf-background-color, 4%)
+  display: block
+  border-radius: 0.25em
+  color: $mods_tf-text-color
+  padding: 0.5em
+
+a.small_item:hover
+  background: darken($mods_tf-background-color, 8%)
+  color: inherit
+
+.backpack_image
+  position: relative
+  width: 100%
+  overflow: hidden
+  &:before
+    content: ""
+    display: block
+    padding-top: 64%
+  & img
+    position:  absolute
+    top: -28%
+    left: 0
+    width: 100%
+
+.count_place
+  font-size: 1.5em
+  font-weight: bold
+
 @import alerts.sass
 @import steam.sass
 @import header.sass
 @import mods.sass
 @import pagination.sass
+
+
+
+$map: (1: hello, 2: world)
+

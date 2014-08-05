@@ -25,13 +25,13 @@ def index():
 @app.errorhandler(500)  # Internal server error.
 def internal_error(error):
     error_descriptions = {
-        401: {"quote": "\"No way!\" &dash; Scout",
+        401: {"quote": "\"No way!\" &ndash; Scout",
               "description": "You are not authorised to access this page. "
                              "<a href=\"{}\">Try logging in.</a>".format(url_for('users.login'))},
-        403: {"quote": "\"Nope.\" &dash; Engineer",
+        403: {"quote": "\"Nope.\" &ndash; Engineer",
               "description": "Access to this is resource is forbidden."},
-        404: {"quote": "\"Well, this was a disappointment!\" &dash; Spy"},
-        500: {"quote": "\"Tell me, where did we go so wrong?\" &dash; Heavy",
+        404: {"quote": "\"Well, this was a disappointment!\" &ndash; Spy"},
+        500: {"quote": "\"Tell me, where did we go so wrong?\" &ndash; Heavy",
               "description": "The error has been reported and will be investigated."},
     }
     return_to_main_menu = " Please return to <a href=\"{}\">the main page</a>.".format(url_for('index'))

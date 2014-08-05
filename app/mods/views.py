@@ -31,7 +31,7 @@ def all_mods(page=1):
             equip_regions=[equip_region.equip_region for equip_region in mod.equip_regions]
         )
         mod.replacements = item_query.count()
-    return render_template('mods/all_mods.html', mods=_mods)
+    return render_template('mods/all_mods.html', mods=_mods, title="All mods")
 
 
 @mods.route('/<int:mod_id>/')
