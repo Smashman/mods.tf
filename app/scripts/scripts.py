@@ -160,7 +160,7 @@ def delete_expired_packages():
                 os.remove(package_path)
                 print u"Deleted package where {} replaces {}.".format(package.mod.pretty_name, package.replacement.item_name)
             except OSError:
-                print u"Package where {} replaces {} already deleted."
+                print u"Package where {} replaces {} already deleted.".format(package.mod.pretty_name, package.replacement.item_name)
             package.deleted = True
             db.session.add(package)
     db.session.commit()
