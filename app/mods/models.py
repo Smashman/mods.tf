@@ -58,6 +58,7 @@ class ModPackage(db.Model):
     defindex = db.Column(db.Integer, db.ForeignKey('tf2_schema.defindex'), nullable=False)
     filename = db.Column(db.String(256), nullable=False)
     expire_date = db.Column(db.DateTime, default=datetime.datetime.utcnow() + datetime.timedelta(days=2), nullable=False)
+    deleted = db.Column(db.Boolean, default=False)
 
     mod = db.relationship("Mod", backref="package")
     replacement = db.relationship("TF2Item", backref="package")

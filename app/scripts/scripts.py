@@ -153,8 +153,14 @@ def update_tf2_items():
 def delete_expired_packages():
     packages = ModPackage.query.all()
     for package in packages:
-        if package.expire_date <= datetime.datetime.utcnow():
+        if package.expire_date <= datetime.datetime.utcnow() and not package.deleted:
             package_path = os.path.abspath(os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'],
                                                         str(package.mod_id), package.filename))
-            print u"Deleting package where {} replaces {}.".format(package.mod.pretty_name, package.replacement.item_name)
-            os.remove(package_path)
+            try:
+                os.remove(package_path)
+                print u"Deleted package where {} replaces {}.".format(package.mod.pretty_name, package.replacement.item_name)
+            except OSError:
+                print u"Package where {} replaces {} already deleted."
+            package.deleted = True
+            db.session.add(package)
+    db.session.commit()

@@ -21,15 +21,14 @@ class AdminIndex(Auth, AdminIndexView):
     def index(self):
         from collections import OrderedDict
         import datetime
-        stats = {
-            "users": User.query.filter_by(enabled=True).count(),
-            "mods": Mod.query.filter_by(visibility="Pu").count(),
-            "hidden mods": Mod.query.filter_by(visibility="H").count(),
-            "current packages": ModPackage.query.filter(ModPackage.expire_date > datetime.datetime.utcnow()).count(),
-            "expired packages": ModPackage.query.filter(ModPackage.expire_date < datetime.datetime.utcnow()).count(),
-            "downloads": PackageDownload.query.count()
-        }
-        stats = OrderedDict(sorted(stats.items(), key=lambda t: t[0]))
+        stats = OrderedDict([
+            ("users", User.query.filter_by(enabled=True).count(),),
+            ("downloads", PackageDownload.query.count()),
+            ("mods", Mod.query.filter_by(visibility="Pu").count(),),
+            ("hidden mods", Mod.query.filter_by(visibility="H").count(),),
+            ("valid packages", ModPackage.query.filter(ModPackage.expire_date > datetime.datetime.utcnow()).count(),),
+            ("expired packages - not deleted", ModPackage.query.filter(ModPackage.expire_date < datetime.datetime.utcnow()).filter(ModPackage.deleted == False).count(),)
+        ])
         return self.render('admin/index.html', stats=stats)
 
 

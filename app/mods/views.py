@@ -244,6 +244,7 @@ def package(mod_id, defindex):
         filename = package_mod_to_item(mod, replacement)
         mod_package.filename = filename
         mod_package.update_expire(long_date)
+        mod_package.deleted = False
         db.session.add(mod_package)
         db.session.commit()
     else:
