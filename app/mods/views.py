@@ -113,6 +113,8 @@ def edit(mod_id):
                     edit_form.workshop_id.errors.append("Not a valid workshop ID.")
                     workshop_id = None
             mod.workshop_id = workshop_id
+        if not workshop_id or workshop_id == "":
+            mod.workshop_id = None
 
         mod.package_format = edit_form.package_format.data
 
