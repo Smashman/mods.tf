@@ -1,9 +1,11 @@
 from flask.ext.login import current_user
-from flask.ext.admin import Admin, expose, AdminIndexView
+from flask.ext.admin import Admin, expose, AdminIndexView, BaseView
 from flask.ext.admin.contrib.sqla import ModelView
 from jinja2 import Markup
+from app import db
 from ..users.models import User
 from ..mods.models import Mod, ModPackage, PackageDownload
+from datetime import datetime, timedelta
 
 
 class Auth(object):
@@ -51,4 +53,32 @@ class UserView(Auth, ModelView):
     }
     column_searchable_list = ['name']
 
+class BigDownloaders(Auth, BaseView):
+    """ Views for database-stored site logs. """
+
+    @staticmethod
+    def user_download_count(hours=None):
+        rows = db.session.query(PackageDownload, db.func.count(PackageDownload.id))
+        if hours:
+            _time_ago = datetime.utcnow() - timedelta(hours=hours)
+            rows = rows.filter(PackageDownload.downloaded >= _time_ago)
+        rows = rows.group_by(PackageDownload.user_id).\
+            order_by(db.func.count(PackageDownload.package_id).desc()).\
+            limit(30).\
+            all()
+        return rows
+
+    @expose('/')
+    def index(self):
+        """ Renders a list of users who have done an lot of downloads in particular time frames. """
+
+        return self.render(
+            'admin/big_downloaders.html',
+            daily_downloaders=self.user_download_count(24),
+            weekly_downloaders=self.user_download_count(24 * 7),
+            monthly_downloaders=self.user_download_count(24 * 7 * 30),
+            all_time_downloaders=self.user_download_count()
+        )
+
 admin = Admin(name="mods.tf", index_view=AdminIndex())
+admin.add_view(BigDownloaders(name="Big downloaders", category="Reports"))
