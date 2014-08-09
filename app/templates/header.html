@@ -20,12 +20,14 @@
                         {%- if current_user.upload_credits != -1 -%}
                         {{ current_user.upload_credits | default(0) }} {%- else -%} Infinite {%- endif %} credit{{ current_user.upload_credits | pluralize }}
                         )</a></li>
-                    <li class="spacer"></li>
                 {%- endif -%}
-                <li><a href="{{ url_for('users.user_page', user_id=current_user.account_id) }}">Profile</a></li>
                 {%- if current_user.is_admin() -%}
                     <li><a href="{{ url_for('admin.index') }}">Admin</a></li>
                 {%- endif -%}
+                {%- if current_user.is_admin() or current_user.is_uploader() -%}
+                    <li class="spacer"></li>
+                {%- endif -%}
+                <li><a href="{{ url_for('users.user_page', user_id=current_user.account_id) }}">Profile</a></li>
                 <li><a href="{{ url_for('users.logout') }}">Logout</a></li>
             </ul>
         {%- else -%}
