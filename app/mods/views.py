@@ -49,25 +49,25 @@ def page(mod_id, page=1):
     item_results = format_query(item_query, mod.id, page)
     mod.replacements = item_query.count()
 
-    classes = mod.class_model
-
     item_search_form = ItemSearch()
 
-    class_choices = [(_class.class_name, _class.class_name.capitalize()) for key, _class in classes.items()]
-    class_choices.sort()
+    classes = mod.class_model
+    class_array = ["scout", "soldier", "pyro", "demoman", "heavy", "engineer", "sniper", "medic", "spy"]
+    sorted_classes = sorted([(_class.class_name, _class.class_name.capitalize())
+                            for key, _class in classes.items()], key=lambda c: class_array.index(c[0]))
+
     item_search_form.classes.data = [_class for _class in classes]
     item_search_form.bodygroups.data = [bodygroup.bodygroup for bodygroup in mod.bodygroups]
     item_search_form.equip_regions.data = [equip_region.equip_region for equip_region in mod.equip_regions]
 
-    equip_regions = TF2EquipRegion.query.all()
-    bodygroups = TF2BodyGroup.query.all()
+    item_search_form.equip_regions.query = TF2EquipRegion.query.all()
+    item_search_form.bodygroups.query = TF2BodyGroup.query.all()
 
-    item_search_form.classes.choices = class_choices
-    item_search_form.equip_regions.choices = [(equip_region.equip_region, equip_region.full_name or equip_region.equip_region.capitalize()) for equip_region in equip_regions]
-    item_search_form.bodygroups.choices = [(bodygroup.bodygroup, bodygroup.full_name or bodygroup.bodygroup.capitalize()) for bodygroup in bodygroups]
+    item_search_form.classes.choices = sorted_classes
 
     return render_template('mods/page.html', mod=mod, item_search=item_search_form, mod_id=mod.id,
-                           item_results=item_results.get('items'), page=page, title=mod.pretty_name)
+                           item_results=item_results.get('items'), page=page, title=mod.pretty_name,
+                           sorted_classes=sorted_classes)
 
 
 @mods.route('/<int:mod_id>/edit/', methods=['GET', 'POST'])
@@ -77,18 +77,12 @@ def edit(mod_id):
     check_edit_permissions(mod)
     edit_form = EditMod()
 
-    equip_regions = TF2EquipRegion.query.all()
-    bodygroups = TF2BodyGroup.query.all()
+    edit_form.equip_regions.query = TF2EquipRegion.query.all()
+    edit_form.bodygroups.query = TF2BodyGroup.query.all()
 
     package_formats = [("vpk", "VPK")]
 
     edit_form.package_format.choices = package_formats
-    edit_form.equip_regions.choices = [(equip_region.equip_region,
-                                        equip_region.full_name or equip_region.equip_region.capitalize())
-                                       for equip_region in equip_regions]
-    edit_form.bodygroups.choices = [(bodygroup.bodygroup,
-                                     bodygroup.full_name or bodygroup.bodygroup.capitalize())
-                                    for bodygroup in bodygroups]
 
     if mod.visibility != "Pu":
         edit_form.publish.label.text += " and Publish!"

@@ -42,8 +42,8 @@
                 <span class="mod-stat">{{ mod.replacements | default(0) | format_thousands }}+</span>
             </div>
             <div><span class="mod-stat-title">Class: </span>
-                {%- for key, class in mod.class_model.items() -%}
-                    <a href="{{ url_for('.search', class=class.class_name) }}">{{ class.class_name | capitalize }}</a>{{ ", " if not loop.last }}
+                {%- for key, class in sorted_classes -%}
+                    <a href="{{ url_for('.search', class=class) }}">{{ class }}</a>{{ ", " if not loop.last }}
                 {%- endfor -%}
             </div>
             {%- if mod.bodygroups | length > 0 -%}
