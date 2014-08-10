@@ -56,14 +56,13 @@ def page(mod_id, page=1):
     sorted_classes = sorted([(_class.class_name, _class.class_name.capitalize())
                             for key, _class in classes.items()], key=lambda c: class_array.index(c[0]))
 
-    item_search_form.classes.data = [_class for _class in classes]
-    item_search_form.bodygroups.data = [bodygroup.bodygroup for bodygroup in mod.bodygroups]
-    item_search_form.equip_regions.data = [equip_region.equip_region for equip_region in mod.equip_regions]
-
     item_search_form.equip_regions.query = TF2EquipRegion.query.all()
     item_search_form.bodygroups.query = TF2BodyGroup.query.all()
-
     item_search_form.classes.choices = sorted_classes
+
+    item_search_form.classes.data = [_class for _class in classes]
+    item_search_form.bodygroups.data = [bodygroup for bodygroup in mod.bodygroups]
+    item_search_form.equip_regions.data = [equip_region for equip_region in mod.equip_regions]
 
     return render_template('mods/page.html', mod=mod, item_search=item_search_form, mod_id=mod.id,
                            item_results=item_results.get('items'), page=page, title=mod.pretty_name,
@@ -133,8 +132,8 @@ def edit(mod_id):
     edit_form.pretty_name.data = mod.pretty_name
     edit_form.workshop_id.data = mod.workshop_id
     edit_form.description.data = mod.description
-    edit_form.equip_regions.data = [equip_region.equip_region for equip_region in mod.equip_regions]
-    edit_form.bodygroups.data = [bodygroup.bodygroup for bodygroup in mod.bodygroups]
+    edit_form.equip_regions.data = [equip_region for equip_region in mod.equip_regions]
+    edit_form.bodygroups.data = [bodygroup for bodygroup in mod.bodygroups]
 
     classes_array = json.dumps(classes)
 
