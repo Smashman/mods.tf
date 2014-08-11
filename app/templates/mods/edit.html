@@ -25,3 +25,9 @@
     </form>
     <a href="{{ url_for('mods.page', mod_id=mod.id) }}">Return to the '{{ mod.pretty_name }}' page</a>
 {% endblock %}
+{% block styles %}
+    {% assets "multiple-select" %}
+        <link href="{{ ASSET_URL }}" rel="stylesheet">
+    {% endassets %}
+    {{ super() }}
+{% endblock %}

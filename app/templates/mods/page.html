@@ -99,3 +99,9 @@
         {%- endif -%}
     </div>
 {% endblock %}
+{% block styles %}
+    {% assets "multiple-select" %}
+        <link href="{{ ASSET_URL }}" rel="stylesheet">
+    {% endassets %}
+    {{ super() }}
+{% endblock %}

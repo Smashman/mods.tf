@@ -1,0 +1,12 @@
+$mods_tf-background-color: #312e29
+$mods_tf-highlight: #f3732d
+$mods_tf-classes: multi-class scout soldier pyro demoman heavy engineer medic sniper spy
+$mods_tf-logo: "../images/mods_tf_logo.png"
+$mods_tf-logo-width: 200px
+
+$number_of_backgrounds: 5
+@for $bg_num from 0 to $number_of_backgrounds
+  .header.bg_#{$bg_num}
+    background: url('../images/header/tf2/bg_#{$bg_num}.png') no-repeat center
+
+@import main

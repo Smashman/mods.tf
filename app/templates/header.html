@@ -1,5 +1,6 @@
 {% from "macros.html" import steam_block %}
-<div class="header bg_{{ range(5) | random }} cf">
+{% set num_backgrounds = 3 if config.GAME == "dota" else 5 %}
+<div class="header bg_{{ range(num_backgrounds) | random }} cf">
     <div class="container">
         <div id="status">
             <div class="title">Current status: <span>Closed Beta</span></div>

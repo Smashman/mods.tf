@@ -2,10 +2,12 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>{{ title }}{{ " - " if title }}mods.tf</title>
-    {% assets "main_css" %}
-        <link href="{{ ASSET_URL }}" rel="stylesheet">
-    {% endassets %}
+    <title>{{ title }}{{ " - " if title }}mods.{{ "do" if config.GAME == "dota" else "tf" }}</title>
+    {%- block styles -%}
+        {% assets config.GAME + "_css" %}
+            <link href="{{ ASSET_URL }}" rel="stylesheet">
+        {% endassets %}
+    {%- endblock -%}
     {% block scripts %}
         <script>
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -37,8 +39,12 @@
     <footer>
 		<div class="container cf">
 			<span id="credit">Developed by <a target="_blank" href="http://steamcommunity.com/id/smashman2004">Ben 'smash.mn' Williams</a>. Site designed by <a target="_blank" href="http://steamcommunity.com/id/nassimo">Nassim 'NassimO' Sadoun</a>.</span>
-            <div id="recommend">If you like mods.tf, please consider <a target="_blank" href="http://steamcommunity.com/workshop/suggestserviceproviders/?appid=440">recommending it as a service provider on the Workshop</a>.</div>
-            <div id="valve">Valve, Steam, and Team Fortress are trademarks and/or registered trademarks of <a href="http://valvesoftware.com/" target="_blank">Valve Corporation</a>. mods.tf is not endorsed by Valve. This site is powered by <a href="http://steampowered.com/" target="_blank">Steam</a>.</div>
+            {%- if config.GAME == "tf2" -%}
+            <div id="recommend">If you like mods.tf, please consider <a target="_blank" href="http://steamcommunity.com/workshop/suggestserviceproviders/?appid=440">recommending us as a service provider on the Workshop</a>.</div>
+            {%- elif config.GAME == "dota" -%}
+            <div id="recommend">If you like mods.do, please consider <a target="_blank" href="http://steamcommunity.com/workshop/suggestserviceproviders/?appid=570">recommending us as a service provider on the Workshop</a>.</div>
+            {%- endif -%}
+            <div id="valve">Valve, Steam, and Team Fortress are trademarks and/or registered trademarks of <a href="http://valvesoftware.com/" target="_blank">Valve Corporation</a>. mods.{{ "do" if config.GAME == "dota" else "tf" }} is not endorsed by Valve. This site is powered by <a href="http://steampowered.com/" target="_blank">Steam</a>.</div>
 		</div>
 	</footer>
 </body>

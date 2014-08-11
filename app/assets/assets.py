@@ -1,17 +1,24 @@
 from flask.ext.assets import Bundle, Environment
-from webassets.filter import get_filter
 from .. import app
 from os.path import abspath, join
 
 bundles = {
-    'main_css': Bundle(
+    'tf2_css': Bundle(
+        'sass/tf2.sass',
+        depends='sass/*.sass',
+        filters='sass',
+        output='../static/css/tf2.css'
+    ),
+    'dota_css': Bundle(
+        'sass/dota.sass',
+        depends='sass/*.sass',
+        filters='sass',
+        output='../static/css/dota.css'
+    ),
+    'multiple-select': Bundle(
         'lib/multiple-select/multiple-select.css',
-        Bundle(
-            'sass/main.sass',
-            depends='sass/*.sass',
-            filters='sass'
-        ),
-        output='../static/css/main.css'
+        #filters='cssmin',
+        output='../static/css/multiple-select.css'
     ),
     'main_js': Bundle(
         'lib/multiple-select/jquery.multiple.select.js',

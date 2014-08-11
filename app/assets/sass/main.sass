@@ -2,10 +2,7 @@
 @import ../lib/normalize-scss/_normalize
 
 $mods_tf-text-color: #e6e6e6
-$mods_tf-background-color: #312e29 //#2a2a2a - Dota color
-$mods_tf-highlight: #f3732d //#A63E38 - Dota color
 $mods_tf-fonts: Neris Light, Helvetica Neue, Helvetica, Arial, sans-serif
-$mods_tf-classes: multi-class scout soldier pyro demoman heavy engineer medic sniper spy
 $mods_tf-container-widths: 760 1000 1240 1480 1720
 
 +font-face("Neris Light", "../fonts/neris-light/Neris-Light-webfont")
@@ -38,9 +35,9 @@ body
 .logo
   display: block
   margin: 0 auto
-  width: 200px
+  width: $mods_tf-logo-width
   height: 57px
-  background: url('../images/mods_tf_logo.png') no-repeat center
+  background: url($mods_tf-logo) no-repeat center
 
 .container
   width: 760px
@@ -205,13 +202,8 @@ a.small_item:hover
   font-size: 1.5em
   font-weight: bold
 
-@import alerts.sass
-@import steam.sass
-@import header.sass
-@import mods.sass
-@import pagination.sass
-
-
-
-$map: (1: hello, 2: world)
-
+@import alerts
+@import steam
+@import header
+@import mods
+@import pagination
