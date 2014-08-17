@@ -3,6 +3,7 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>{{ title }}{{ " - " if title }}mods.{{ "do" if config.GAME == "dota" else "tf" }}</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
     {%- block styles -%}
         {% assets config.GAME + "_css" %}
             <link href="{{ ASSET_URL }}" rel="stylesheet">

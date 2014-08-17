@@ -1,5 +1,6 @@
+import os
 from . import app, db
-from flask import render_template, url_for
+from flask import render_template, url_for, send_from_directory
 from mods.models import Mod, PackageDownload, ModPackage
 
 
@@ -16,6 +17,12 @@ def index():
         )
         mod.replacements = item_query.count()
     return render_template('index.html', mods=mods)
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'images/favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 @app.errorhandler(401)  # Unauthorized
