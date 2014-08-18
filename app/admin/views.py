@@ -4,7 +4,7 @@ from flask.ext.admin.contrib.sqla import ModelView
 from jinja2 import Markup
 from app import db
 from ..users.models import User
-from ..mods.models import Mod, ModPackage, PackageDownload
+from ..mods.models import Mod, ModPackage, PackageDownload, ModAuthor
 from datetime import datetime, timedelta
 
 
@@ -47,11 +47,19 @@ class UserView(Auth, ModelView):
 
     column_display_pk = True
     column_exclude_list = ['avatar_small', 'avatar_large']
+    form_excluded_columns = ['mod', 'author']
     column_formatters = {
         'avatar_medium': show_avatar,
         'profile_url': profile_url
     }
     column_searchable_list = ['name']
+    form_ajax_refs = {
+        'download': {
+            'fields': (PackageDownload.package_id,),
+            'page_size': 10
+        }
+    }
+
 
 class BigDownloaders(Auth, BaseView):
     """ Views for database-stored site logs. """

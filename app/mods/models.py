@@ -95,9 +95,7 @@ class PackageDownload(db.Model):
         self.user_id = user_id
 
     def __repr__(self):
-        return u"Download record for package: {} -> {} by user: {}".format(self.package.mod.pretty_name,
-                                                                          self.package.replacement.item_name,
-                                                                          self.user.name)
+        return u"Download record for package: {}".format(self.package_id)
 
 mod_bodygroup = db.Table(
     "mod_bodygroup",
