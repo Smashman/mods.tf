@@ -38,7 +38,8 @@
                 <span class="mod-stat-title">Downloads: </span>
                 <span class="mod-stat">{{ mod.downloads | default(0) | format_thousands}}</span>
             </div>
-            <div><span class="mod-stat-title">Replacements: </span>
+            <div>
+                <span class="mod-stat-title">Replacements: </span>
                 <span class="mod-stat">{{ mod.replacements | default(0) | format_thousands }}+</span>
             </div>
             <div><span class="mod-stat-title">Class: </span>
@@ -59,6 +60,10 @@
                 {%- for equip_region in mod.equip_regions -%}
                     <a href="{{ url_for('.search', equip_region=equip_region.equip_region) }}">{{ equip_region }}</a>{{ ", " if not loop.last }}
                 {%- endfor -%}
+            </div>
+            <div>
+                <span class="mod-stat-title">Uploaded: </span>
+                <span>{{ mod.uploaded | datetime_to_datestring }}</span>
             </div>
             {%- if current_user in mod.authors or current_user.is_admin() -%}
                 <div id="owner_controls">

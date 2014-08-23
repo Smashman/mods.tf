@@ -61,6 +61,7 @@ app.register_blueprint(tf2_blueprint)
 from assets import assets
 
 # Jinja2 Filters
-from filters import format_thousands, pluralize
+from filters import format_thousands, pluralize, datetime_to_datestring
 app.add_template_filter(format_thousands)
 app.add_template_filter(pluralize)
+app.add_template_filter(datetime_to_datestring)
