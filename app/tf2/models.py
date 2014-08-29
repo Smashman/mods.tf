@@ -113,8 +113,8 @@ class TF2Item(db.Model):
         self.image_inventory = image_inventory
         if class_model:
             for class_name, model in class_model.items():
-                self.class_model[class_name] = (get_or_create(db.session, TF2ClassModel, defindex=defindex,
-                                                              class_name=class_name, model_path=model))
+                self.class_model[class_name] = get_or_create(db.session, TF2ClassModel, defindex=defindex,
+                                                             class_name=class_name, model_path=model)
         if _equip_regions:
             for equip_region in _equip_regions:
                 self.equip_regions.append(get_or_create(db.session, TF2EquipRegion, equip_region=equip_region))

@@ -4,6 +4,7 @@
 $mods_tf-text-color: #e6e6e6
 $mods_tf-fonts: Neris Light, Helvetica Neue, Helvetica, Arial, sans-serif
 $mods_tf-container-widths: 760 1000 1240 1480 1720
+$mods_tf-alerts: (success: #518F3F, info: #3F799B, warning: #C28A2E, danger: #A63E38)
 
 +font-face("Neris Light", "../fonts/neris-light/Neris-Light-webfont")
 
@@ -114,6 +115,8 @@ input[type=text].input-default, textarea.input-default, select.input-default, .m
   &:focus
     border: 1px solid $mods_tf-highlight
     padding: 2px
+  .error > &
+    box-shadow: 0 0 6px map_get($mods_tf-alerts, danger)
 
 input[type=submit].input-default
   border: 0
@@ -179,6 +182,10 @@ input[type=submit].input-default
   border-radius: 0.25em
   color: $mods_tf-text-color
   padding: 0.5em
+  text-overflow: ellipsis
+  white-space: nowrap
+  overflow: hidden
+  width: 470px
 
 a.small_item:hover
   background: darken($mods_tf-background-color, 8%)
@@ -201,6 +208,23 @@ a.small_item:hover
 .count_place
   font-size: 1.5em
   font-weight: bold
+
+.error
+  color: map_get($mods_tf-alerts, danger)
+
+.form-authors
+  .author-field
+    margin-bottom: 0.5em
+    .author-block
+      float: left
+      width: 20%
+      & ~ .input
+        margin-top: 1em
+        padding-left: 1em
+        width: 80%
+    .input
+      padding-left: 0
+      width: 100%
 
 @import alerts
 @import steam

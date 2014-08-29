@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "macros.html" import form_field %}
+{% from "macros.html" import form_field, steam_block, field_errors %}
 {% block scripts %}
     {{ super() }}
     {% assets "edit_js" %}
@@ -16,7 +16,22 @@
         {{ edit_form.hidden_tag() }}
         {{ form_field(edit_form.pretty_name) }}
         {{ form_field(edit_form.workshop_id, placeholder="Paste a link to the item on the Steam Workshop.") }}
-        {{ form_field(edit_form.description, rows=5, placeholder="Markdown can be used in this area.") }}
+        {{ form_field(edit_form.description, rows=5) }}
+        <div class="form-row form-authors">
+            {{ edit_form.authors.label }}
+            <div class="input">
+                {%- for author_field in edit_form.authors -%}
+                    <div class="author-field cf">
+                        {%- if mod.authors[loop.index0] -%}
+                            <div class="author-block cf">{{ steam_block(mod.authors[loop.index0], no_link=True) }}</div>
+                        {%- endif -%}
+                        <div class="input">{{ author_field.author(placeholder="Paste a user's Steam profile URL (/id/<vanity> or /profiles/<number>)", class="input-default") }}</div>
+                        {{ field_errors(author_field.author) }}
+                    </div>
+                {%- endfor -%}
+                {{ field_errors(edit_form.authors) }}
+            </div>
+        </div>
         {{ form_field(edit_form.equip_regions) }}
         {{ form_field(edit_form.bodygroups) }}
         <div class="form-row offset" id="item-count">The current settings return <span>{{ count | default(0) }}</span> compatible items.</div>

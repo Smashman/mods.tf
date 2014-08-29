@@ -1,5 +1,3 @@
-$alerts: (success: #518F3F, info: #3F799B, warning: #C28A2E, danger: #A63E38)
-
 .alert
   padding: 15px
   margin-bottom: 1em
@@ -28,7 +26,7 @@ $alerts: (success: #518F3F, info: #3F799B, warning: #C28A2E, danger: #A63E38)
       display: block
     
 
-  @each $alert-type, $alert-color in $alerts
+  @each $alert-type, $alert-color in $mods_tf-alerts
     &-#{$alert-type}
       color: lighten($alert-color, 50%)
       background: $alert-color

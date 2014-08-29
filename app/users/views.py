@@ -36,6 +36,10 @@ def create_or_login(resp):
     steam_id = long(resp.identity_url.replace("http://steamcommunity.com/openid/id/", ""))
     account_id = int(steam_id & 0xFFFFFFFF)
     _user = User.query.get(account_id)
+    if not _user.signed_in:
+        _user.signed_in = True
+        db.session.add(_user)
+        db.session.commit()
     new_user = False
 
     if not _user:

@@ -42,7 +42,7 @@ def item_search(classes=None, bodygroups=None, equip_regions=None, item_name=Non
 
 
 def format_query(items_query, mod_id, page):
-    mod = Mod.query.get_or_404(mod_id)
+    Mod.query.get_or_404(mod_id)
     count = items_query.count()
     items_query = items_query.paginate(int(page), per_page=36)
     if count < 1:

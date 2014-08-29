@@ -1,5 +1,9 @@
-{%- macro steam_block(user_info, header=False) -%}
-    <a class="steam_block" href="{{ url_for('users.user_page', user_id=user_info.account_id) }}">
+{%- macro steam_block(user_info, header=False, no_link=False) -%}
+    {%- if not no_link -%}
+        <a class="steam_block" href="{{ url_for('users.user_page', user_id=user_info.account_id) }}">
+    {%- else -%}
+        <div class="steam_block">
+    {%- endif -%}
     {%- if user_info.avatar_small -%}
         <div class="iconholder"><img src="{{ user_info.avatar_small }}"/></div>
     {%- endif -%}
@@ -7,24 +11,30 @@
     {%- if header -%}
         <div class="dropdown-arrow"></div>
     {%- endif -%}
-    </a>
+    {%- if not no_link -%}
+        </a>
+    {%- else -%}
+        </div>
+    {%- endif -%}
 {%- endmacro -%}
 {%- macro form_field(field, placeholder, rows) -%}
     <div class="form-row">
         {{ field.label }}
-        {%- if field.type == "SelectField" -%}
-            <div class="input select">
-        {%- else -%}
-            <div class="input">
-        {%- endif -%}
+        <div class="input{{ " select" if field.type == "SelectField" }}{{ " error" if field.errors }}">
         {{ field(placeholder=placeholder, class="input-default", rows=rows if rows) }}
-            {%- if field.errors -%}
-                {%- for error in field.errors -%}
-                    <span>{{ error }}</span>
-                {%- endfor -%}
-            {%- endif -%}
+            {% if field.description %}
+                <div class="description">{{ field.description | safe }}</div>
+            {% endif %}
+            {{ field_errors(field) }}
         </div>
     </div>
+{%- endmacro -%}
+{%- macro field_errors(field) -%}
+    {%- if field.errors -%}
+        {%- for error in field.errors -%}
+            <div class="error">{{ error }}</div>
+        {%- endfor -%}
+    {%- endif -%}
 {%- endmacro -%}
 {%- macro pagination(pagination_obj, endpoint, endpoint_values={}) -%}
     {%- if pagination_obj.pages > 1 -%}

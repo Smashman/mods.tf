@@ -3,6 +3,7 @@ from steam.api import HTTPError
 from flask.ext.login import AnonymousUserMixin
 import datetime
 
+
 class AnonymousUser(AnonymousUserMixin):
     user_class = 0
 
@@ -32,14 +33,17 @@ class User(db.Model):
     next_steam_check = db.Column(db.DateTime, default=datetime.datetime.utcnow() + datetime.timedelta(hours=4))
     user_class = db.Column(db.Integer, default=0)
     upload_credits = db.Column(db.Integer, default=0)
+    signed_in = db.Column(db.Boolean, default=True)
     enabled = db.Column(db.Boolean, default=True)
 
     __mapper_args__ = {
         "order_by": [db.asc(joined)]
     }
 
-    def __init__(self, account_id=None):
+    def __init__(self, account_id=None, signed_in=None, last_seen=None):
         self.account_id = account_id
+        self.signed_in = signed_in
+        self.last_seen = last_seen
         self.fetch_steam_info()
 
     def __repr__(self):

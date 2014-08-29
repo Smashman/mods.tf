@@ -7,9 +7,10 @@ from ..utils.utils import extract_and_image, package_mod_to_item
 from ..tf2.models import TF2Item, TF2BodyGroup, TF2EquipRegion
 from ..tf2.views import item_search
 from ..users.models import User
-from models import Mod, ModPackage, PackageDownload, ModImage
+from models import Mod, ModPackage, PackageDownload, ModImage, ModAuthor
 from forms import ItemSearch, EditMod
-from functions import check_mod_permissions, check_edit_permissions
+from functions import check_mod_permissions, check_edit_permissions, new_author
+from ..functions import remove_duplicates
 import datetime
 import os
 import json
@@ -46,6 +47,7 @@ def page(mod_id, page=1):
         bodygroups=[bodygroup.bodygroup for bodygroup in mod.bodygroups],
         equip_regions=[equip_region.equip_region for equip_region in mod.equip_regions]
     )
+
     item_results = format_query(item_query, mod.id, page)
     mod.replacements = item_query.count()
 
@@ -90,6 +92,7 @@ def edit(mod_id):
         edit_form.workshop_id.data = None
 
     if edit_form.validate_on_submit():
+        valid = True
         mod.pretty_name = edit_form.pretty_name.data
         mod.description = edit_form.description.data
         workshop_id = edit_form.workshop_id.data
@@ -100,9 +103,11 @@ def edit(mod_id):
                     workshop_id = parse_qs(urlparse(workshop_id).query).get("id")[0]
                     int(workshop_id)
                 elif not int(workshop_id) > 0:
+                    valid = False
                     edit_form.workshop_id.errors.append("Not a valid workshop ID.")
                     workshop_id = None
             except (ValueError, TypeError):
+                    valid = False
                     edit_form.workshop_id.errors.append("Not a valid workshop ID.")
                     workshop_id = None
             mod.workshop_id = workshop_id
@@ -122,16 +127,46 @@ def edit(mod_id):
         if edit_form.publish.data:
             mod.visibility = "Pu"
 
-        db.session.add(mod)
-        db.session.commit()
-        flash("Save successful.", "success")
-        return redirect(url_for("mods.page", mod_id=mod.id))
+        authors_to_add = []
+        for i, author in enumerate(edit_form.authors):
+            authors_to_add.append((i, author.author.data))
+
+        author_profiles = []
+        for i, add_author in authors_to_add:
+            if add_author:
+                user_author_record = new_author(add_author)
+                if isinstance(user_author_record, str):
+                    print edit_form.authors.entries[i].author.errors
+                    edit_form.authors.entries[i].author.errors.append(user_author_record)
+                    print edit_form.authors.entries[i].author.errors
+                    valid = False
+                else:
+                    author_profiles.append(user_author_record)
+
+        if not current_user.is_admin() and current_user not in author_profiles:
+            edit_form.authors.errors.append("You may not remove yourself as an author.")
+            valid = False
+
+        author_profiles = remove_duplicates(author_profiles)
+
+        if valid:
+            for i in range(0, len(mod.authors)):
+                mod.authors.pop()
+            for i, author_profile in enumerate(author_profiles):
+                mod_author = ModAuthor(mod_id=mod.id, user_id=author_profile.account_id, order=i)
+                db.session.add(mod_author)
+            db.session.add(mod)
+            db.session.commit()
+            flash("Save successful.", "success")
+            return redirect(url_for("mods.page", mod_id=mod.id))
 
     classes = [_class for _class in mod.class_model]
 
     edit_form.pretty_name.data = mod.pretty_name
     edit_form.workshop_id.data = mod.workshop_id
     edit_form.description.data = mod.description
+    for i, author in enumerate(mod.authors):
+        edit_form.authors[i].author.data = author.perma_profile_url
     edit_form.equip_regions.data = [equip_region for equip_region in mod.equip_regions]
     edit_form.bodygroups.data = [bodygroup for bodygroup in mod.bodygroups]
 
