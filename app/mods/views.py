@@ -1,6 +1,6 @@
 from flask import Blueprint, send_from_directory, abort, render_template, request, flash, redirect, url_for,\
     current_app
-from app import db, workshopzips
+from app import db, workshopzips, sentry
 from flask.ext.uploads import UploadNotAllowed
 from flask.ext.login import current_user, login_required
 from ..utils.utils import extract_and_image, package_mod_to_item
@@ -251,20 +251,16 @@ def package(mod_id, defindex):
         downloads_by_mod = PackageDownload.query.filter_by(user=current_user)\
             .filter(PackageDownload.downloaded >= twenty_four_hours_ago)\
             .outerjoin(ModPackage)\
-            .filter(ModPackage.mod_id == mod_id)\
-            .count()
-        if downloads_by_mod >= 15:
+            .filter(ModPackage.mod_id == mod_id)
+        if downloads_by_mod.count() >= 15:
             flash(u"Download limit for {} reached. Please try again in 24 hours.".format(mod.pretty_name), "danger")
+            sentry.captureMessage("User reached download limit for mod.")
             return redirect(url_for("mods.page", mod_id=mod_id))
-        downloads_by_item = PackageDownload.query.filter_by(user=current_user)\
-            .filter(PackageDownload.downloaded >= twenty_four_hours_ago)\
-            .outerjoin(ModPackage)\
-            .filter(ModPackage.mod_id == mod_id)\
-            .filter(ModPackage.defindex == defindex)\
-            .count()
-        if downloads_by_item >= 2:
+        downloads_by_replacement = downloads_by_mod.filter(ModPackage.defindex == defindex)
+        if downloads_by_replacement.count() >= 2:
             flash(u"Download limit for {} replacement reached. Please try again in 24 hours."
                   .format(replacement.item_name), "danger")
+            sentry.captureMessage("User reached download limit for mod replacement.")
             return redirect(url_for("mods.page", mod_id=mod_id))
     if not mod_package:
         filename = package_mod_to_item(mod, replacement)
