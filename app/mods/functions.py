@@ -27,7 +27,6 @@ def new_author(profile_url):
     parsed_url = urlparse.urlparse(profile_url)
     steam_id = None
     split_path = os.path.split(os.path.normpath(parsed_url.path))
-    print split_path
     if parsed_url.hostname == "steamcommunity.com":
         if "id" in split_path[0]:
             try:
@@ -55,7 +54,6 @@ def get_mod_stats(mod):
         bodygroups=[bodygroup.bodygroup for bodygroup in mod.bodygroups],
         equip_regions=[equip_region.equip_region for equip_region in mod.equip_regions]
     )
-    print mod.authors
     authors = set(user.account_id for user in mod.authors)
     stats = {
         "downloads": PackageDownload.query.outerjoin(ModPackage).filter_by(mod_id=mod.id)

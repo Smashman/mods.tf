@@ -254,7 +254,7 @@ def package(mod_id, defindex):
             .filter(ModPackage.mod_id == mod_id)\
             .count()
         if downloads_by_mod >= 15:
-            flash("Download limit for {} reached. Please try again in 24 hours.".format(mod.pretty_name), "danger")
+            flash(u"Download limit for {} reached. Please try again in 24 hours.".format(mod.pretty_name), "danger")
             return redirect(url_for("mods.page", mod_id=mod_id))
         downloads_by_item = PackageDownload.query.filter_by(user=current_user)\
             .filter(PackageDownload.downloaded >= twenty_four_hours_ago)\
@@ -263,7 +263,7 @@ def package(mod_id, defindex):
             .filter(ModPackage.defindex == defindex)\
             .count()
         if downloads_by_item >= 2:
-            flash("Download limit for {} replacement reached. Please try again in 24 hours."
+            flash(u"Download limit for {} replacement reached. Please try again in 24 hours."
                   .format(replacement.item_name), "danger")
             return redirect(url_for("mods.page", mod_id=mod_id))
     if not mod_package:
