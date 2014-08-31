@@ -260,7 +260,7 @@ def package(mod_id, defindex):
         if downloads_by_replacement.count() >= 2:
             flash(u"Download limit for {} replacement reached. Please try again in 24 hours."
                   .format(replacement.item_name), "danger")
-            sentry.captureMessage("User reached download limit for mod replacement.")
+            sentry.captureMessage("User reached download limit for mod replacement. Package ID: {}".format(mod_package.id))
             return redirect(url_for("mods.page", mod_id=mod_id))
     if not mod_package:
         filename = package_mod_to_item(mod, replacement)
