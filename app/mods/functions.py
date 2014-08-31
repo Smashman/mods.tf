@@ -3,9 +3,11 @@ import os
 from flask import abort
 from app import steam, db
 from flask.ext.login import current_user
-from app.models import get_or_create
-from app.users.models import User
+from ..models import get_or_create
+from ..users.models import User
 from steam.user import VanityError, ProfileNotFoundError
+from ..mods.models import PackageDownload, ModPackage, ModAuthor
+from ..tf2.views import item_search
 
 
 def check_mod_permissions(mod):
@@ -45,3 +47,21 @@ def new_author(profile_url):
         return author
     else:
         return "Please insert a valid Steam profile URL."
+
+
+def get_mod_stats(mod):
+    item_query = item_search(
+        classes=[_class for _class in mod.class_model],
+        bodygroups=[bodygroup.bodygroup for bodygroup in mod.bodygroups],
+        equip_regions=[equip_region.equip_region for equip_region in mod.equip_regions]
+    )
+    print mod.authors
+    authors = set(user.account_id for user in mod.authors)
+    stats = {
+        "downloads": PackageDownload.query.outerjoin(ModPackage).filter_by(mod_id=mod.id)
+        .filter(~PackageDownload.user_id.in_(authors))
+        .count(),
+        "replacements": item_query.count(),
+        "item_query": item_query
+    }
+    return stats

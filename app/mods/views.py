@@ -5,11 +5,11 @@ from flask.ext.uploads import UploadNotAllowed
 from flask.ext.login import current_user, login_required
 from ..utils.utils import extract_and_image, package_mod_to_item
 from ..tf2.models import TF2Item, TF2BodyGroup, TF2EquipRegion
-from ..tf2.views import item_search
+from ..tf2.views import format_query, item_search
 from ..users.models import User
 from models import Mod, ModPackage, PackageDownload, ModImage, ModAuthor
 from forms import ItemSearch, EditMod
-from functions import check_mod_permissions, check_edit_permissions, new_author
+from functions import check_mod_permissions, check_edit_permissions, new_author, get_mod_stats
 from ..functions import remove_duplicates
 import datetime
 import os
@@ -25,13 +25,9 @@ enabled_mods = Mod.query.filter_by(visibility="Pu", completed=True, enabled=True
 def all_mods(page=1):
     _mods = enabled_mods.paginate(page, 20)
     for mod in _mods.items:
-        mod.downloads = PackageDownload.query.outerjoin(ModPackage).filter(ModPackage.mod_id == mod.id).count()
-        item_query = item_search(
-            classes=[_class for _class in mod.class_model],
-            bodygroups=[bodygroup.bodygroup for bodygroup in mod.bodygroups],
-            equip_regions=[equip_region.equip_region for equip_region in mod.equip_regions]
-        )
-        mod.replacements = item_query.count()
+        mod_stats = get_mod_stats(mod)
+        mod.downloads = mod_stats.get("downloads")
+        mod.replacements = mod_stats.get("replacements")
     return render_template('mods/all_mods.html', mods=_mods, title="All mods")
 
 
@@ -40,16 +36,11 @@ def all_mods(page=1):
 def page(mod_id, page=1):
     mod = Mod.query.get_or_404(mod_id)
     check_mod_permissions(mod)
-    mod.downloads = PackageDownload.query.outerjoin(ModPackage).filter(ModPackage.mod_id == mod.id).count()
-    from ..tf2.views import item_search, format_query
-    item_query = item_search(
-        classes=[_class for _class in mod.class_model],
-        bodygroups=[bodygroup.bodygroup for bodygroup in mod.bodygroups],
-        equip_regions=[equip_region.equip_region for equip_region in mod.equip_regions]
-    )
+    mod_stats = get_mod_stats(mod)
+    mod.downloads = mod_stats.get("downloads")
+    mod.replacements = mod_stats.get("replacements")
 
-    item_results = format_query(item_query, mod.id, page)
-    mod.replacements = item_query.count()
+    item_results = format_query(mod_stats.get("item_query"), mod.id, page)
 
     item_search_form = ItemSearch()
 
@@ -136,9 +127,7 @@ def edit(mod_id):
             if add_author:
                 user_author_record = new_author(add_author)
                 if isinstance(user_author_record, str):
-                    print edit_form.authors.entries[i].author.errors
                     edit_form.authors.entries[i].author.errors.append(user_author_record)
-                    print edit_form.authors.entries[i].author.errors
                     valid = False
                 else:
                     author_profiles.append(user_author_record)
@@ -255,9 +244,29 @@ def image(mod_id, type):
 @login_required
 def package(mod_id, defindex):
     mod_package = ModPackage.query.filter_by(mod_id=mod_id, defindex=defindex).first()
+    mod = Mod.query.get_or_404(mod_id)
+    replacement = TF2Item.query.get_or_404(defindex)
+    if not current_user.is_admin():
+        twenty_four_hours_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
+        downloads_by_mod = PackageDownload.query.filter_by(user=current_user)\
+            .filter(PackageDownload.downloaded >= twenty_four_hours_ago)\
+            .outerjoin(ModPackage)\
+            .filter(ModPackage.mod_id == mod_id)\
+            .count()
+        if downloads_by_mod >= 15:
+            flash("Download limit for {} reached. Please try again in 24 hours.".format(mod.pretty_name), "danger")
+            return redirect(url_for("mods.page", mod_id=mod_id))
+        downloads_by_item = PackageDownload.query.filter_by(user=current_user)\
+            .filter(PackageDownload.downloaded >= twenty_four_hours_ago)\
+            .outerjoin(ModPackage)\
+            .filter(ModPackage.mod_id == mod_id)\
+            .filter(ModPackage.defindex == defindex)\
+            .count()
+        if downloads_by_item >= 2:
+            flash("Download limit for {} replacement reached. Please try again in 24 hours."
+                  .format(replacement.item_name), "danger")
+            return redirect(url_for("mods.page", mod_id=mod_id))
     if not mod_package:
-        mod = Mod.query.get_or_404(mod_id)
-        replacement = TF2Item.query.get_or_404(defindex)
         filename = package_mod_to_item(mod, replacement)
         long_date = False
         if datetime.datetime.utcnow() < mod.uploaded + datetime.timedelta(weeks=4):

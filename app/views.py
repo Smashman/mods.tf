@@ -2,20 +2,16 @@ import os
 from . import app, db
 from flask import render_template, url_for, send_from_directory
 from mods.models import Mod, PackageDownload, ModPackage
+from mods.functions import get_mod_stats
 
 
 @app.route('/')
 def index():
     mods = Mod.query.filter_by(visibility="Pu", enabled=True, completed=True).limit(18).all()
     for mod in mods:
-        mod.downloads = PackageDownload.query.outerjoin(ModPackage).filter(ModPackage.mod_id == mod.id).count()
-        from tf2.views import item_search
-        item_query = item_search(
-            classes=[_class.class_name for key, _class in mod.class_model.items()],
-            bodygroups=[bodygroup.bodygroup for bodygroup in mod.bodygroups],
-            equip_regions=[equip_region.equip_region for equip_region in mod.equip_regions]
-        )
-        mod.replacements = item_query.count()
+        mod_stats = get_mod_stats(mod)
+        mod.downloads = mod_stats.get("downloads")
+        mod.replacements = mod_stats.get("replacements")
     return render_template('index.html', mods=mods)
 
 
