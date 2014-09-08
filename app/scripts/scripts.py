@@ -6,7 +6,7 @@ from steam.api import HTTPError
 from .. import db
 from ..models import get_or_create
 from ..tf2.models import TF2Item, TF2Class, TF2BodyGroup, TF2ClassModel, TF2EquipRegion, all_classes
-from ..mods.models import ModPackage
+from ..mods.models import ModPackage, ModAuthor
 from ..utils.utils import list_from_vdf_dict
 from flask import current_app
 
@@ -151,7 +151,8 @@ def update_tf2_items():
 
 
 def delete_expired_packages():
-    packages = ModPackage.query.filter(ModPackage.expire_date <= datetime.datetime.utcnow()).filter(ModPackage.deleted == False).all()
+    packages = ModPackage.query.filter(ModPackage.expire_date <= datetime.datetime.utcnow())\
+        .filter(ModPackage.deleted == False).all()
     for package in packages:
         package_path = os.path.abspath(os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'],
                                                     str(package.mod_id), package.filename))
@@ -162,4 +163,11 @@ def delete_expired_packages():
             print u"Package where {} replaces {} already deleted.".format(package.mod.pretty_name, package.replacement.item_name)
         package.deleted = True
         db.session.add(package)
+    db.session.commit()
+
+
+def update_authors_steam_info():
+    authors = ModAuthor.query.group_by(ModAuthor.user_id).all()
+    for author in authors:
+        author.user.fetch_steam_info()
     db.session.commit()

@@ -25,5 +25,11 @@ def delete_expired_packages():
     from app.scripts.scripts import delete_expired_packages as _delete_expired_packages
     _delete_expired_packages()
 
+
+@manager.command
+def update_authors_steam_info():
+    from app.scripts.scripts import update_authors_steam_info as _update_authors_steam_info
+    _update_authors_steam_info()
+
 if __name__ == "__main__":
     manager.run()
