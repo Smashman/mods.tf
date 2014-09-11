@@ -39,13 +39,21 @@
     </div>
     <footer>
 		<div class="container cf">
-			<span id="credit">Developed by <a target="_blank" href="http://steamcommunity.com/id/smashman2004">Ben 'smash.mn' Williams</a>. Site designed by <a target="_blank" href="http://steamcommunity.com/id/nassimo">Nassim 'NassimO' Sadoun</a>.</span>
-            {%- if config.GAME == "tf2" -%}
-            <div id="recommend">If you like mods.tf, please consider <a target="_blank" href="http://steamcommunity.com/workshop/suggestserviceproviders/?appid=440">recommending us as a service provider on the Workshop</a>.</div>
-            {%- elif config.GAME == "dota" -%}
-            <div id="recommend">If you like mods.do, please consider <a target="_blank" href="http://steamcommunity.com/workshop/suggestserviceproviders/?appid=570">recommending us as a service provider on the Workshop</a>.</div>
-            {%- endif -%}
+            <div class="first-line cf">
+                <div>Developed by <a target="_blank" href="http://steamcommunity.com/id/smashman2004">Ben 'smash.mn' Williams</a>. Site designed by <a target="_blank" href="http://steamcommunity.com/id/nassimo">Nassim 'NassimO' Sadoun</a>.</div>
+                <div>
+                    {%- if config.GAME == "tf2" -%}
+                    If you like mods.tf, please consider <a target="_blank" href="http://steamcommunity.com/workshop/suggestserviceproviders/?appid=440">recommending us as a service provider on the Workshop</a>.
+                    {%- elif config.GAME == "dota" -%}
+                    If you like mods.do, please consider <a target="_blank" href="http://steamcommunity.com/workshop/suggestserviceproviders/?appid=570">recommending us as a service provider on the Workshop</a>.
+                    {%- endif -%}
+                </div>
+            </div>
             <div id="valve">Valve, Steam, and Team Fortress are trademarks and/or registered trademarks of <a href="http://valvesoftware.com/" target="_blank">Valve Corporation</a>. mods.{{ "do" if config.GAME == "dota" else "tf" }} is not endorsed by Valve. This site is powered by <a href="http://steampowered.com/" target="_blank">Steam</a>.</div>
+            <div class="below-fold cf">
+                <div><a href="{{ url_for('additional_credits') }}">Additional credits</a></div>
+                <div>Latest change: <a href="http://code.mods.tf/c/{{ config.VERSION }}" target="_blank">{{ config.VERSION }}</a></div>
+            </div>
 		</div>
 	</footer>
 </body>

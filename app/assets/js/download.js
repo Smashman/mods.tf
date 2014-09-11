@@ -7,6 +7,7 @@ $(function(){
     var equip_regions = $("#equip_regions");
     var item_name = $("#item_name");
     var description = $(".mod-description");
+    var old_val = [];
     function call_api(search_data, page){
         $.ajax({
             url: tf2_api,
@@ -36,11 +37,24 @@ $(function(){
         };
     }
     make_search_data();
-    search_form.submit(function(event){
+    search_form.change(function(event){
         page = 1;
         event.preventDefault();
         make_search_data();
         call_api(search_data, page);
+    });
+    item_name.change(function(event){
+        var name_value = item_name.val();
+
+        if(name_value != "") {
+            old_val = [equip_regions.val(), bodygroups.val()];
+            equip_regions.val("").multipleSelect('refresh');
+            bodygroups.val("").multipleSelect('refresh');
+        }
+        if (old_val.length > 0 && name_value == ""){
+            equip_regions.val(old_val[0]).multipleSelect('refresh');
+            bodygroups.val(old_val[1]).multipleSelect('refresh');
+        }
     });
     $(document).on("click", ".next, .prev", function(){
         var element = $(this);

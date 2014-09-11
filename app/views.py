@@ -1,7 +1,7 @@
 import os
 from . import app, db
 from flask import render_template, url_for, send_from_directory
-from mods.models import Mod, PackageDownload, ModPackage
+from mods.models import Mod
 from mods.functions import get_mod_stats
 
 
@@ -19,6 +19,11 @@ def index():
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'images/favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+
+@app.route('/credits/')
+def additional_credits():
+    return render_template('credits.html')
 
 
 @app.errorhandler(401)  # Unauthorized

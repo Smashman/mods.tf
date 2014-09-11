@@ -82,20 +82,19 @@
         {%- endif -%}
         {%- if current_user.is_authenticated() -%}
             <div class="item-search">
-                <span>Choose an item to replace:</span>
+                <span>Filter for items to replace:</span>
                 <form id="item_search" method="POST">
                     {{ item_search.hidden_tag() }}
-                    {{ item_search.item_name(placeholder="Filter by name...", class="input-default") }}
+                    {{ item_search.item_name(placeholder="Item name...", class="input-default") }}
                     {{ item_search.classes }}
                     {{ item_search.equip_regions }}
                     {{ item_search.bodygroups }}
-                    <input type="submit" class="submit input-default" value="Submit">
                 </form>
                 <div id="results">
                     {%- if item_results -%}
                         {{ item_results | safe }}
                     {%- else -%}
-                        This item cannot be repackaged at this time.
+                        No items found matching this criteria. Change the criteria above to find items.
                     {%- endif -%}
                 </div>
             </div>

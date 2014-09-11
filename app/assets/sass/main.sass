@@ -63,16 +63,28 @@ footer
   margin-top: -#{$mods_tf-footer-height}px
   background: darken($mods_tf-background-color, 4%)
   border-top: 1px solid transparentize($mods_tf-highlight, 0.4)
-  line-height: #{$mods_tf-footer-height / 2 - 1}px
+  line-height: #{$mods_tf-footer-height / 2}px
 
-  & #recommend
+  & .first-line
+    line-height: #{$mods_tf-footer-height / 2 - 1}px
+
+  & .below-fold
+    line-height: initial
+    margin-bottom: 1em
+
+  & .first-line div:first-child, & .below-fold div:first-child
+    float: left
+
+  & .first-line div:last-child, & .below-fold div:last-child
     float: right
 
   & #valve
-    line-height: 35px
     float: left
     width: 100%
     text-align: center
+
+.pull-right
+  float: right
 
 a
   color: mix($mods_tf-highlight, $mods_tf-text-color, 60%)

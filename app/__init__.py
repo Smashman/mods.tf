@@ -65,3 +65,7 @@ from filters import format_thousands, pluralize, datetime_to_datestring
 app.add_template_filter(format_thousands)
 app.add_template_filter(pluralize)
 app.add_template_filter(datetime_to_datestring)
+
+# Load current app version into globals
+from functions import current_version
+app.config['VERSION'] = current_version()
