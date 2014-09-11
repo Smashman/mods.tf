@@ -8,6 +8,7 @@ $(function(){
     var item_name = $("#item_name");
     var description = $(".mod-description");
     var old_val = [];
+    var num = 1;
     function call_api(search_data, page){
         $.ajax({
             url: tf2_api,
@@ -37,17 +38,17 @@ $(function(){
         };
     }
     make_search_data();
-    search_form.change(function(event){
+    search_form.find("select").change(function(event){
         page = 1;
         event.preventDefault();
         make_search_data();
         call_api(search_data, page);
     });
-    item_name.change(function(event){
+    item_name.change(function(){
+        page = 1;
         var name_value = item_name.val();
-
         if(name_value != "") {
-            old_val = [equip_regions.val(), bodygroups.val()];
+            old_val = [equip_regions.val() || old_val[0], bodygroups.val() || old_val[1]];
             equip_regions.val("").multipleSelect('refresh');
             bodygroups.val("").multipleSelect('refresh');
         }
@@ -55,6 +56,8 @@ $(function(){
             equip_regions.val(old_val[0]).multipleSelect('refresh');
             bodygroups.val(old_val[1]).multipleSelect('refresh');
         }
+        make_search_data();
+        call_api(search_data, page);
     });
     $(document).on("click", ".next, .prev", function(){
         var element = $(this);

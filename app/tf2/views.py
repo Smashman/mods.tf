@@ -43,13 +43,14 @@ def item_search(classes=None, bodygroups=None, equip_regions=None, item_name=Non
 
 def format_query(items_query, mod_id, page):
     Mod.query.get_or_404(mod_id)
-    count = items_query.count()
-    items_query = items_query.paginate(int(page), per_page=36)
-    if count < 1:
+    if items_query:
+        count = items_query.count()
+        items_query = items_query.paginate(int(page), per_page=36)
+        for item in items_query.items:
+            item.downloads = PackageDownload.query.join(ModPackage).join(TF2Item).filter(TF2Item.defindex == item.defindex) \
+                .filter(ModPackage.mod_id == mod_id).count()
+    else:
         return {"status": "No items found matching these criteria.", "count": 0}
-    for item in items_query.items:
-        item.downloads = PackageDownload.query.join(ModPackage).join(TF2Item).filter(TF2Item.defindex == item.defindex)\
-            .filter(ModPackage.mod_id == mod_id).count()
 
     items = render_template('tf2/api_result.html', items=items_query, mod_id=mod_id)
     return {"items": items, "count": count}
