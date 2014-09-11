@@ -43,14 +43,14 @@ def item_search(classes=None, bodygroups=None, equip_regions=None, item_name=Non
 
 def format_query(items_query, mod_id, page):
     Mod.query.get_or_404(mod_id)
-    if items_query:
+    if items_query and items_query.count() > 0:
         count = items_query.count()
         items_query = items_query.paginate(int(page), per_page=36)
         for item in items_query.items:
             item.downloads = PackageDownload.query.join(ModPackage).join(TF2Item).filter(TF2Item.defindex == item.defindex) \
                 .filter(ModPackage.mod_id == mod_id).count()
     else:
-        return {"status": "No items found matching these criteria.", "count": 0}
+        return {"err_msg": "No items found matching these criteria.", "count": 0}
 
     items = render_template('tf2/api_result.html', items=items_query, mod_id=mod_id)
     return {"items": items, "count": count}
@@ -67,15 +67,15 @@ def api():
     mod_id = form_values.get("mod_id")
     page = form_values.get('page')
     if len(classes) < 1:
-        return Response(json.dumps({"status": "No classes selected, please select a class to search.", "count": 0}),  mimetype='application/json')
+        return Response(json.dumps({"err_msg": "No classes selected, please select a class to search.", "count": 0}),  mimetype='application/json')
     if not page.isnumeric():
-        return Response(json.dumps({"status": "Error, please refresh the page and try again.", "count": 0}),  mimetype='application/json')
+        return Response(json.dumps({"err_msg": "Error, please refresh the page and try again.", "count": 0}),  mimetype='application/json')
 
     items_query = item_search(classes, bodygroups, equip_regions, item_name)
     items_dict = format_query(items_query, mod_id, page)
 
-    if "status" in items_dict:
-        return Response(json.dumps({"status": items_dict.get('status')}),  mimetype='application/json')
+    if "err_msg" in items_dict:
+        return Response(json.dumps({"err_msg": items_dict.get('err_msg')}),  mimetype='application/json')
 
     return Response(json.dumps(items_dict),  mimetype='application/json')
 
@@ -90,9 +90,9 @@ def api_count():
     equip_regions = form_values.getlist("search_data[equip_regions][]")
     page = request.form.get('page')
     if len(classes) < 1:
-        return Response(json.dumps({"status": "No classes selected, please select a class to search.", "count": 0}),  mimetype='application/json')
+        return Response(json.dumps({"err_msg": "No classes selected, please select a class to search.", "count": 0}),  mimetype='application/json')
     if not page.isnumeric():
-        return Response(json.dumps({"status": "Error, please refresh the page and try again.", "count": 0}),  mimetype='application/json')
+        return Response(json.dumps({"err_msg": "Error, please refresh the page and try again.", "count": 0}),  mimetype='application/json')
 
     items_query = item_search(classes, bodygroups, equip_regions, item_name)
     items_dict = {"count": items_query.count()}

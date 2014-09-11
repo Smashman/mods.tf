@@ -9,24 +9,27 @@ $(function(){
     var description = $(".mod-description");
     var old_val = [];
     var num = 1;
+    var ajax_call;
     function call_api(search_data, page){
-        $.ajax({
+        ajax_call = $.ajax({
             url: tf2_api,
             type: "POST",
             data: { search_data: search_data, page: page, mod_id: mod_id, bodygroups: search_data["bodygroups"] }
         }).done(function(results){
             insert_div.empty();
-            if (results.status) {
-                insert_div.text(results.status);
+            if (results.err_msg) {
+                insert_div.text(results.err_msg);
             }
             else if (results.items.length > 0){
                 insert_div.html(results.items);
             }
 
             $(".next, .prev, .pagination .page").removeAttr("href");
-        }).fail(function() {
-            insert_div.empty();
-            insert_div.text("Fail!");
+        }).fail(function(results, status) {
+            if (status != "abort") {
+                insert_div.empty();
+                insert_div.text("Fail!");
+            }
         });
     }
     function make_search_data(){
@@ -39,12 +42,18 @@ $(function(){
     }
     make_search_data();
     search_form.find("select").change(function(event){
+        if (ajax_call){
+            ajax_call.abort();
+        }
         page = 1;
         event.preventDefault();
         make_search_data();
         call_api(search_data, page);
     });
     item_name.change(function(){
+        if (ajax_call){
+            ajax_call.abort();
+        }
         page = 1;
         var name_value = item_name.val();
         if(name_value != "") {
