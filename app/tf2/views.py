@@ -25,8 +25,8 @@ def item_search(classes=None, bodygroups=None, equip_regions=None, item_name=Non
         if len(classes) == 9:
             pass
         elif len(classes) > 1:
-            items_query = items_query.filter(sq.c.class_count == 9)
-        else:
+            items_query = items_query.filter(sq.c.class_count > 1).filter(sq.c.class_count < 9)
+        elif len(classes) == 1:
             items_query = items_query.filter(sq.c.class_count == 1)
     else:
         return
