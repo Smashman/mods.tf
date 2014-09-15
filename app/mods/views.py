@@ -9,7 +9,7 @@ from ..tf2.views import format_query, item_search
 from ..users.models import User
 from models import Mod, ModPackage, PackageDownload, ModImage, ModAuthor
 from forms import ItemSearch, EditMod
-from functions import check_mod_permissions, check_edit_permissions, new_author, get_mod_stats
+from functions import check_mod_permissions, check_edit_permissions, new_author, get_mod_stats, enabled_mods
 from ..functions import remove_duplicates
 import datetime
 import os
@@ -17,13 +17,10 @@ import json
 
 mods = Blueprint("mods", __name__, url_prefix="/mods")
 
-enabled_mods = Mod.query.filter_by(visibility="Pu", completed=True, enabled=True)
-
-
 @mods.route('/')
 @mods.route('/page/<int:page>/')
 def all_mods(page=1):
-    _mods = enabled_mods.paginate(page, 20)
+    _mods = enabled_mods().paginate(page, 20)
     for mod in _mods.items:
         mod_stats = get_mod_stats(mod)
         mod.downloads = mod_stats.get("downloads")
@@ -186,7 +183,7 @@ def edit(mod_id):
 def search(page=1):
     #equip_region = request.args.get('equip_region')
     #bodygroup = request.args.get('bodygroup')
-    #mods = enabled_mods
+    #mods = enabled_mods()
     #if equip_region:
         #mods = mods.filter(Mod.equip_regions.any(TF2EquipRegion.equip_region == equip_region))
     #if bodygroup:

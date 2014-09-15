@@ -6,7 +6,7 @@ from flask.ext.login import current_user
 from ..models import get_or_create
 from ..users.models import User
 from steam.user import VanityError, ProfileNotFoundError
-from ..mods.models import PackageDownload, ModPackage, ModAuthor
+from ..mods.models import PackageDownload, ModPackage, Mod
 from ..tf2.views import item_search
 
 
@@ -46,6 +46,9 @@ def new_author(profile_url):
         return author
     else:
         return "Please insert a valid Steam profile URL."
+
+
+enabled_mods = lambda: Mod.query.filter_by(visibility="Pu", completed=True, enabled=True)
 
 
 def get_mod_stats(mod):
