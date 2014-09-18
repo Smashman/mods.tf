@@ -31,5 +31,20 @@ def update_authors_steam_info():
     from app.scripts.scripts import update_authors_steam_info as _update_authors_steam_info
     _update_authors_steam_info()
 
+
+@manager.command
+def cron_update():
+    import datetime
+    from app.filters import datetime_to_datestring
+    start = datetime.datetime.utcnow()
+    print "Performing complete cron update at: {}".format(datetime_to_datestring(start))
+    print "--- Deleting expired packages ---"
+    delete_expired_packages()
+    print "--- Updating author Steam info ---"
+    update_authors_steam_info()
+    end = datetime.datetime.utcnow()
+    elapsed = divmod((end-start).total_seconds(), 60)
+    print "Finished complete cron update at: {}, took: {}m {}s".format(datetime_to_datestring(end), int(elapsed[0]), int(elapsed[1]))
+
 if __name__ == "__main__":
     manager.run()
