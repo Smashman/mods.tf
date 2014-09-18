@@ -62,8 +62,6 @@ class UserView(Auth, ModelView):
 
 
 class BigDownloaders(Auth, BaseView):
-    """ Views for database-stored site logs. """
-
     @staticmethod
     def user_download_count(hours=None):
         rows = db.session.query(PackageDownload, db.func.count(PackageDownload.id))
@@ -88,5 +86,20 @@ class BigDownloaders(Auth, BaseView):
             all_time_downloaders=self.user_download_count()
         )
 
+
+class SharedZips(Auth, BaseView):
+    @expose('/')
+    def index(self):
+        """ Renders a list of mods who do not have the manifest_steam_id within mod_authors. """
+
+        mod_authors_sq = db.session.query(ModAuthor.user_id).filter(ModAuthor.mod_id == Mod.id).subquery
+        shared_zip_mods = Mod.query.filter(Mod.manifest_steamid.notin_(mod_authors_sq()))
+
+        return self.render(
+            'admin/shared_zips.html',
+            shared_zip_mods=shared_zip_mods
+        )
+
 admin = Admin(name="mods.tf", index_view=AdminIndex())
 admin.add_view(BigDownloaders(name="Big downloaders", category="Reports"))
+admin.add_view(SharedZips(name="Shared zips", category="Reports"))

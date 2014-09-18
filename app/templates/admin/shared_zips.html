@@ -1,0 +1,22 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+
+    <table class="table">
+    <thead>
+    <tr>
+        <th>Mod</th>
+        <th>Manifest ID</th>
+    </tr>
+    </thead>
+    <tbody>
+    {%- for mod in shared_zip_mods -%}
+        {%- set steam_profile = mod.manifest_steamid + 76561197960265728 -%}
+        <tr>
+            <td><a href="{{ url_for("mods.page", mod_id=mod.id) }}">{{ mod.pretty_name }}</a></td>
+            <td><a href="{{ url_for("users.user_page", user_id=mod.manifest_steamid) }}">{{ mod.manifest_steamid }}</a> / <a href="http://steamcommunity.com/profiles/{{ steam_profile }}">{{ steam_profile }}</a></td>
+        </tr>
+    {%- endfor -%}
+    </tbody>
+</table>
+
+{% endblock %}
