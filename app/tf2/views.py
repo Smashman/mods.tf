@@ -42,13 +42,14 @@ def item_search(classes=None, bodygroups=None, equip_regions=None, item_name=Non
 
 
 def format_query(items_query, mod_id, page):
-    Mod.query.get_or_404(mod_id)
+    mod = Mod.query.get_or_404(mod_id)
+    authors = set(user.account_id for user in mod.authors)
     if items_query and items_query.count() > 0:
         count = items_query.count()
         items_query = items_query.paginate(int(page), per_page=36)
         for item in items_query.items:
             item.downloads = PackageDownload.query.join(ModPackage).join(TF2Item).filter(TF2Item.defindex == item.defindex) \
-                .filter(ModPackage.mod_id == mod_id).count()
+                .filter(ModPackage.mod_id == mod_id).filter(~PackageDownload.user_id.in_(authors)).count()
     else:
         return {"err_msg": "No items found matching these criteria.", "count": 0}
 
