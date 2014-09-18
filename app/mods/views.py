@@ -6,6 +6,7 @@ from flask.ext.login import current_user, login_required
 from ..utils.utils import extract_and_image, package_mod_to_item
 from ..tf2.models import TF2Item, TF2BodyGroup, TF2EquipRegion
 from ..tf2.views import format_query, item_search
+from ..tf2.functions import sort_classes
 from ..users.models import User
 from models import Mod, ModPackage, PackageDownload, ModImage, ModAuthor
 from forms import ItemSearch, EditMod
@@ -42,9 +43,7 @@ def page(mod_id, page=1):
     item_search_form = ItemSearch()
 
     classes = mod.class_model
-    class_array = ["scout", "soldier", "pyro", "demoman", "heavy", "engineer", "sniper", "medic", "spy"]
-    sorted_classes = sorted([(_class.class_name, _class.class_name.capitalize())
-                            for key, _class in classes.items()], key=lambda c: class_array.index(c[0]))
+    sorted_classes = sort_classes(classes)
 
     item_search_form.equip_regions.query = TF2EquipRegion.query.all()
     item_search_form.bodygroups.query = TF2BodyGroup.query.all()
