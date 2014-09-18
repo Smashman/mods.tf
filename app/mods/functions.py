@@ -62,6 +62,9 @@ def get_mod_stats(mod):
         "downloads": PackageDownload.query.outerjoin(ModPackage).filter_by(mod_id=mod.id)
         .filter(~PackageDownload.user_id.in_(authors))
         .count(),
+        "author_downloads": PackageDownload.query.outerjoin(ModPackage).filter_by(mod_id=mod.id)
+        .filter(PackageDownload.user_id.in_(authors))
+        .count(),
         "replacements": item_query.count(),
         "item_query": item_query
     }

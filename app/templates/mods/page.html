@@ -36,11 +36,17 @@
             {%- endif -%}
             <div>
                 <span class="mod-stat-title">Downloads: </span>
-                <span class="mod-stat">{{ mod.downloads | default(0) | format_thousands}}</span>
+                <span class="mod-stat">{{ mod_stats.downloads | default(0) | format_thousands}}</span>
             </div>
+            {%- if current_user.is_admin() or current_user in mod.authors -%}
+            <div>
+                <span class="mod-stat-title">Downloads by authors: </span>
+                <span class="mod-stat">{{ mod_stats.author_downloads | default(0) | format_thousands}}</span>
+            </div>
+            {%- endif -%}
             <div>
                 <span class="mod-stat-title">Replacements: </span>
-                <span class="mod-stat">{{ mod.replacements | default(0) | format_thousands }}+</span>
+                <span class="mod-stat">{{ mod_stats.replacements | default(0) | format_thousands }}+</span>
             </div>
             <div><span class="mod-stat-title">Class: </span>
                 {%- for key, class in sorted_classes -%}

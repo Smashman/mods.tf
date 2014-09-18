@@ -35,8 +35,6 @@ def page(mod_id, page=1):
     mod = Mod.query.get_or_404(mod_id)
     check_mod_permissions(mod)
     mod_stats = get_mod_stats(mod)
-    mod.downloads = mod_stats.get("downloads")
-    mod.replacements = mod_stats.get("replacements")
 
     item_results = format_query(mod_stats.get("item_query"), mod.id, page)
 
@@ -53,7 +51,7 @@ def page(mod_id, page=1):
     item_search_form.bodygroups.data = [bodygroup for bodygroup in mod.bodygroups]
     item_search_form.equip_regions.data = [equip_region for equip_region in mod.equip_regions]
 
-    return render_template('mods/page.html', mod=mod, item_search=item_search_form, mod_id=mod.id,
+    return render_template('mods/page.html', mod=mod, mod_stats=mod_stats, item_search=item_search_form, mod_id=mod.id,
                            item_results=item_results.get('items'), page=page, title=mod.pretty_name,
                            sorted_classes=sorted_classes)
 
