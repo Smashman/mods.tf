@@ -6,6 +6,7 @@ from steam.api import HTTPError
 from .. import db
 from ..models import get_or_create
 from ..tf2.models import TF2Item, TF2Class, TF2BodyGroup, TF2ClassModel, TF2EquipRegion, all_classes
+from ..tf2.functions import class_array
 from ..mods.models import ModPackage, ModAuthor
 from ..utils.utils import list_from_vdf_dict
 from flask import current_app
@@ -22,7 +23,7 @@ def update_tf2_items():
 
     insert_classes()
 
-    bad_item_types = ["CheatDetector", "Tournament Medal", "Cursed Soul"]
+    bad_item_types = ["CheatDetector", "Tournament Medal", "Cursed Soul", "Badge"]
     bad_item_names = ["TF_GateBot_Light"]
     bad_defindexes = [5606,  # Damaged Capacitor (Not equippable)
                       8938,  # Glitched Circuit Board (Not equippable)
@@ -98,8 +99,6 @@ def update_tf2_items():
 
                     used_by_classes = item.get('used_by_classes')
                     model_player = items_game_info.get('model_player')
-                    if existing_item:
-                        existing_item.class_model = {}
                     class_models = {}
 
                     if used_by_classes and len(used_by_classes) is 1:
@@ -117,6 +116,7 @@ def update_tf2_items():
                             if model_player_per_class:
                                 class_model = model_player_per_class.get(tf2_class)
                             elif model_player:
+                                #class_model = model_player
                                 continue
                             else:
                                 continue
@@ -131,10 +131,19 @@ def update_tf2_items():
                         existing_item.image_url = image_url
                         existing_item.image_url_large = image_url_large
                         existing_item.image_inventory = image_inventory
-                        for class_name, model in class_models.items():
-                            existing_item.class_model[class_name] = get_or_create(db.session, TF2ClassModel,
-                                                                                  defindex=defindex,
-                                                                                  class_name=class_name, model_path=model)
+                        for class_name in class_array:
+                            class_models_c_m = class_models.get(class_name)
+                            existing_c_m = existing_item.class_model.get(class_name)
+                            if class_models_c_m and existing_c_m and existing_c_m.model_path != class_models[class_name]:
+                                existing_c_m.model_path = class_models[class_name]
+                            elif class_models_c_m and not existing_c_m:
+                                model = class_models[class_name]
+                                existing_item.class_model[class_name] = get_or_create(db.session, TF2ClassModel,
+                                                                                      defindex=defindex,
+                                                                                      class_name=class_name,
+                                                                                      model_path=model)
+                            elif existing_c_m and not class_models_c_m:
+                                db.session.delete(existing_item.class_model[class_name])
                         for equip_region in equip_regions:
                             existing_item.equip_regions.append(get_or_create(db.session, TF2EquipRegion, equip_region=equip_region))
                         for bodygroup in bodygroups:
@@ -153,6 +162,7 @@ def update_tf2_items():
 def delete_expired_packages():
     packages = ModPackage.query.filter(ModPackage.expire_date <= datetime.datetime.utcnow())\
         .filter(ModPackage.deleted == False).all()
+    print "{} packages to delete.".format(len(packages))
     for package in packages:
         package_path = os.path.abspath(os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'],
                                                     str(package.mod_id), package.filename))
@@ -163,11 +173,12 @@ def delete_expired_packages():
             print u"Package where {} replaces {} already deleted.".format(package.mod.pretty_name, package.replacement.item_name)
         package.deleted = True
         db.session.add(package)
-    db.session.commit()
+        db.session.commit()
 
 
 def update_authors_steam_info():
     authors = ModAuthor.query.group_by(ModAuthor.user_id).all()
+    print "Updating {} authors.".format(len(authors))
     for author in authors:
         author.user.fetch_steam_info()
     db.session.commit()
