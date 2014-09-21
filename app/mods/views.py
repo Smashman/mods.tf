@@ -8,7 +8,7 @@ from ..tf2.models import TF2Item, TF2BodyGroup, TF2EquipRegion
 from ..tf2.views import format_query, item_search
 from ..tf2.functions import sort_classes
 from ..users.models import User
-from models import Mod, ModPackage, PackageDownload, ModImage, ModAuthor
+from models import Mod, ModPackage, PackageDownload, ModImage, ModAuthor, Tag
 from forms import ItemSearch, EditMod
 from functions import check_mod_permissions, check_edit_permissions, new_author, get_mod_stats, enabled_mods
 from ..functions import remove_duplicates
@@ -17,6 +17,7 @@ import os
 import json
 
 mods = Blueprint("mods", __name__, url_prefix="/mods")
+
 
 @mods.route('/')
 @mods.route('/page/<int:page>/')
@@ -27,6 +28,13 @@ def all_mods(page=1):
         mod.downloads = mod_stats.get("downloads")
         mod.replacements = mod_stats.get("replacements")
     return render_template('mods/all_mods.html', mods=_mods, title="All mods")
+
+
+@mods.route('/tag/<string:tag_id>/')
+def tag(tag_id=None):
+    tag_info = Tag.query.get(tag_id)
+    return render_template('construction.html', bg_num=tag_info.bg_num,
+                           title=tag_info.id.capitalize() + " tagged mods - Under construction")
 
 
 @mods.route('/<int:mod_id>/')
@@ -60,18 +68,22 @@ def page(mod_id, page=1):
 @login_required
 def edit(mod_id):
     mod = Mod.query.get_or_404(mod_id)
+    new_item = False
+    if request.referrer == url_for(".upload", _external=True):
+        new_item = True
+
     check_edit_permissions(mod)
     edit_form = EditMod()
 
     edit_form.equip_regions.query = TF2EquipRegion.query.all()
     edit_form.bodygroups.query = TF2BodyGroup.query.all()
+    edit_form.tags.query = Tag.query.all()
 
     package_formats = [("vpk", "VPK")]
+    visibilities = [("Pu", "Public"), ("Pr", "Unlisted"), ("H", "Hidden")]
 
     edit_form.package_format.choices = package_formats
-
-    if mod.visibility != "Pu":
-        edit_form.publish.label.text += " and Publish!"
+    edit_form.visibility.choices = visibilities
 
     if edit_form.workshop_id.data == "":
         edit_form.workshop_id.data = None
@@ -92,14 +104,15 @@ def edit(mod_id):
                     edit_form.workshop_id.errors.append("Not a valid workshop ID.")
                     workshop_id = None
             except (ValueError, TypeError):
-                    valid = False
-                    edit_form.workshop_id.errors.append("Not a valid workshop ID.")
-                    workshop_id = None
+                valid = False
+                edit_form.workshop_id.errors.append("Not a valid workshop ID.")
+                workshop_id = None
             mod.workshop_id = workshop_id
         if not workshop_id or workshop_id == "":
             mod.workshop_id = None
 
         mod.package_format = edit_form.package_format.data
+        mod.visibility = edit_form.visibility.data
 
         mod.bodygroups = []
         mod.equip_regions = []
@@ -109,8 +122,9 @@ def edit(mod_id):
 
         for equip_region in edit_form.equip_regions.data:
             mod.equip_regions.append(TF2EquipRegion.query.get(equip_region))
-        if edit_form.publish.data:
-            mod.visibility = "Pu"
+
+        for tag in edit_form.tags.data:
+            mod.tags.append(Tag.query.get(tag))
 
         authors_to_add = []
         for i, author in enumerate(edit_form.authors):
@@ -152,6 +166,12 @@ def edit(mod_id):
         edit_form.authors[i].author.data = author.perma_profile_url
     edit_form.equip_regions.data = [equip_region for equip_region in mod.equip_regions]
     edit_form.bodygroups.data = [bodygroup for bodygroup in mod.bodygroups]
+    edit_form.tags.data = [tag for tag in mod.tags]
+    edit_form.package_format.data = mod.package_format
+    edit_form.visibility.data = mod.visibility
+    if new_item:
+        edit_form.visibility.data = "Pu"
+        edit_form.publish.label.text += " and Publish!"
 
     classes_array = json.dumps(classes)
 

@@ -17,6 +17,7 @@
         {{ form_field(edit_form.pretty_name) }}
         {{ form_field(edit_form.workshop_id, placeholder="Paste a link to the item on the Steam Workshop.") }}
         {{ form_field(edit_form.description, rows=5) }}
+        {{ form_field(edit_form.tags) }}
         <div class="form-row form-authors">
             {{ edit_form.authors.label }}
             <div class="input">
@@ -36,6 +37,7 @@
         {{ form_field(edit_form.bodygroups) }}
         <div class="form-row offset" id="item-count">The current settings return <span>{{ count | default(0) }}</span> compatible items.</div>
         {{ form_field(edit_form.package_format) }}
+        {{ form_field(edit_form.visibility) }}
         <div class="form-row offset">{{ edit_form.publish(class="input-default") }}</div>
     </form>
     <a href="{{ url_for('mods.page', mod_id=mod.id) }}">Return to the '{{ mod.pretty_name }}' page</a>

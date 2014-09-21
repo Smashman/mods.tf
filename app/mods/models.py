@@ -110,6 +110,22 @@ mod_equipregion = db.Table(
 )
 
 
+class Tag(db.Model):
+    __tablename__ = "tags"
+    id = db.Column(db.String(64), primary_key=True)
+    bg_num = db.Column(db.Integer)
+    css = db.Column(db.Boolean)
+
+    def __repr__(self):
+        return self.id.capitalize()
+
+mod_tag = db.Table(
+    "mod_tag",
+    db.Column('mod_id', db.Integer, db.ForeignKey('mods.id')),
+    db.Column('tag', db.String(64), db.ForeignKey('tags.id'))
+)
+
+
 class Mod(db.Model):
     __tablename__ = "mods"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -120,12 +136,11 @@ class Mod(db.Model):
     workshop_id = db.Column(db.Integer)
     app = db.Column(db.Integer, default=440)
     package_format = db.Column(db.Enum('VPK', 'ZIP', name='package_types'), default='VPK')
-    license = db.Column(db.String(16))  # Ought to be Enum.
     manifest_steamid = db.Column(db.Integer)
     item_slot = db.Column(db.String(64))
     image_inventory = db.Column(db.String(256))
     uploaded = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    visibility = db.Column(db.Enum('H', 'Pu', 'Pr', name='visibility_types'), default='H')  # Hidden, Public, Private
+    visibility = db.Column(db.Enum('H', 'Pu', 'Pr', name='visibility_types'), default='H')  # Hidden, Public, Unlisted
     completed = db.Column(db.Boolean, default=False, nullable=False)
     enabled = db.Column(db.Boolean, default=True)
 
@@ -139,6 +154,9 @@ class Mod(db.Model):
     bodygroups = db.relationship('TF2BodyGroup', secondary=mod_bodygroup, backref=db.backref('mod',
                                                                                              lazy="dynamic"),
                                  lazy="subquery")
+    tags = db.relationship('Tag', secondary=mod_tag, backref=db.backref('mod',
+                                                                        lazy="dynamic"),
+                           lazy="subquery")
     class_model = db.relationship('ModClassModel', backref=db.backref('mod'),
                                   collection_class=attribute_mapped_collection('class_name'),
                                   lazy="subquery", cascade='all')

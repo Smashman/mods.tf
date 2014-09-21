@@ -25,9 +25,10 @@ class EditMod(Form):
                                 description="You can use Markdown to format your description; "
                                             "<a target=\"_blank\" "
                                             "href=\"http://daringfireball.net/projects/markdown/syntax\">syntax</a>.")
+    tags = QuerySelectMultipleField("Tags:")
     authors = FieldList(FormField(AuthorField), min_entries=5)
     package_format = SelectField("Package format:", validators=[Required()])
-    #license = SelectField("License:")
     equip_regions = QuerySelectMultipleField("Equip regions:", validators=[Required()])
     bodygroups = QuerySelectMultipleField("Bodygroups:")
+    visibility = SelectField("Visibility:", validators=[Required()])
     publish = SubmitField("Save")

@@ -62,11 +62,19 @@
                 </div>
             {%- endif -%}
             <div class="equip_regions">
-                <span class="mod-stat-title">Equip region: </span>
+                <span class="mod-stat-title">Equip regions: </span>
                 {%- for equip_region in mod.equip_regions -%}
                     <a href="{{ url_for('.search', equip_region=equip_region.equip_region) }}">{{ equip_region }}</a>{{ ", " if not loop.last }}
                 {%- endfor -%}
             </div>
+            {%- if mod.tags | length > 0 -%}
+            <div class="equip_regions">
+                <span class="mod-stat-title">Tags: </span>
+                {%- for tag in mod.tags -%}
+                    <a href="{{ url_for('.tag', tag_id=tag.id) }}">{{ tag }}</a>{{ ", " if not loop.last }}
+                {%- endfor -%}
+            </div>
+            {%- endif -%}
             <div>
                 <span class="mod-stat-title">Uploaded: </span>
                 <span>{{ mod.uploaded | datetime_to_datestring }}</span>

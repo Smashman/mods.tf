@@ -21,4 +21,5 @@ $(function() {
         call_count(search_data);
     };
     multipleSelect_three(true, get_count);
+    $("#tags").multipleSelect({selectAll: false, placeholder: "No tags selected", allSelected: false});
 });
