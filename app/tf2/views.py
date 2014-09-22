@@ -2,7 +2,7 @@ from flask import url_for, Response, abort, Blueprint, request, render_template
 from models import TF2Item, TF2ClassModel, TF2BodyGroup, TF2EquipRegion
 from ..mods.models import Mod, PackageDownload, ModPackage
 from flask.ext.login import login_required
-from sqlalchemy import func
+from sqlalchemy import func, or_
 import json
 from .. import db
 from sqlalchemy import desc
@@ -37,7 +37,7 @@ def item_search(classes=None, bodygroups=None, equip_regions=None, item_name=Non
     if equip_regions:
         for equip_region in equip_regions:
             if equip_region != "0":
-                items_query = items_query.filter(TF2Item.equip_regions.any(TF2EquipRegion.equip_region == equip_region))
+                items_query = items_query.filter(TF2Item.equip_regions.any(or_(*[TF2EquipRegion.equip_region == equip_region for equip_region in equip_regions])))
     return items_query
 
 

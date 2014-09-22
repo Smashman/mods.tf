@@ -27,6 +27,7 @@ class AdminIndex(Auth, AdminIndexView):
             ("users", User.query.filter_by(enabled=True).count(),),
             ("downloads", PackageDownload.query.count()),
             ("mods", Mod.query.filter_by(visibility="Pu").count(),),
+            ("unlisted mods", Mod.query.filter_by(visibility="Pr").count(),),
             ("hidden mods", Mod.query.filter_by(visibility="H").count(),),
             ("valid packages", ModPackage.query.filter(ModPackage.expire_date > datetime.datetime.utcnow()).count(),),
             ("expired packages - not deleted", ModPackage.query.filter(ModPackage.expire_date < datetime.datetime.utcnow()).filter(ModPackage.deleted == False).count(),)
@@ -90,7 +91,7 @@ class BigDownloaders(Auth, BaseView):
 class SharedZips(Auth, BaseView):
     @expose('/')
     def index(self):
-        """ Renders a list of mods who do not have the manifest_steam_id within mod_authors. """
+        """ Renders a list of mods which do not have the manifest_steamid within mod_authors. """
 
         mod_authors_sq = db.session.query(ModAuthor.user_id).filter(ModAuthor.mod_id == Mod.id).subquery
         shared_zip_mods = Mod.query.filter(Mod.manifest_steamid.notin_(mod_authors_sq()))
@@ -100,6 +101,29 @@ class SharedZips(Auth, BaseView):
             shared_zip_mods=shared_zip_mods
         )
 
+
+class ModLists(Auth, BaseView):
+    @staticmethod
+    def mod_query(visibility=None):
+        rows = Mod.query
+        if visibility:
+            rows = rows.filter_by(visibility=visibility)
+        return rows.all()
+
+    @expose('/')
+    def index(self):
+        """ Renders a list of mods with non-standard visibilities. """
+
+        return self.render(
+            'admin/mod_lists.html',
+            unlisted=self.mod_query("Pr"),
+            hidden=self.mod_query("H")
+        )
+
+
 admin = Admin(name="mods.tf", index_view=AdminIndex())
+
 admin.add_view(BigDownloaders(name="Big downloaders", category="Reports"))
 admin.add_view(SharedZips(name="Shared zips", category="Reports"))
+
+admin.add_view(ModLists(name="Mod lists"))

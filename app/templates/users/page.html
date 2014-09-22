@@ -17,6 +17,14 @@
             {%- endfor -%}
         </ul>
     {%- endif -%}
+    {%- if unlisted_mods.items | length > 0 -%}
+        Unlisted Mods
+        <ul>
+            {%- for mod in unlisted_mods.items -%}
+                <li><a href="{{ url_for('mods.page',mod_id=mod.id) }}">{{ mod.pretty_name }}</a></li>
+            {%- endfor -%}
+        </ul>
+    {%- endif -%}
     {%- if hidden_mods.items | length > 0 -%}
         Hidden Mods
         <ul>

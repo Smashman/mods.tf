@@ -1,0 +1,39 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#unlisted" data-toggle="tab">Unlisted ({{ unlisted | length }})</a></li>
+        <li><a href="#hidden" data-toggle="tab">Hidden ({{ hidden | length }})</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        {%- for key, data in
+        [
+            ("unlisted", unlisted),
+            ("hidden", hidden)
+        ]
+        -%}
+            <div class="tab-pane {{ "active" if loop.index == 1 }}" id="{{ key }}">
+                <h2>{{ key| capitalize }}</h2>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Mod</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {%- for mod in data -%}
+                        <tr>
+                            <td><a href="{{ url_for("mods.page", mod_id=mod.id) }}">{{ mod.pretty_name }}</a></td>
+                        </tr>
+                    {%- endfor -%}
+                    </tbody>
+                </table>
+            </div>
+        {%- endfor -%}
+    </div>
+{% endblock %}
