@@ -32,12 +32,9 @@ def item_search(classes=None, bodygroups=None, equip_regions=None, item_name=Non
         return
     if bodygroups:
         for bodygroup in bodygroups:
-            if bodygroup != "0":
-                items_query = items_query.filter(TF2Item.bodygroups.any(TF2BodyGroup.bodygroup == bodygroup))
+            items_query = items_query.filter(TF2Item.bodygroups.any(TF2BodyGroup.bodygroup == bodygroup))
     if equip_regions:
-        for equip_region in equip_regions:
-            if equip_region != "0":
-                items_query = items_query.filter(TF2Item.equip_regions.any(or_(*[TF2EquipRegion.equip_region == equip_region for equip_region in equip_regions])))
+        items_query = items_query.filter(TF2Item.equip_regions.any(or_(*[TF2EquipRegion.equip_region == equip_region for equip_region in equip_regions])))
     return items_query
 
 
