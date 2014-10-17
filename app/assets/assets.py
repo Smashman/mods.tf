@@ -3,23 +3,37 @@ from .. import app
 from os.path import abspath, join
 
 bundles = {
+
+    # TEAM FORTRESS 2 THEMES
     'tf2_css': Bundle(
-        'sass/tf2.sass',
+        'sass/main.sass',
         depends='sass/*.sass',
         filters='sass',
         output='../static/css/tf2.css'
     ),
+    'tf2_halloween_css': Bundle(
+        'sass/halloween.sass',
+        depends='sass/*.sass',
+        filters='sass',
+        output='../static/css/tf2_halloween.css'
+    ),
+
+    # DOTA 2 THEMES
     'dota_css': Bundle(
         'sass/dota.sass',
         depends='sass/*.sass',
         filters='sass',
         output='../static/css/dota.css'
     ),
+
+    # OTHER
     'multiple-select': Bundle(
         'lib/multiple-select/multiple-select.css',
         #filters='cssmin',
         output='../static/css/multiple-select.css'
     ),
+
+    # JAVASCRIPT
     'main_js': Bundle(
         'lib/multiple-select/jquery.multiple.select.js',
         'js/main.js',

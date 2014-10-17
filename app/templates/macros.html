@@ -70,3 +70,15 @@
         </div>
     {%- endif -%}
 {%- endmacro -%}
+{%- macro mod_wall(mods) -%}
+{% from 'mods/macros.html' import mod_block %}
+    <div class="mod_wall cf">
+    {% for mod in mods %}
+        {% set large = False %}
+        {%- if loop.first -%}
+            {% set large = True %}
+        {%- endif -%}
+        {{ mod_block(mod, large) }}
+    {% endfor %}
+    </div>
+{%- endmacro -%}

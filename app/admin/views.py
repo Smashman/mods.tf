@@ -1,6 +1,7 @@
 from flask.ext.login import current_user
 from flask.ext.admin import Admin, expose, AdminIndexView, BaseView
 from flask.ext.admin.contrib.sqla import ModelView
+from flask import url_for
 from jinja2 import Markup
 from app import db
 from ..users.models import User
@@ -24,13 +25,15 @@ class AdminIndex(Auth, AdminIndexView):
         from collections import OrderedDict
         import datetime
         stats = OrderedDict([
-            ("users", User.query.filter_by(enabled=True).count(),),
-            ("downloads", PackageDownload.query.count()),
-            ("mods", Mod.query.filter_by(visibility="Pu").count(),),
-            ("unlisted mods", Mod.query.filter_by(visibility="Pr").count(),),
-            ("hidden mods", Mod.query.filter_by(visibility="H").count(),),
-            ("valid packages", ModPackage.query.filter(ModPackage.expire_date > datetime.datetime.utcnow()).count(),),
-            ("expired packages - not deleted", ModPackage.query.filter(ModPackage.expire_date < datetime.datetime.utcnow()).filter(ModPackage.deleted == False).count(),)
+            ("users", {"stat": User.query.filter_by(enabled=True).count()}),
+            ("downloads", {"stat": PackageDownload.query.count()}),
+            ("mods", {"stat": Mod.query.filter_by(visibility="Pu").count()}),
+            ("unlisted mods", {"stat": Mod.query.filter_by(visibility="Pr").count(),
+                               "url": url_for('modlists.index', _anchor='unlisted')}),
+            ("hidden mods", {"stat": Mod.query.filter_by(visibility="H").count(),
+                             "url": url_for('modlists.index', _anchor='hidden')}),
+            ("valid packages", {"stat": ModPackage.query.filter(ModPackage.expire_date > datetime.datetime.utcnow()).count()}),
+            ("expired packages - not deleted", {"stat": ModPackage.query.filter(ModPackage.expire_date < datetime.datetime.utcnow()).filter(ModPackage.deleted == False).count()})
         ])
         return self.render('admin/index.html', stats=stats)
 

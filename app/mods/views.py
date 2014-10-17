@@ -33,6 +33,12 @@ def all_mods(page=1):
 @mods.route('/tag/<string:tag_id>/')
 def tag(tag_id=None):
     tag_info = Tag.query.get(tag_id)
+    #if not tag_info:
+        #return abort(404)
+    #mods = enabled_mods().filter(Mod.tags.any(Tag.id == tag_id))
+    #return render_template('mods/tag.html', mods=mods, tag_info=tag_info, bg_num=tag_info.bg_num,
+                           #tag_theme=tag_info.id if tag_info.css else None,
+                           #title=tag_info.id.capitalize() + " tagged mods")
     return render_template('construction.html', bg_num=tag_info.bg_num,
                            title=tag_info.id.capitalize() + " tagged mods - Under construction")
 
@@ -134,6 +140,7 @@ def edit(mod_id):
         for i, add_author in authors_to_add:
             if add_author:
                 user_author_record = new_author(add_author)
+
                 if isinstance(user_author_record, str):
                     edit_form.authors.entries[i].author.errors.append(user_author_record)
                     valid = False
@@ -200,14 +207,14 @@ def edit(mod_id):
 def search(page=1):
     #equip_region = request.args.get('equip_region')
     #bodygroup = request.args.get('bodygroup')
-    #mods = enabled_mods()
+    #_mods = enabled_mods()
     #if equip_region:
-        #mods = mods.filter(Mod.equip_regions.any(TF2EquipRegion.equip_region == equip_region))
+        #_mods = _mods.filter(Mod.equip_regions.any(TF2EquipRegion.equip_region == equip_region))
     #if bodygroup:
-        #mods = mods.filter(Mod.bodygroups.any(TF2BodyGroup.bodygroup == bodygroup))
-    #mods = mods.paginate(page, 30)
-    #return render_template('mods/search.html', mods=mods, title="Search")
-    return render_template('construction.html', mods=mods, title="Under construction")
+        #_mods = _mods.filter(Mod.bodygroups.any(TF2BodyGroup.bodygroup == bodygroup))
+    #_mods = _mods.paginate(page, 30)
+    #return render_template('mods/search.html', mods=_mods, title="Search")
+    return render_template('construction.html', title="Under construction")
 
 
 @mods.route('/upload/', methods=['GET', 'POST'])
@@ -249,9 +256,12 @@ def image(mod_id, type):
     mod = Mod.query.get_or_404(mod_id)
     check_mod_permissions(mod)
     image = ModImage.query.filter_by(mod_id=mod_id, type=type).first()
-    return send_from_directory(os.path.abspath(os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'], str(mod_id))),
-                               image.filename,
-                               as_attachment=True)
+    if image:
+        return send_from_directory(os.path.abspath(os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'], str(mod_id))),
+                                   image.filename,
+                                   as_attachment=True)
+    else:
+        abort(404)
 
 
 @mods.route('/<int:mod_id>/download/<int:defindex>/')
@@ -268,13 +278,11 @@ def package(mod_id, defindex):
             .filter(ModPackage.mod_id == mod_id)
         if downloads_by_mod.count() >= 15:
             flash(u"Download limit for {} reached. Please try again in 24 hours.".format(mod.pretty_name), "danger")
-            sentry.captureMessage("User reached download limit for mod.")
             return redirect(url_for("mods.page", mod_id=mod_id))
         downloads_by_replacement = downloads_by_mod.filter(ModPackage.defindex == defindex)
         if downloads_by_replacement.count() >= 2:
             flash(u"Download limit for {} replacement reached. Please try again in 24 hours."
                   .format(replacement.item_name), "danger")
-            sentry.captureMessage("User reached download limit for mod replacement. Package ID: {}".format(mod_package.id))
             return redirect(url_for("mods.page", mod_id=mod_id))
     if not mod_package:
         filename = package_mod_to_item(mod, replacement)

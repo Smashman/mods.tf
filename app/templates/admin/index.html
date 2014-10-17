@@ -9,10 +9,11 @@
             </tr>
         </thead>
         <tbody>
-            {% for stat_name, stat in stats.items() %}
+            {% for stat_name, stats in stats.items() %}
+                {%- set stat_url = stats.get('url') -%}
                 <tr>
-                    <td>{{ stat_name | capitalize }}</td>
-                    <td>{{ stat | format_thousands }}</td>
+                    <td>{{ "<a href='{}'>".format(stat_url) | safe if stat_url }}{{ stat_name | capitalize }}{{ "</a>" | safe if stat_url }}</td>
+                    <td>{{ stats.get('stat') | format_thousands }}</td>
                 </tr>
             {% endfor %}
         </tbody>

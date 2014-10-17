@@ -6,6 +6,10 @@
   position: relative
   z-index: 1
 
+  @for $bg_num from 0 to $mods_tf-number_of_backgrounds
+    &.bg_#{$bg_num}
+      background: url('../images/header/#{$mods_tf-game}/#{$mods_tf-bg_word}_#{$bg_num}.png') no-repeat center
+
   &.minimised
     padding: 5px 60px
 

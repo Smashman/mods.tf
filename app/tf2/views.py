@@ -1,8 +1,8 @@
 from flask import url_for, Response, abort, Blueprint, request, render_template
-from models import TF2Item, TF2ClassModel, TF2BodyGroup, TF2EquipRegion
+from models import TF2Item, TF2ClassModel, TF2BodyGroup, TF2EquipRegion, schema_bodygroup
 from ..mods.models import Mod, PackageDownload, ModPackage
 from flask.ext.login import login_required
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, and_
 import json
 from .. import db
 from sqlalchemy import desc
@@ -30,11 +30,14 @@ def item_search(classes=None, bodygroups=None, equip_regions=None, item_name=Non
             items_query = items_query.filter(sq.c.class_count == 1)
     else:
         return
-    if bodygroups:
-        for bodygroup in bodygroups:
-            items_query = items_query.filter(TF2Item.bodygroups.any(TF2BodyGroup.bodygroup == bodygroup))
     if equip_regions:
         items_query = items_query.filter(TF2Item.equip_regions.any(or_(*[TF2EquipRegion.equip_region == equip_region for equip_region in equip_regions])))
+    if bodygroups:
+        items_query = items_query.filter(TF2Item.bodygroups.any(or_(*[TF2BodyGroup.bodygroup == bodygroup for bodygroup in bodygroups])))
+        bodygroup_count = db.session.query(schema_bodygroup.c.defindex, func.count('*').label("bg_count")).group_by(schema_bodygroup.c.defindex).subquery()
+        items_query = items_query.join(bodygroup_count, TF2Item.defindex == bodygroup_count.c.defindex).filter(bodygroup_count.c.bg_count == len(bodygroups))
+    else:
+        items_query = items_query.filter(TF2Item.bodygroups == None)
     return items_query
 
 

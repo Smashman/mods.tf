@@ -9,6 +9,7 @@ from ..tf2.models import TF2Item, TF2Class, TF2BodyGroup, TF2ClassModel, TF2Equi
 from ..tf2.functions import class_array
 from ..mods.models import ModPackage, ModAuthor
 from ..utils.utils import list_from_vdf_dict
+from ..functions import combine_dicts
 from flask import current_app
 
 
@@ -42,7 +43,6 @@ def update_tf2_items():
                 items_game_url = schema.get('items_game_url')
                 items_game = steam.vdf.load(urllib2.urlopen(items_game_url)).get('items_game')
             except HTTPError:
-                print "HTTPError"
                 db.session.rollback()
                 continue
             items = schema.get('items')
@@ -64,12 +64,11 @@ def update_tf2_items():
                     item_slot = item.get('item_slot')
                     image_url = item.get('image_url')
                     image_url_large = item.get('image_url_large')
-
                     items_game_info = items_game['items'].get(str(defindex))
                     if 'prefab' in items_game_info:
                         for prefab in items_game_info['prefab'].split(" "):
                             prefab = items_game['prefabs'][prefab]
-                            items_game_info.update(prefab)
+                            items_game_info = combine_dicts(items_game_info, prefab)
 
                     image_inventory = items_game_info.get('image_inventory')
 
@@ -77,6 +76,10 @@ def update_tf2_items():
                         existing_item.equip_regions = []
                     equip_regions = []
                     equip_region = items_game_info.get('equip_region')
+                    if equip_region:
+                        if isinstance(equip_region, dict) is True:
+                            equip_regions = equip_region
+                            equip_region = []
                     if equip_region:
                         equip_regions.append(equip_region)
                     else:
@@ -87,15 +90,6 @@ def update_tf2_items():
                             for amend_region, region_defindexes in amend_equip_regions.items():
                                 if defindex in region_defindexes:
                                     equip_regions.append(amend_region)
-
-                    visuals = items_game_info.get('visuals')
-                    if existing_item:
-                        existing_item.bodygroups = []
-                    bodygroups = []
-                    if visuals:
-                        bodygroups_dict = visuals.get('player_bodygroups')
-                        if bodygroups_dict:
-                            bodygroups += list_from_vdf_dict(bodygroups_dict)
 
                     used_by_classes = item.get('used_by_classes')
                     model_player = items_game_info.get('model_player')
@@ -122,6 +116,19 @@ def update_tf2_items():
                                 continue
                             class_and_model = {tf2_class: class_model}
                             class_models.update(class_and_model)
+
+                    visuals = items_game_info.get('visuals')
+                    if existing_item:
+                        existing_item.bodygroups = []
+                    bodygroups = []
+                    if visuals:
+                        bodygroups_dict = visuals.get('player_bodygroups')
+                        if bodygroups_dict:
+                            bodygroups += list_from_vdf_dict(bodygroups_dict)
+                        if len(used_by_classes) is 1 and 'hat' in bodygroups:
+                            if used_by_classes[0] in ('Pyro', 'Demoman', 'Heavy', 'Medic', 'Spy'):
+                                bodygroups.remove('hat')
+
                     if existing_item:
                         print u"Updating item: {} ({})".format(item_name, defindex)
                         existing_item.defindex = defindex
@@ -177,8 +184,9 @@ def delete_expired_packages():
 
 
 def update_authors_steam_info():
-    authors = ModAuthor.query.group_by(ModAuthor.user_id).all()
+    authors = ModAuthor.query.group_by(ModAuthor.user_id).order_by(ModAuthor.user_id).all()
     print "Updating {} authors.".format(len(authors))
-    for author in authors:
-        author.user.fetch_steam_info()
+    profile_list = sorted(steam.user.profile_batch([author.user.steam_id for author in authors]), key=lambda x: x.id64)
+    for i, profile in enumerate(profile_list):
+        authors[i].user.update_steam_info(profile)
     db.session.commit()

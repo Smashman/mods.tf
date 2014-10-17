@@ -1,5 +1,5 @@
 from app import db, steam
-from steam.api import HTTPError
+from steam.api import HTTPError, HTTPTimeoutError
 from flask.ext.login import AnonymousUserMixin
 import datetime
 
@@ -70,7 +70,6 @@ class User(db.Model):
         return True if self.upload_credits > 0 or self.upload_credits == -1 or self.is_admin() else False
 
     def update_last_seen(self):
-        # Called every page load for current_user
         now = datetime.datetime.utcnow()
         if not self.next_steam_check:
             self.next_steam_check = datetime.datetime.utcnow()
@@ -82,6 +81,9 @@ class User(db.Model):
 
     def fetch_steam_info(self):
         steam_info = steam.user.profile(self.steam_id)
+        self.update_steam_info(steam_info)
+
+    def update_steam_info(self, steam_info):
         try:
             self.name = steam_info.persona
             self.profile_url = steam_info.profile_url
@@ -89,7 +91,7 @@ class User(db.Model):
             self.avatar_medium = steam_info.avatar_medium
             self.avatar_large = steam_info.avatar_large
             self.next_steam_check = datetime.datetime.utcnow() + datetime.timedelta(hours=4)
-        except HTTPError:
+        except (HTTPError, HTTPTimeoutError):
             self.next_steam_check = datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
 
     @property

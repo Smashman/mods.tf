@@ -6,6 +6,7 @@ from flask.ext.login import current_user
 from ..models import get_or_create
 from ..users.models import User
 from steam.user import VanityError, ProfileNotFoundError
+from steam.api import HTTPError, HTTPTimeoutError
 from ..mods.models import PackageDownload, ModPackage, Mod
 from ..tf2.views import item_search
 
@@ -33,6 +34,8 @@ def new_author(profile_url):
                 steam_id = steam.user.vanity_url(profile_url).id64
             except (ProfileNotFoundError, VanityError):
                 return "User not found."
+            except (HTTPError, HTTPTimeoutError):
+                return "Steam error. Please try again later."
         elif "profiles" in split_path[0]:
             steam_id = split_path[1]
 

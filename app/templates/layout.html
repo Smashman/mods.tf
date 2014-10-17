@@ -4,8 +4,15 @@
     <meta charset="UTF-8">
     <title>{{ title }}{{ " - " if title }}mods.{{ "do" if config.GAME == "dota" else "tf" }}</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    {%- if tag_theme -%}
+        {%- set style_name = config.GAME + "_" + tag_theme -%}
+    {%- elif config.THEME -%}
+        {%- set style_name = config.GAME + "_" + config.THEME -%}
+    {%- else -%}
+        {%- set style_name = config.GAME -%}
+    {%- endif -%}
     {%- block styles -%}
-        {% assets config.GAME + "_css" %}
+        {% assets style_name + "_css" %}
             <link href="{{ ASSET_URL }}" rel="stylesheet">
         {% endassets %}
     {%- endblock -%}

@@ -1,0 +1,6 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div>{{ tag_info.id | capitalize }} tagged mods</div>
+    {%- from 'macros.html' import mod_wall -%}
+    {{ mod_wall(mods) }}
+{% endblock %}
