@@ -6,6 +6,7 @@
     <ul class="nav nav-tabs">
         <li class="active"><a href="#unlisted" data-toggle="tab">Unlisted ({{ unlisted | length }})</a></li>
         <li><a href="#hidden" data-toggle="tab">Hidden ({{ hidden | length }})</a></li>
+        <li><a href="#uncompleted" data-toggle="tab">Uncompleted ({{ uncompleted | length }})</a></li>
     </ul>
 
     <!-- Tab panes -->
@@ -13,7 +14,8 @@
         {%- for key, data in
         [
             ("unlisted", unlisted),
-            ("hidden", hidden)
+            ("hidden", hidden),
+            ("uncompleted", uncompleted)
         ]
         -%}
             <div class="tab-pane {{ "active" if loop.index == 1 }}" id="{{ key }}">
@@ -28,7 +30,7 @@
                     <tbody>
                     {%- for mod in data -%}
                         <tr>
-                            <td><a href="{{ url_for("mods.page", mod_id=mod.id) }}">{{ mod.pretty_name }}</a></td>
+                            <td><a href="{{ url_for("mods.page", mod_id=mod.id) }}">{{ mod.pretty_name }}</a> ({% if mod.completed %}<a href="{{ url_for("mods.edit", mod_id=mod.id) }}">Edit</a> / {% endif %}<a href="{{ url_for("modview.edit_view", id=mod.id) }}">Model</a>)</td>
                         </tr>
                     {%- endfor -%}
                     </tbody>

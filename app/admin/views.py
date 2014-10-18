@@ -32,6 +32,8 @@ class AdminIndex(Auth, AdminIndexView):
                                "url": url_for('modlists.index', _anchor='unlisted')}),
             ("hidden mods", {"stat": Mod.query.filter_by(visibility="H").count(),
                              "url": url_for('modlists.index', _anchor='hidden')}),
+            ("uncompleted mods", {"stat": Mod.query.filter_by(completed=False).count(),
+                                  "url": url_for('modlists.index', _anchor='uncompleted')}),
             ("valid packages", {"stat": ModPackage.query.filter(ModPackage.expire_date > datetime.datetime.utcnow()).count()}),
             ("expired packages - not deleted", {"stat": ModPackage.query.filter(ModPackage.expire_date < datetime.datetime.utcnow()).filter(ModPackage.deleted == False).count()})
         ])
@@ -65,6 +67,19 @@ class UserView(Auth, ModelView):
     }
 
 
+class ModView(Auth, ModelView):
+    column_display_pk = True
+    column_exclude_list = ['avatar_small', 'avatar_large']
+    form_excluded_columns = ['author', 'class_model', 'package']
+    column_searchable_list = ['name']
+    form_ajax_refs = {
+        'authors': {
+            'fields': (User.account_id,),
+            'page_size': 10
+        }
+    }
+
+
 class BigDownloaders(Auth, BaseView):
     @staticmethod
     def user_download_count(hours=None):
@@ -86,7 +101,7 @@ class BigDownloaders(Auth, BaseView):
             'admin/big_downloaders.html',
             daily_downloaders=self.user_download_count(24),
             weekly_downloaders=self.user_download_count(24 * 7),
-            monthly_downloaders=self.user_download_count(24 * 7 * 30),
+            monthly_downloaders=self.user_download_count(24 * 31),
             all_time_downloaders=self.user_download_count()
         )
 
@@ -107,10 +122,11 @@ class SharedZips(Auth, BaseView):
 
 class ModLists(Auth, BaseView):
     @staticmethod
-    def mod_query(visibility=None):
+    def mod_query(visibility=None, completed=True):
         rows = Mod.query
         if visibility:
             rows = rows.filter_by(visibility=visibility)
+        rows = rows.filter_by(completed=completed)
         return rows.all()
 
     @expose('/')
@@ -120,13 +136,17 @@ class ModLists(Auth, BaseView):
         return self.render(
             'admin/mod_lists.html',
             unlisted=self.mod_query("Pr"),
-            hidden=self.mod_query("H")
+            hidden=self.mod_query("H"),
+            uncompleted=self.mod_query(completed=False)
         )
 
 
 admin = Admin(name="mods.tf", index_view=AdminIndex())
 
+admin.add_view(ModView(Mod, db.session, category="Models"))
+admin.add_view(UserView(User, db.session, category="Models"))
+
 admin.add_view(BigDownloaders(name="Big downloaders", category="Reports"))
 admin.add_view(SharedZips(name="Shared zips", category="Reports"))
 
-admin.add_view(ModLists(name="Mod lists"))
+admin.add_view(ModLists(name="Mod lists", category="Lists"))

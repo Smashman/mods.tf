@@ -35,7 +35,7 @@
                     <tbody>
                     {%- for row, count in data -%}
                         <tr>
-                            <td><a href="{{ url_for("users.user_page", user_id=row.user.account_id) }}">{{ row.user.name }}</a></td>
+                            <td><a href="{{ url_for("users.user_page", user_id=row.user.account_id) }}">{{ row.user.name }}</a> (<a href="{{ url_for("userview.edit_view", id=row.user.account_id) }}">Edit</a>)</td>
                             <td>{{ count }}</td>
                         </tr>
                     {%- endfor -%}

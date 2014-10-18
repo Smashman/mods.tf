@@ -43,10 +43,7 @@ from .mods.views import mods as mods_blueprint
 # Admin
 from .users.models import User
 from .mods.models import ModAuthor
-from .admin.views import admin, AdminModelView, UserView
-
-admin.add_view(UserView(User, db.session))
-admin.add_view(AdminModelView(ModAuthor, db.session))
+from .admin.views import admin
 
 admin.init_app(app)
 
