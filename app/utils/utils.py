@@ -150,14 +150,15 @@ def extract_and_image(zip_in, db_record):
             model_player_per_class = items_game_info.get('model_player_per_class')
             for tf2_class in used_by_classes:
                 tf2_class = tf2_class.lower()
-                if model_player_per_class:
-                    class_model = model_player_per_class.get(tf2_class)
-                elif model_player:
-                    class_model = model_player
-                else:
-                    continue
-                class_and_model = {tf2_class: class_model}
-                class_models.update(class_and_model)
+                if tf2_class.title() in all_classes:
+                    if model_player_per_class:
+                        class_model = model_player_per_class.get(tf2_class)
+                    elif model_player:
+                        class_model = model_player
+                    else:
+                        continue
+                    class_and_model = {tf2_class: class_model}
+                    class_models.update(class_and_model)
 
         # Update database record
 
@@ -168,10 +169,14 @@ def extract_and_image(zip_in, db_record):
         db_record.image_inventory = items_game_info.get('image_inventory')
         if bodygroups:
             for bodygroup in bodygroups:
-                db_record.bodygroups.append(TF2BodyGroup.query.get(bodygroup))
+                bg_db = TF2BodyGroup.query.get(bodygroup)
+                if bg_db:
+                    db_record.bodygroups.append(bg_db)
         if equip_regions:
             for er in equip_regions:
-                db_record.equip_regions.append(TF2EquipRegion.query.get(er))
+                er_db = TF2EquipRegion.query.get(er)
+                if er_db:
+                    db_record.equip_regions.append(er_db)
         if class_models:
             for class_name, model in class_models.items():
                 db_record.class_model[class_name] = (get_or_create(db.session, ModClassModel, mod_id=mod_id,

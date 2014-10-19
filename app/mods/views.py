@@ -239,6 +239,10 @@ def upload():
         db.session.commit()
         result = extract_and_image(filename, mod_info)
         if result:
+            if len(result.class_model) < 1:
+                result.completed = False
+                flash("Error uploading, please contact an administrator.", "danger")
+                return redirect(url_for('.upload'))
             if current_user.upload_credits != -1:
                 current_user.upload_credits = User.upload_credits - 1
             db.session.add(current_user)
