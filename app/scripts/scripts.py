@@ -127,7 +127,9 @@ def update_tf2_items():
                             bodygroups += list_from_vdf_dict(bodygroups_dict)
                         if len(used_by_classes) is 1 and 'hat' in bodygroups:
                             if used_by_classes[0] in ('Pyro', 'Demoman', 'Heavy', 'Medic', 'Spy'):
-                                bodygroups.remove('hat')
+                                bodygroups.remove('hat')  # These guys don't even have a hat to hide...
+                        if 'disconnected_floating_item' in equip_regions:
+                            bodygroups = []  # Disconnected items don't need to hide anything. What's wrong with you Volvo.
 
                     if existing_item:
                         print u"Updating item: {} ({})".format(item_name, defindex)
