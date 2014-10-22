@@ -1,12 +1,7 @@
-{% from "macros.html" import steam_block %}
+{% from "macros.html" import steam_block, mod_class, pagination %}
 {%- macro mod_block(mod, large) -%}
-    {% if mod.class_model | length > 1 %}
-        {% set mod_class = "multi-class" %}
-    {% else %}
-        {% set mod_class = mod.class_model.itervalues().next().class_name %}
-    {% endif %}
     <a href="{{ url_for('mods.page', mod_id=mod.id) }}" class="mod{{ " large" if large }}">
-        <div class="mod_class {{ mod_class }}" title="{{ mod_class | capitalize }}"></div>
+        {{ mod_class("multi-class" if mod.class_model | length > 1 else mod.class_model.itervalues().next().class_name) }}
         <div class="info">
             <div class="authors">
                 {%- for author in mod.authors -%}
@@ -40,4 +35,45 @@
     {%- else -%}
         Unknown
     {%- endif -%}
+{%- endmacro -%}
+{%- macro mod_table(mods, endpoint, endpoint_values={}) -%}
+    {%- if mods.items | count > 0 -%}
+    {{ pagination(mods, endpoint, endpoint_values) }}
+    <table class="all_mod">
+        <thead>
+            <tr>
+                <th>Mod</th>
+                <th>Class</th>
+                <th>Authors</th>
+                <th>Downloads</th>
+                <th>Replacements</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%- for mod in mods.items -%}
+                <tr>
+                    <td><a class="small_item" href="{{ url_for('mods.page', mod_id=mod.id) }}"><div class="backpack_image"><img src="{{ url_for('mods.image', mod_id=mod.id, type=1) }}" /></div> {{ mod.pretty_name }}</a></td>
+                    <td>{{ mod_class("multi-class" if mod.class_model | length > 1 else mod.class_model.itervalues().next().class_name) }}</td>
+                    <td>
+                        <div class="authors cf">
+                            {%- for author in mod.authors -%}
+                                <a class="iconholder" title="{{ author.name }}" href="{{ url_for('users.user_page', user_id=author.account_id) }}">
+                                    <img src="{{ author.avatar_small }}"/>
+                                </a>
+                            {%- endfor -%}
+                        </div>
+                    </td>
+                    <td>{{ mod.downloads | default(0) | format_thousands}}</td>
+                    <td>{{ mod.replacements | default(0) | format_thousands}}+</td>
+                </tr>
+            {%- endfor -%}
+        </tbody>
+    </table>
+    {{ pagination(mods, endpoint, endpoint_values) }}
+    {%- else -%}
+    No items found
+    {%- endif -%}
+{%- endmacro -%}
+{%- macro mod_class(class_name) -%}
+    <div class="mod_class {{ class_name }}" title="{{ class_name | capitalize }}"></div>
 {%- endmacro -%}

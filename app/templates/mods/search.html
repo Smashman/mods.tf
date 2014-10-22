@@ -1,6 +1,27 @@
 {% extends "layout.html" %}
+{%- from 'mods/macros.html' import mod_table -%}
+{% block scripts %}
+    {{ super() }}
+    {% assets "search_js" %}
+        <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endblock %}
 {% block content %}
-    {% for mod in mods.items %}
-        <div><a href="{{ url_for('.page', mod_id=mod.id) }}">{{ mod.pretty_name }}</a></div>
-    {% endfor %}
+    <form id="mod_search" method="GET" action="{{ url_for('mods.search') }}">
+        {{ mod_search.item_name(placeholder="Item name...", class="input-default") }}
+        {{ mod_search.classes(class="input-default") }}
+        {{ mod_search.equip_regions(class="input-default") }}
+        {{ mod_search.bodygroups(class="input-default") }}
+        {{ mod_search.tags(class="input-default") }}
+        {{ mod_search.submit(class="input-default") }}
+    </form>
+    {%- if searched -%}
+        {{ mod_table(mods, endpoint=request.endpoint, endpoint_values=request.args) }}
+    {%- endif -%}
+{% endblock %}
+{% block styles %}
+    {% assets "multiple-select" %}
+        <link href="{{ ASSET_URL }}" rel="stylesheet">
+    {% endassets %}
+    {{ super() }}
 {% endblock %}

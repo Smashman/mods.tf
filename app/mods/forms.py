@@ -32,3 +32,12 @@ class EditMod(Form):
     bodygroups = QuerySelectMultipleField("Bodygroups:")
     visibility = SelectField("Visibility:", validators=[Required()])
     publish = SubmitField("Save")
+
+
+class ModSearch(Form):
+    item_name = TextField('Item name:')
+    classes = SelectMultipleField('Class:')
+    equip_regions = QuerySelectMultipleField('Equip region:')
+    bodygroups = QuerySelectMultipleField('Bodygroup:')
+    tags = QuerySelectMultipleField('Tags:')
+    submit = SubmitField("Submit")

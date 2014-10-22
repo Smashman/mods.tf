@@ -4,3 +4,8 @@ class_array = ["scout", "soldier", "pyro", "demoman", "heavy", "engineer", "snip
 def sort_classes(classes):
     return sorted([(_class.class_name, _class.class_name.capitalize())
                             for key, _class in classes.items()], key=lambda c: class_array.index(c[0]))
+
+
+def sort_classes_search(classes):
+    return sorted([(_class.class_name, _class.class_name.capitalize())
+                            for key, _class in enumerate(classes)], key=lambda c: class_array.index(c[0]))

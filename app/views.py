@@ -10,8 +10,6 @@ def index():
     mods = Mod.query.filter_by(visibility="Pu", enabled=True, completed=True).limit(18).all()
     for mod in mods:
         mod_stats = get_mod_stats(mod)
-        mod.downloads = mod_stats.get("downloads")
-        mod.replacements = mod_stats.get("replacements")
     return render_template('index.html', mods=mods)
 
 

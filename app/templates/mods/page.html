@@ -38,12 +38,6 @@
                 <span class="mod-stat-title">Downloads: </span>
                 <span class="mod-stat">{{ mod_stats.downloads | default(0) | format_thousands}}</span>
             </div>
-            {%- if current_user.is_admin() or current_user in mod.authors -%}
-            <div>
-                <span class="mod-stat-title">Downloads by authors: </span>
-                <span class="mod-stat">{{ mod_stats.author_downloads | default(0) | format_thousands}}</span>
-            </div>
-            {%- endif -%}
             <div>
                 <span class="mod-stat-title">Replacements: </span>
                 <span class="mod-stat">{{ mod_stats.replacements | default(0) | format_thousands }}+</span>
@@ -83,6 +77,10 @@
                 <div id="owner_controls">
                     <div class="mod-stat-title">Owner controls</div>
                     <div><span class="mod-stat-title">Visibility:</span> {{ readable_visibility(mod.visibility) }}</div>
+                    <div>
+                        <span class="mod-stat-title">Downloads by authors: </span>
+                        {{ mod_stats.author_downloads | default(0) | format_thousands}}
+                    </div>
                     <div><a href="{{ url_for(".edit", mod_id=mod.id) }}">Edit mod</a></div>
                 </div>
             {%- endif -%}

@@ -13,7 +13,7 @@ class TF2Class(db.Model):
         self.class_name = class_name
 
     def __repr__(self):
-        return self.full_name or self.class_name.capitalize()
+        return self.class_name.capitalize()
 
 
 class TF2ClassModel(db.Model):
@@ -83,6 +83,7 @@ class TF2Item(db.Model):
     image_url = db.Column(db.String(256))
     image_url_large = db.Column(db.String(256))
     image_inventory = db.Column(db.String(256))
+    inactive = db.Column(db.Boolean, default=False)
 
     # Relationships
     equip_regions = db.relationship('TF2EquipRegion', secondary=schema_equipregion, backref=db.backref('tf2_item',

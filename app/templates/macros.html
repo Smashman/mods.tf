@@ -74,11 +74,7 @@
 {% from 'mods/macros.html' import mod_block %}
     <div class="mod_wall cf">
     {% for mod in mods %}
-        {% set large = False %}
-        {%- if loop.first -%}
-            {% set large = True %}
-        {%- endif -%}
-        {{ mod_block(mod, large) }}
+        {{ mod_block(mod, loop.first) }}
     {% endfor %}
     </div>
 {%- endmacro -%}

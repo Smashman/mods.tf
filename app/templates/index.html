@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
+{%- from 'macros.html' import mod_wall -%}
 {% block content %}
-    {%- from 'macros.html' import mod_wall -%}
     {{ mod_wall(mods) }}
-    <div class="button_block"><a href="{{ url_for('mods.all_mods') }}">View more...</a><a href="{{ url_for('tf2.item_download_counts') }}">Top replaced items...</a></div>
+    <div class="button_block">{%- if mods | length > 9 -%}<a href="{{ url_for('mods.all_mods') }}">View more...</a>{%- endif -%}<a href="{{ url_for('tf2.item_download_counts') }}">Top replaced items...</a></div>
 {% endblock %}

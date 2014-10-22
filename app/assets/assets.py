@@ -49,6 +49,11 @@ bundles = {
         'js/edit.js',
         output='../static/js/edit.js',
         filters='jsmin'
+    ),
+    'search_js': Bundle(
+        'js/search.js',
+        output='../static/js/search.js',
+        filters='jsmin'
     )
 }
 

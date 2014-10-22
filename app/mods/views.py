@@ -1,17 +1,18 @@
 from flask import Blueprint, send_from_directory, abort, render_template, request, flash, redirect, url_for,\
     current_app
-from app import db, workshopzips, sentry
+from app import db, workshopzips
 from flask.ext.uploads import UploadNotAllowed
 from flask.ext.login import current_user, login_required
 from ..utils.utils import extract_and_image, package_mod_to_item
-from ..tf2.models import TF2Item, TF2BodyGroup, TF2EquipRegion
+from ..tf2.models import TF2Item, TF2BodyGroup, TF2EquipRegion, TF2Class
 from ..tf2.views import format_query, item_search
-from ..tf2.functions import sort_classes
+from ..tf2.functions import sort_classes, sort_classes_search
 from ..users.models import User
-from models import Mod, ModPackage, PackageDownload, ModImage, ModAuthor, Tag
-from forms import ItemSearch, EditMod
+from models import Mod, ModPackage, PackageDownload, ModImage, ModAuthor, Tag, ModClassModel
+from forms import ItemSearch, EditMod, ModSearch
 from functions import check_mod_permissions, check_edit_permissions, new_author, get_mod_stats, enabled_mods
 from ..functions import remove_duplicates
+from sqlalchemy import func, or_, and_
 import datetime
 import os
 import json
@@ -22,25 +23,20 @@ mods = Blueprint("mods", __name__, url_prefix="/mods")
 @mods.route('/')
 @mods.route('/page/<int:page>/')
 def all_mods(page=1):
-    _mods = enabled_mods().paginate(page, 20)
-    for mod in _mods.items:
-        mod_stats = get_mod_stats(mod)
-        mod.downloads = mod_stats.get("downloads")
-        mod.replacements = mod_stats.get("replacements")
-    return render_template('mods/all_mods.html', mods=_mods, title="All mods")
+    return search(page=page, all_mods=True)
 
 
 @mods.route('/tag/<string:tag_id>/')
 def tag(tag_id=None):
     tag_info = Tag.query.get(tag_id)
-    #if not tag_info:
-        #return abort(404)
-    #mods = enabled_mods().filter(Mod.tags.any(Tag.id == tag_id))
-    #return render_template('mods/tag.html', mods=mods, tag_info=tag_info, bg_num=tag_info.bg_num,
-                           #tag_theme=tag_info.id if tag_info.css else None,
-                           #title=tag_info.id.capitalize() + " tagged mods")
-    return render_template('construction.html', bg_num=tag_info.bg_num,
-                           title=tag_info.id.capitalize() + " tagged mods - Under construction")
+    if not tag_info:
+        return abort(404)
+    mods = enabled_mods().filter(Mod.tags.any(Tag.id == tag_id)).limit(18).all()
+    return render_template('mods/tag.html', mods=mods, tag_info=tag_info, bg_num=tag_info.bg_num,
+                           tag_theme=tag_info.id if tag_info.css else None,
+                           title=tag_info.id.capitalize() + " tagged mods")
+    #return render_template('construction.html', bg_num=tag_info.bg_num,
+                           #title=tag_info.id.capitalize() + " tagged mods - Under construction")
 
 
 @mods.route('/<int:mod_id>/')
@@ -48,7 +44,7 @@ def tag(tag_id=None):
 def page(mod_id, page=1):
     mod = Mod.query.get_or_404(mod_id)
     check_mod_permissions(mod)
-    mod_stats = get_mod_stats(mod)
+    mod_stats = get_mod_stats(mod, True)
 
     item_results = format_query(mod_stats.get("item_query"), mod.id, page)
 
@@ -204,17 +200,63 @@ def edit(mod_id):
 
 @mods.route('/search/')
 @mods.route('/search/page/<int:page>/')
-def search(page=1):
-    #equip_region = request.args.get('equip_region')
-    #bodygroup = request.args.get('bodygroup')
-    #_mods = enabled_mods()
-    #if equip_region:
-        #_mods = _mods.filter(Mod.equip_regions.any(TF2EquipRegion.equip_region == equip_region))
-    #if bodygroup:
-        #_mods = _mods.filter(Mod.bodygroups.any(TF2BodyGroup.bodygroup == bodygroup))
-    #_mods = _mods.paginate(page, 30)
-    #return render_template('mods/search.html', mods=_mods, title="Search")
-    return render_template('construction.html', title="Under construction")
+def search(page=1, all_mods=False):
+
+    _mods = None
+
+    mod_search = ModSearch()
+
+    mod_search.equip_regions.query = TF2EquipRegion.query.all()
+    mod_search.bodygroups.query = TF2BodyGroup.query.all()
+    mod_search.classes.choices = sort_classes_search(TF2Class.query.all())
+    mod_search.tags.query = Tag.query.all()
+
+    print all_mods
+    print request.args
+
+    search_submitted = any([all_mods, request.args])
+
+    if search_submitted:
+        item_name = request.args.get('item_name')
+        equip_regions = request.args.getlist('equip_regions')
+        bodygroups = request.args.getlist('bodygroups')
+        classes = request.args.getlist('classes')
+        tags = request.args.getlist('tags')
+
+        mod_search.item_name.data = item_name
+        mod_search.equip_regions.data = equip_regions
+        mod_search.bodygroups.data = bodygroups
+        mod_search.classes.data = classes
+        mod_search.tags.data = tags
+
+        _mods = enabled_mods()
+        wildcards = ["%", "_"]
+        if item_name:
+            if any([w in item_name for w in wildcards]):
+                return
+            _mods = _mods.filter(Mod.pretty_name.contains(item_name))
+        if equip_regions:
+            _mods = _mods.filter(Mod.equip_regions.any(or_(*[TF2EquipRegion.equip_region == equip_region for equip_region in equip_regions])))
+        if bodygroups:
+            _mods = _mods.filter(Mod.bodygroups.any(or_(*[TF2BodyGroup.bodygroup == bodygroup for bodygroup in bodygroups])))
+        if classes:
+            sq = db.session.query(ModClassModel.mod_id, func.count(ModClassModel).label("class_count")).group_by(ModClassModel.mod_id).subquery()
+            _mods = _mods.join(sq, Mod.id == sq.c.mod_id)
+            if len(classes) == 9:
+                pass
+            elif len(classes) > 1:
+                _mods = _mods.filter(sq.c.class_count > 1).filter(sq.c.class_count < 9)
+            elif len(classes) == 1:
+                _mods = _mods.filter(sq.c.class_count == 1)
+            for class_name in classes:
+                _mods = _mods.filter(Mod.class_model.any(ModClassModel.class_name == class_name))
+        if tags:
+            _mods = _mods.filter(Mod.tags.any(or_(*[Tag.id == tag for tag in tags])))
+        print _mods
+        _mods = _mods.paginate(page, 20)
+        for mod in _mods.items:
+            get_mod_stats(mod)
+    return render_template('mods/search.html', mod_search=mod_search, searched=search_submitted, mods=_mods, title="Search")
 
 
 @mods.route('/upload/', methods=['GET', 'POST'])
@@ -273,47 +315,50 @@ def image(mod_id, type):
 def package(mod_id, defindex):
     mod_package = ModPackage.query.filter_by(mod_id=mod_id, defindex=defindex).first()
     mod = Mod.query.get_or_404(mod_id)
-    replacement = TF2Item.query.get_or_404(defindex)
-    if not current_user.is_admin():
-        twenty_four_hours_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
-        downloads_by_mod = PackageDownload.query.filter_by(user=current_user)\
-            .filter(PackageDownload.downloaded >= twenty_four_hours_ago)\
-            .outerjoin(ModPackage)\
-            .filter(ModPackage.mod_id == mod_id)
-        if downloads_by_mod.count() >= 15:
-            flash(u"Download limit for {} reached. Please try again in 24 hours.".format(mod.pretty_name), "danger")
-            return redirect(url_for("mods.page", mod_id=mod_id))
-        downloads_by_replacement = downloads_by_mod.filter(ModPackage.defindex == defindex)
-        if downloads_by_replacement.count() >= 2:
-            flash(u"Download limit for {} replacement reached. Please try again in 24 hours."
-                  .format(replacement.item_name), "danger")
-            return redirect(url_for("mods.page", mod_id=mod_id))
-    if not mod_package:
-        filename = package_mod_to_item(mod, replacement)
-        long_date = False
-        if datetime.datetime.utcnow() < mod.uploaded + datetime.timedelta(weeks=4):
-            long_date = True
-        mod_package = ModPackage(mod.id, replacement.defindex, filename, long_date)
-        db.session.add(mod_package)
+    check_mod_permissions(mod)
+    replacement = TF2Item.query.filter_by(defindex=defindex, inactive=False).first()
+    if mod and replacement:
+        if not current_user.is_admin():
+            twenty_four_hours_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
+            downloads_by_mod = PackageDownload.query.filter_by(user=current_user)\
+                .filter(PackageDownload.downloaded >= twenty_four_hours_ago)\
+                .outerjoin(ModPackage)\
+                .filter(ModPackage.mod_id == mod_id)
+            if downloads_by_mod.count() >= 15:
+                flash(u"Download limit for {} reached. Please try again in 24 hours.".format(mod.pretty_name), "danger")
+                return redirect(url_for("mods.page", mod_id=mod_id))
+            downloads_by_replacement = downloads_by_mod.filter(ModPackage.defindex == defindex)
+            if downloads_by_replacement.count() >= 2:
+                flash(u"Download limit for {} replacement reached. Please try again in 24 hours."
+                      .format(replacement.item_name), "danger")
+                return redirect(url_for("mods.page", mod_id=mod_id))
+        if not mod_package:
+            filename = package_mod_to_item(mod, replacement)
+            long_date = False
+            if datetime.datetime.utcnow() < mod.uploaded + datetime.timedelta(weeks=4):
+                long_date = True
+            mod_package = ModPackage(mod.id, replacement.defindex, filename, long_date)
+            db.session.add(mod_package)
+            db.session.commit()
+        elif datetime.datetime.utcnow() > mod_package.expire_date:
+            mod = mod_package.mod
+            replacement = mod_package.replacement
+            long_date = False
+            if datetime.datetime.utcnow() < mod.uploaded + datetime.timedelta(weeks=4):
+                long_date = True
+            filename = package_mod_to_item(mod, replacement)
+            mod_package.filename = filename
+            mod_package.update_expire(long_date)
+            mod_package.deleted = False
+            db.session.add(mod_package)
+            db.session.commit()
+        else:
+            filename = mod_package.filename
+        download_record = PackageDownload(mod_package.id, current_user.account_id)
+        db.session.add(download_record)
         db.session.commit()
-    elif datetime.datetime.utcnow() > mod_package.expire_date:
-        mod = mod_package.mod
-        replacement = mod_package.replacement
-        long_date = False
-        if datetime.datetime.utcnow() < mod.uploaded + datetime.timedelta(weeks=4):
-            long_date = True
-        filename = package_mod_to_item(mod, replacement)
-        mod_package.filename = filename
-        mod_package.update_expire(long_date)
-        mod_package.deleted = False
-        db.session.add(mod_package)
-        db.session.commit()
+        return send_from_directory(os.path.abspath(os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'], str(mod.id))),
+                                   filename,
+                                   as_attachment=True)
     else:
-        mod = mod_package.mod
-        filename = mod_package.filename
-    download_record = PackageDownload(mod_package.id, current_user.account_id)
-    db.session.add(download_record)
-    db.session.commit()
-    return send_from_directory(os.path.abspath(os.path.join(current_app.config['OUTPUT_FOLDER_LOCATION'], str(mod.id))),
-                               filename,
-                               as_attachment=True)
+        abort(404)

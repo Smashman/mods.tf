@@ -35,6 +35,17 @@ def update_tf2_items():
                       ]
     amend_equip_regions = {"hat": [162, 711, 712, 713], "belt_misc": [1011], "ring": [5075], "shirt": [1088]}
 
+    weapon_cosmetics = [  # Weapons that are basically cosmetics
+        133,  # Gunboats
+        405,  # Ali Baba's Wee Booties
+        444,  # Mantreads
+        608,  # Bootlegger
+        642,  # Cozy Camper
+        231,  # Darwin's Danger Shield
+    ]
+
+    valid_defindexes = []
+
     for i in range(10):
         if not update_completed:
             print "Not completed. Trying again."
@@ -48,18 +59,21 @@ def update_tf2_items():
             items = schema.get('items')
             print "{} items in schema. Starting loop".format(len(items))
             for item in items:
-                if item.get('item_slot') == "misc" and item.get('item_type_name') not in bad_item_types:
-
-                    defindex = item.get('defindex')
+                defindex = item.get('defindex')
+                if item.get('item_slot') == "misc" and item.get('item_type_name') not in bad_item_types\
+                        or defindex in weapon_cosmetics:
 
                     existing_item = TF2Item.query.get(defindex)
 
+                    valid_defindexes.append(defindex)
+
                     if defindex in bad_defindexes:
                         continue
-                    item_name = item.get('item_name')
 
+                    item_name = item.get('item_name')
                     if item_name in bad_item_names:
                         continue
+
                     proper_name = item.get('proper_name')
                     item_slot = item.get('item_slot')
                     image_url = item.get('image_url')
@@ -142,6 +156,7 @@ def update_tf2_items():
                         existing_item.image_url = image_url
                         existing_item.image_url_large = image_url_large
                         existing_item.image_inventory = image_inventory
+                        existing_item.inactive = False
                         for class_name in class_array:
                             class_models_c_m = class_models.get(class_name)
                             existing_c_m = existing_item.class_model.get(class_name)
@@ -165,7 +180,12 @@ def update_tf2_items():
                         db_item = TF2Item(defindex, item_name, proper_name, item_slot, image_url, image_url_large,
                                           image_inventory, class_models, equip_regions, bodygroups)
                         db.session.add(db_item)
-                    db.session.commit()
+            items_not_in_schema = TF2Item.query.filter_by(inactive=False).filter(~TF2Item.defindex.in_(valid_defindexes))
+            print "{} items to delete.".format(items_not_in_schema.count())
+            for item in items_not_in_schema.all():
+                item.inactive = True
+                db.session.add(item)
+            db.session.commit()
             print "All items processed."
             update_completed = True
 

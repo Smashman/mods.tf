@@ -48,7 +48,7 @@ class ModClassModel(db.Model):
         self.model_path = model_path
 
     def __repr__(self):
-        return u"{} ({})".format(self.class_name, self.mod_id)
+        return self.model_path
 
 
 class ModPackage(db.Model):

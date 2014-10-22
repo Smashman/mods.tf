@@ -11,7 +11,7 @@ tf2 = Blueprint("tf2", __name__, url_prefix="/tf2")
 
 
 def item_search(classes=None, bodygroups=None, equip_regions=None, item_name=None):
-    items_query = TF2Item.query
+    items_query = TF2Item.query.filter_by(inactive=False)
     wildcards = ["%", "_"]
     if item_name:
         if any([w in item_name for w in wildcards]):

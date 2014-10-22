@@ -15,6 +15,11 @@ $mods_tf-mods-info-transition: 0.2s
 +font-face("Neris SemiBold", "../fonts/neris-semibold/Neris-SemiBold-webfont")
 +font-face("Neris Black", "../fonts/neris-black/Neris-Black-webfont")
 
+.mod_class
+  +size(50px)
+  background-image: url('../images/class_icons.png')
+  +class-icons(50)
+
 .mod
   position: relative
   float: left
@@ -46,10 +51,7 @@ $mods_tf-mods-info-transition: 0.2s
       +overflow_ellipse
 
   & .mod_class
-    +size(50px)
-    background-image: url('../images/class_icons.png')
     +position(absolute, 5px 5px null null)
-    +class-icons(50)
 
   & img
     display: block
@@ -104,7 +106,7 @@ $mods_tf-mods-info-transition: 0.2s
         font-weight: normal
 
 .mod_wall
-  height: 720px
+  max-height: 720px
   overflow: hidden
   margin-bottom: 1em
 
@@ -264,8 +266,19 @@ table.all_mod
     padding: 0.5em
     border-bottom: 1px solid darken(desaturate($mods_tf-highlight, 25%), 15%)
     background: darken($mods_tf-background-color, 2%)
+    text-align: center
 
   & .backpack_image
     width: 128px
     display: inline-block
     vertical-align: middle
+
+  & .authors
+    width: 144px
+    & .iconholder
+      margin: 2px
+      float: none
+      display: inline-block
+
+#mod_search
+  margin-bottom: 1em
