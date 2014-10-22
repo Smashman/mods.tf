@@ -3,5 +3,5 @@
     <h1>{{ tag_info.id | capitalize }} tagged mods</h1>
     {%- from 'macros.html' import mod_wall -%}
     {{ mod_wall(mods) }}
-    {%- if mods | length > 9 -%}<div class="button_block"><a href="{{ url_for('mods.search', tag=tag_info.id) }}">View more...</a></div>{%- endif -%}
+    {%- if mods | length > 9 -%}<div class="button_block"><a href="{{ url_for('mods.search', tags=tag_info.id) }}">View more...</a></div>{%- endif -%}
 {% endblock %}

@@ -51,14 +51,14 @@
                 <div class="bodygroups">
                     <span class="mod-stat-title">Bodygroups: </span>
                     {%- for bodygroup in mod.bodygroups -%}
-                        <a href="{{ url_for('.search', bodygroup=bodygroup.bodygroup) }}">{{ bodygroup }}</a>{{ ", " if not loop.last }}
+                        <a href="{{ url_for('.search', bodygroups=bodygroup.bodygroup) }}">{{ bodygroup }}</a>{{ ", " if not loop.last }}
                     {%- endfor -%}
                 </div>
             {%- endif -%}
             <div class="equip_regions">
                 <span class="mod-stat-title">Equip regions: </span>
                 {%- for equip_region in mod.equip_regions -%}
-                    <a href="{{ url_for('.search', equip_region=equip_region.equip_region) }}">{{ equip_region }}</a>{{ ", " if not loop.last }}
+                    <a href="{{ url_for('.search', equip_regions=equip_region.equip_region) }}">{{ equip_region }}</a>{{ ", " if not loop.last }}
                 {%- endfor -%}
             </div>
             {%- if mod.tags | length > 0 -%}

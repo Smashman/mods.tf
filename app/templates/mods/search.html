@@ -10,9 +10,6 @@
     <form id="mod_search" method="GET" action="{{ url_for('mods.search') }}">
         {{ mod_search.item_name(placeholder="Item name...", class="input-default") }}
         {{ mod_search.classes(class="input-default") }}
-        {{ mod_search.equip_regions(class="input-default") }}
-        {{ mod_search.bodygroups(class="input-default") }}
-        {{ mod_search.tags(class="input-default") }}
         {{ mod_search.submit(class="input-default") }}
     </form>
     {%- if searched -%}

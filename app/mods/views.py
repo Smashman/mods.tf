@@ -211,9 +211,6 @@ def search(page=1, all_mods=False):
     mod_search.classes.choices = sort_classes_search(TF2Class.query.all())
     mod_search.tags.query = Tag.query.all()
 
-    print all_mods
-    print request.args
-
     search_submitted = any([all_mods, request.args])
 
     if search_submitted:
@@ -252,7 +249,6 @@ def search(page=1, all_mods=False):
                 _mods = _mods.filter(Mod.class_model.any(ModClassModel.class_name == class_name))
         if tags:
             _mods = _mods.filter(Mod.tags.any(or_(*[Tag.id == tag for tag in tags])))
-        print _mods
         _mods = _mods.paginate(page, 20)
         for mod in _mods.items:
             get_mod_stats(mod)
