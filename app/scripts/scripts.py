@@ -128,6 +128,8 @@ def update_tf2_items():
                         if len(used_by_classes) is 1 and 'hat' in bodygroups:
                             if used_by_classes[0] in ('Pyro', 'Demoman', 'Heavy', 'Medic', 'Spy'):
                                 bodygroups.remove('hat')  # These guys don't even have a hat to hide...
+                        if 'headphones' in bodygroups and 'Scout' not in used_by_classes:
+                            bodygroups.remove('headphones')  # No class but the Scout has headphones...
                         if 'disconnected_floating_item' in equip_regions:
                             bodygroups = []  # Disconnected items don't need to hide anything. What's wrong with you Volvo.
 
