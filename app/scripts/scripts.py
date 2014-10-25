@@ -2,8 +2,9 @@ import steam
 import urllib2
 import datetime
 import os
-from steam.api import HTTPError
-from .. import db
+from steam.api import HTTPError, HTTPTimeoutError
+from steam.user import ProfileNotFoundError
+from .. import db, sentry
 from ..models import get_or_create
 from ..tf2.models import TF2Item, TF2Class, TF2BodyGroup, TF2ClassModel, TF2EquipRegion, all_classes
 from ..tf2.functions import class_array
@@ -209,8 +210,14 @@ def delete_expired_packages():
 
 def update_authors_steam_info():
     authors = ModAuthor.query.group_by(ModAuthor.user_id).order_by(ModAuthor.user_id).all()
+    author_dict = dict([(author.user.steam_id, author.user) for author in authors])
+    profile_dict = {}
+    try:
+        profiles = steam.user.profile_batch([author for author in author_dict])
+        profile_dict = dict([(prof.id64, prof) for prof in profiles])
+    except (HTTPError, HTTPTimeoutError, ProfileNotFoundError):
+        sentry.captureException()
     print "Updating {} authors.".format(len(authors))
-    profile_list = sorted(steam.user.profile_batch([author.user.steam_id for author in authors]), key=lambda x: x.id64)
-    for i, profile in enumerate(profile_list):
-        authors[i].user.update_steam_info(profile)
+    for id64, profile in profile_dict.iteritems():
+        author_dict[id64].update_steam_info(profile)
     db.session.commit()
