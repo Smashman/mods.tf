@@ -139,6 +139,8 @@ class Mod(db.Model):
     manifest_steamid = db.Column(db.Integer)
     item_slot = db.Column(db.String(64))
     image_inventory = db.Column(db.String(256))
+    defindex = db.Column(db.Integer, nullable=True)
+    hide_downloads = db.Column(db.Boolean, default=False)
     uploaded = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     visibility = db.Column(db.Enum('H', 'Pu', 'Pr', name='visibility_types'), default='H')  # Hidden, Public, Unlisted
     completed = db.Column(db.Boolean, default=False, nullable=False)

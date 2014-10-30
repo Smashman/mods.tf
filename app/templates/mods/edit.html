@@ -37,6 +37,8 @@
         {{ form_field(edit_form.bodygroups) }}
         <div class="form-row offset" id="item-count">The current settings return <span>{{ count | default(0) }}</span> compatible items.</div>
         {{ form_field(edit_form.package_format) }}
+        {{ form_field(edit_form.defindex) }}
+        {{ form_field(edit_form.hide_downloads) }}
         {{ form_field(edit_form.visibility) }}
         <div class="form-row offset">{{ edit_form.publish(class="input-default") }}</div>
     </form>

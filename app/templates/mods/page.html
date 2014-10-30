@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% from "mods/macros.html" import author_list, readable_visibility %}
+{% from 'macros.html' import wiki_link %}
 {% if mod.class_model | length > 1 %}
     {% set mod_class = "multi-class" %}
 {% else %}
@@ -34,6 +35,9 @@
                     <a href="//steamcommunity.com/sharedfiles/filedetails/?id={{ mod.workshop_id }}" target="_blank" title="View on Steam Workshop"><img src="{{ url_for('static', filename='images/workshop.png') }}"/></a>
                 </div>
             {%- endif -%}
+            {%- if mod.defindex -%}
+                {{ wiki_link(mod.defindex) }}
+            {%- endif -%}
             <div>
                 <span class="mod-stat-title">Downloads: </span>
                 <span class="mod-stat">{{ mod_stats.downloads | default(0) | format_thousands}}</span>
@@ -44,7 +48,7 @@
             </div>
             <div><span class="mod-stat-title">Class: </span>
                 {%- for key, class in sorted_classes -%}
-                    <a href="{{ url_for('.search', class=class) }}">{{ class }}</a>{{ ", " if not loop.last }}
+                    <a href="{{ url_for('.search', classes=class) }}">{{ class }}</a>{{ ", " if not loop.last }}
                 {%- endfor -%}
             </div>
             {%- if mod.bodygroups | length > 0 -%}
@@ -92,6 +96,7 @@
                 {{ mod.description | markdown }}
             </div>
         {%- endif -%}
+        {%- if not mod.hide_downloads -%}
         {%- if current_user.is_authenticated() -%}
             <div class="item-search">
                 <span>Filter for items to replace:</span>
@@ -111,7 +116,11 @@
                 </div>
             </div>
         {%- else -%}
-            <div><a href="{{ url_for("users.login") }}">Login via Steam</a> to repackage and download this mod.</div>
+            <div><a href="{{ url_for("users.login") }}"><img src="{{ url_for('static', filename='images/sits_small.png') }}"/></a> to repackage and download this mod.</div>
+        {%- endif -%}
+        {%- else -%}
+            This mod is no longer available to download due to being available officially in-game!
+            {% if mod.defindex %}Please see the <a href="http://wiki.teamfortress.com/scripts/itemredirect.php?id={{ mod.defindex }}" target="_blank" title="View on Official Team Fortress Wiki">Wiki page</a> for more information upon the item.{% endif %}
         {%- endif -%}
     </div>
 {% endblock %}

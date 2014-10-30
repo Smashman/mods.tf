@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import TextField, SelectField, SelectMultipleField, SubmitField, TextAreaField, FieldList, FormField
+from wtforms import TextField, SelectField, SelectMultipleField, SubmitField, TextAreaField, FieldList, FormField, BooleanField
 from wtforms.validators import Required
 from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField
 
@@ -30,6 +30,13 @@ class EditMod(Form):
     package_format = SelectField("Package format:", validators=[Required()])
     equip_regions = QuerySelectMultipleField("Equip regions:", validators=[Required()])
     bodygroups = QuerySelectMultipleField("Bodygroups:")
+    defindex = TextField('Defindex:', description="If your item is officially in-game, "
+                                                  "find the defindex in the corner of the item on the "
+                                                  "<a target=\"_blank\" "
+                                                  "href=\"https://tf2b.com/itemlist.php\">TF2B item list</a>.")
+    hide_downloads = BooleanField('Hide downloads:', description="Enable to hide downloads if your item is in-game. "
+                                                                 "If you want to disable your item otherwise, simply"
+                                                                 "change the visibility to 'Hidden', below.")
     visibility = SelectField("Visibility:", validators=[Required()])
     publish = SubmitField("Save")
 

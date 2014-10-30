@@ -21,10 +21,10 @@
     <div class="form-row">
         {{ field.label }}
         <div class="input{{ " select" if field.type == "SelectField" }}{{ " error" if field.errors }}">
-        {{ field(placeholder=placeholder, class="input-default", rows=rows if rows) }}
             {% if field.description %}
                 <div class="description">{{ field.description | safe }}</div>
             {% endif %}
+            {{ field(placeholder=placeholder, class="input-default", rows=rows if rows) }}
             {{ field_errors(field) }}
         </div>
     </div>
@@ -76,5 +76,10 @@
     {% for mod in mods %}
         {{ mod_block(mod, loop.first) }}
     {% endfor %}
+    </div>
+{%- endmacro -%}
+{%- macro wiki_link(defindex) -%}
+    <div class="workshop">
+        <a href="http://wiki.teamfortress.com/scripts/itemredirect.php?id={{ defindex }}" target="_blank" title="View on Official Team Fortress Wiki"><img src="{{ url_for('static', filename='images/wiki.png') }}"/></a>
     </div>
 {%- endmacro -%}

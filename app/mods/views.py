@@ -116,6 +116,16 @@ def edit(mod_id):
         mod.package_format = edit_form.package_format.data
         mod.visibility = edit_form.visibility.data
 
+        mod.defindex = edit_form.defindex.data
+        if not mod.defindex.isnumeric():
+            mod.defindex = None
+
+        mod.hide_downloads = edit_form.hide_downloads.data
+
+        if mod.hide_downloads and not mod.defindex:
+            mod.hide_downloads = False
+            flash("If the item is not officially in-game, please simply change the item visibility to hidden to remove downloads.", "danger")
+
         mod.bodygroups = []
         mod.equip_regions = []
 
@@ -172,6 +182,8 @@ def edit(mod_id):
     edit_form.tags.data = [tag for tag in mod.tags]
     edit_form.package_format.data = mod.package_format
     edit_form.visibility.data = mod.visibility
+    edit_form.hide_downloads.data = mod.hide_downloads
+    edit_form.defindex.data = mod.defindex
     if new_item:
         edit_form.visibility.data = "Pu"
         edit_form.publish.label.text += " and Publish!"
@@ -312,6 +324,8 @@ def package(mod_id, defindex):
     mod_package = ModPackage.query.filter_by(mod_id=mod_id, defindex=defindex).first()
     mod = Mod.query.get_or_404(mod_id)
     check_mod_permissions(mod)
+    if mod.hide_downloads:
+        abort(404)
     replacement = TF2Item.query.filter_by(defindex=defindex, inactive=False).first()
     if mod and replacement:
         if not current_user.is_admin():
