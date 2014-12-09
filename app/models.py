@@ -7,5 +7,4 @@ def get_or_create(session, model, create_args=None, **kwargs):
             kwargs.update(create_args)
         instance = model(**kwargs)
         session.add(instance)
-        session.commit()
         return instance

@@ -181,7 +181,7 @@ def update_tf2_items():
                         db_item = TF2Item(defindex, item_name, proper_name, item_slot, image_url, image_url_large,
                                           image_inventory, class_models, equip_regions, bodygroups)
                         db.session.add(db_item)
-                        db.session.commit()
+                    db.session.commit()
             items_not_in_schema = TF2Item.query.filter_by(inactive=False).filter(~TF2Item.defindex.in_(valid_defindexes))
             print "{} items to delete.".format(items_not_in_schema.count())
             for item in items_not_in_schema.all():
