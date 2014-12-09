@@ -186,7 +186,7 @@ def update_tf2_items():
             for item in items_not_in_schema.all():
                 item.inactive = True
                 db.session.add(item)
-            db.session.commit()
+                db.session.commit()
             print "All items processed."
             update_completed = True
 
