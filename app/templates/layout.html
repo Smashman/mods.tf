@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>{{ title }}{{ " - " if title }}mods.{{ "do" if config.GAME == "dota" else "tf" }}</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="icon" sizes="185x185" href="{{ url_for('static', filename='images/favicon_large.png') }}">
     {%- if tag_theme -%}
         {%- set style_name = config.GAME + "_" + tag_theme -%}
     {%- elif config.THEME -%}
@@ -31,6 +32,7 @@
             <script src="{{ ASSET_URL }}"></script>
         {% endassets %}
     {% endblock %}
+    <meta name="theme-color" content="#312e29">
 </head>
 <body>
     {% include "header.html" %}
