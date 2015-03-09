@@ -1,5 +1,4 @@
 import urlparse
-import os
 from flask import abort
 from app import steam, db
 from flask.ext.login import current_user
@@ -27,7 +26,7 @@ def check_edit_permissions(mod):
 def new_author(profile_url):
     parsed_url = urlparse.urlparse(profile_url)
     steam_id = None
-    split_path = os.path.split(os.path.normpath(parsed_url.path))
+    split_path = parsed_url.path[1:].split('/')
     if parsed_url.hostname == "steamcommunity.com":
         if "id" in split_path[0]:
             try:

@@ -34,9 +34,9 @@ class EditMod(Form):
                                                   "find the defindex in the corner of the item on the "
                                                   "<a target=\"_blank\" "
                                                   "href=\"https://tf2b.com/itemlist.php\">TF2B item list</a>.")
-    hide_downloads = BooleanField('Hide downloads:', description="Enable to hide downloads if your item is in-game. "
-                                                                 "If you want to disable your item otherwise, simply"
-                                                                 "change the visibility to 'Hidden', below.")
+    hide_downloads = BooleanField('Hide downloads:', description="Enable to hide downloads, if your item is in-game. "
+                                                                 "If you want to disable your item for any other reason"
+                                                                 ", simply change the visibility to 'Hidden', below.")
     visibility = SelectField("Visibility:", validators=[Required()])
     publish = SubmitField("Save")
 
