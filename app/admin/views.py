@@ -1,12 +1,15 @@
 from flask.ext.login import current_user
 from flask.ext.admin import Admin, expose, AdminIndexView, BaseView
 from flask.ext.admin.contrib.sqla import ModelView
-from flask import url_for
+from flask import url_for, flash
 from jinja2 import Markup
-from app import db
+from app import db, app
 from ..users.models import User
+from ..users.functions import get_steam_id_from_url, new_user
 from ..mods.models import Mod, ModPackage, PackageDownload, ModAuthor
 from datetime import datetime, timedelta
+from forms import Promo, CreateUser
+from steam.api import interface, HTTPError, HTTPTimeoutError
 
 
 class Auth(object):
@@ -141,6 +144,58 @@ class ModLists(Auth, BaseView):
         )
 
 
+class GrantItem(Auth, BaseView):
+
+    @expose('/', methods=['GET', 'POST'])
+    def index(self):
+
+        promo_list = app.config['PROMO_LIST']
+
+        form = Promo()
+
+        form.promo.choices = promo_list
+
+        print form.validate_on_submit()
+
+        if form.validate_on_submit():
+            promo_id = form.promo.data
+            steam_id_info = get_steam_id_from_url(form.user.data)
+
+            if steam_id_info[0] is True:
+                steam_id = steam_id_info[1]
+                try:
+                    grant = interface('ITFPromos_440').GrantItem(data={"promoID": promo_id, "steamID": steam_id})
+                    if bool(grant.get('result').get('status')) is True:
+                        flash('Grant successful', 'success')
+                except (HTTPError, HTTPTimeoutError):
+                    form.user.errors.append("Steam error. Please try again later.")
+
+            else:
+                form.user.errors.append(steam_id_info[1])
+
+        return self.render(
+            'admin/distribute.html',
+            form=form
+        )
+
+
+class CreateUserFromProfile(Auth, BaseView):
+
+    @expose('/', methods=['GET', 'POST'])
+    def index(self):
+        form = CreateUser()
+
+        if form.validate_on_submit():
+            user = new_user(form.profile_url.data)
+            if user is not None:
+                flash("User created. ID: {}".format(user.account_id), 'success')
+
+        return self.render(
+                'admin/create_user.html',
+                form=form
+            )
+
+
 admin = Admin(name="mods.tf", index_view=AdminIndex())
 
 admin.add_view(ModView(Mod, db.session, category="Models"))
@@ -149,4 +204,8 @@ admin.add_view(UserView(User, db.session, category="Models"))
 admin.add_view(BigDownloaders(name="Big downloaders", category="Reports"))
 admin.add_view(SharedZips(name="Shared zips", category="Reports"))
 
+admin.add_view(CreateUserFromProfile(name="Create User", category="Users"))
+
 admin.add_view(ModLists(name="Mod lists", category="Lists"))
+
+admin.add_view(GrantItem(name="Grant Item"))

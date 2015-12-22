@@ -1,0 +1,13 @@
+{% extends 'admin/master.html' %}
+{% from "macros.html" import form_field, steam_block, field_errors %}
+
+{% block body %}
+
+    <form method=POST id="edit_form" >
+        {{ form.hidden_tag() }}
+        {{ form_field(form.promo) }}
+        {{ form_field(form.user) }}
+        <input class="input-default" type="submit">
+    </form>
+
+{% endblock %}

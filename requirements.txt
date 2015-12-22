@@ -25,6 +25,6 @@ jsmin==2.0.9
 misaka==1.0.2
 python-openid==2.2.5
 raven==5.0.0
-steamodd==4.10
+-e git+https://github.com/Lagg/steamodd.git@530f5d13bb06ace3a204b149ae4f18048fd92d0b#egg=steamodd
 webassets==0.10
 wsgiref==0.1.2

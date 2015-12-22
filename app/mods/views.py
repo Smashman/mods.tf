@@ -8,9 +8,10 @@ from ..tf2.models import TF2Item, TF2BodyGroup, TF2EquipRegion, TF2Class
 from ..tf2.views import format_query, item_search
 from ..tf2.functions import sort_classes, sort_classes_search
 from ..users.models import User
+from ..users.functions import new_user
 from models import Mod, ModPackage, PackageDownload, ModImage, ModAuthor, Tag, ModClassModel
 from forms import ItemSearch, EditMod, ModSearch
-from functions import check_mod_permissions, check_edit_permissions, new_author, get_mod_stats, enabled_mods
+from functions import check_mod_permissions, check_edit_permissions, get_mod_stats, enabled_mods
 from ..functions import remove_duplicates
 from sqlalchemy import func, or_, and_
 import datetime
@@ -145,7 +146,7 @@ def edit(mod_id):
         author_profiles = []
         for i, add_author in authors_to_add:
             if add_author:
-                user_author_record = new_author(add_author)
+                user_author_record = new_user(add_author)
 
                 if isinstance(user_author_record, str):
                     edit_form.authors.entries[i].author.errors.append(user_author_record)
