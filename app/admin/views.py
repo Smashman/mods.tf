@@ -187,8 +187,10 @@ class CreateUserFromProfile(Auth, BaseView):
 
         if form.validate_on_submit():
             user = new_user(form.profile_url.data)
-            if user is not None:
+            if not isinstance(user, str):
                 flash("User created. ID: {}".format(user.account_id), 'success')
+            else:
+                flash("User create failed. Reason: {}".format(user), 'danger')
 
         return self.render(
                 'admin/create_user.html',
