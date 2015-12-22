@@ -155,23 +155,30 @@ class GrantItem(Auth, BaseView):
 
         form.promo.choices = promo_list
 
-        print form.validate_on_submit()
-
         if form.validate_on_submit():
             promo_id = form.promo.data
-            steam_id_info = get_steam_id_from_url(form.user.data)
+            url_list = form.profile_urls.data
+            url_list = [x.strip() for x in url_list.split('\n')]
 
-            if steam_id_info[0] is True:
-                steam_id = steam_id_info[1]
-                try:
-                    grant = interface('ITFPromos_440').GrantItem(data={"promoID": promo_id, "steamID": steam_id})
-                    if bool(grant.get('result').get('status')) is True:
-                        flash('Grant successful', 'success')
-                except (HTTPError, HTTPTimeoutError):
-                    form.user.errors.append("Steam error. Please try again later.")
+            response = ""
 
-            else:
-                form.user.errors.append(steam_id_info[1])
+            for url in url_list:
+                steam_id_info = get_steam_id_from_url(url)
+
+                if steam_id_info[0] is True:
+                    steam_id = steam_id_info[1]
+                    try:
+                        grant = interface('ITFPromos_440').GrantItem(data={"promoID": promo_id, "steamID": steam_id})
+                        if bool(grant.get('result').get('status')) is True:
+                            response += url + " - Success\n"
+
+                    except (HTTPError, HTTPTimeoutError):
+                        response += url + "Steam error. Please try again later.\n"
+
+                else:
+                    response += url + steam_id_info[1] + "\n"
+
+            form.profile_urls.data = response
 
         return self.render(
             'admin/distribute.html',

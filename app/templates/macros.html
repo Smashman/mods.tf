@@ -24,7 +24,7 @@
             {% if field.description %}
                 <div class="description">{{ field.description | safe }}</div>
             {% endif %}
-            {{ field(placeholder=placeholder, class="input-default", rows=rows if rows) }}
+            {{ field(placeholder=placeholder, class="input-default", rows=rows if rows, **kwargs) }}
             {{ field_errors(field) }}
         </div>
     </div>

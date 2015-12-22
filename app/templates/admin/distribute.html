@@ -6,7 +6,7 @@
     <form method=POST id="edit_form" >
         {{ form.hidden_tag() }}
         {{ form_field(form.promo) }}
-        {{ form_field(form.user) }}
+        {{ form_field(form.profile_urls, rows='25', style='width: 100%') }}
         <input class="input-default" type="submit">
     </form>
 
