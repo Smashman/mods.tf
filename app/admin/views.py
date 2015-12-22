@@ -173,10 +173,10 @@ class GrantItem(Auth, BaseView):
                             response += url + " - Success\n"
 
                     except (HTTPError, HTTPTimeoutError):
-                        response += url + "Steam error. Please try again later.\n"
+                        response += url + " - Steam error. Please try again later.\n"
 
                 else:
-                    response += url + steam_id_info[1] + "\n"
+                    response += url + " - " + steam_id_info[1] + "\n"
 
             form.profile_urls.data = response
 
