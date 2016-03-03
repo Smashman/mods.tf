@@ -134,6 +134,7 @@ def extract_and_image(zip_in, db_record):
 
         used_by_classes = items_game_info.get('used_by_classes')
         used_by_classes = list_from_vdf_dict(used_by_classes)
+        used_by_classes = [i.lower() for i in used_by_classes]
         model_player = items_game_info.get('model_player')
 
         class_models = {}
@@ -148,8 +149,8 @@ def extract_and_image(zip_in, db_record):
             if not used_by_classes:
                 used_by_classes = all_classes
             model_player_per_class = items_game_info.get('model_player_per_class')
+            model_player_per_class = dict((k.lower(), v) for k, v in model_player_per_class.iteritems())
             for tf2_class in used_by_classes:
-                tf2_class = tf2_class.lower()
                 if tf2_class.title() in all_classes:
                     if model_player_per_class:
                         class_model = model_player_per_class.get(tf2_class)
