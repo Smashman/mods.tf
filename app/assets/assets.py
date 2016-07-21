@@ -17,6 +17,12 @@ bundles = {
         filters='sass',
         output='../static/css/tf2_halloween.css'
     ),
+    'tf2_frontline_css': Bundle(
+        'sass/frontline.sass',
+        depends='sass/*.sass',
+        filters='sass',
+        output='../static/css/tf2_frontline.css'
+    ),
 
     # DOTA 2 THEMES
     'dota_css': Bundle(
