@@ -3,22 +3,32 @@
   text-overflow: ellipsis
   white-space: nowrap
 
-=class-icons($mods_tf-class-icon-width)
-  background-size: $mods_tf-class-icon-width * 10px #{$mods_tf-class-icon-width}px
-  @for $i from 0 to length($mods_tf-classes)
-    $mods_tf-class: nth($mods_tf-classes, $i+1)
-    &.#{$mods_tf-class}
-      background-position: -#{$i * $mods_tf-class-icon-width}px
-
 $mods_tf-mods-info-transition: 0.2s
+$mods_tf-class-icon-color: $mods_tf-highlight !default
+$mods_tf-class-icon-image: '../images/class_icons.png' !default
 
 +font-face("Neris SemiBold", "../fonts/neris-semibold/Neris-SemiBold-webfont")
 +font-face("Neris Black", "../fonts/neris-black/Neris-Black-webfont")
 
 .mod_class
-  +size(50px)
-  background-image: url('../images/class_icons.png')
-  +class-icons(50)
+  +size(80px)
+  padding: 5px
+  background-color: $mods_tf-highlight
+  border-radius: 100%
+  background-image: url($mods_tf-class-icon-image)
+  @for $i from 0 to length($mods_tf-classes)
+    $mods_tf-class: nth($mods_tf-classes, $i+1)
+    &.#{$mods_tf-class}
+      background-position: -#{$i * 72}px
+  transform: scale(0.625)
+  &::before
+    content: ''
+    +size(70px)
+    display: block
+    padding: 1px
+    border: 2px white solid
+    border-radius: 100%
+    position: relative
 
 .mod
   position: relative
@@ -51,7 +61,7 @@ $mods_tf-mods-info-transition: 0.2s
       +overflow_ellipse
 
   & .mod_class
-    +position(absolute, 5px 5px null null)
+    +position(absolute, -10px -10px null null)
 
   & img
     display: block
@@ -68,9 +78,8 @@ $mods_tf-mods-info-transition: 0.2s
     & .name
       font-size: golden-ratio(18px, 1)
     & .mod_class
-      +size(80px)
+      transform: none
       +position(absolute, 10px 10px null null)
-      +class-icons(80)
 
   &:hover > .info
     margin-bottom: 0px
