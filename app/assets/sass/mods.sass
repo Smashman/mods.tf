@@ -12,20 +12,18 @@ $mods_tf-class-icon-image: '../images/class_icons.png' !default
 
 .mod_class
   +size(80px)
-  padding: 5px
-  background-color: $mods_tf-highlight
+  padding: 8px
   border-radius: 100%
-  background-image: url($mods_tf-class-icon-image)
+  background-image: url($mods_tf-class-icon-image), radial-gradient(40px at 50% 50% , $mods_tf-class-icon-color 0px, $mods_tf-class-icon-color 35px, rgba(0, 0, 0, 0) 36px, rgba(0, 0, 0, 0) 40px)
   @for $i from 0 to length($mods_tf-classes)
     $mods_tf-class: nth($mods_tf-classes, $i+1)
     &.#{$mods_tf-class}
-      background-position: -#{$i * 72}px
+      background-position: -#{$i * 80}px
   transform: scale(0.625)
   &::before
     content: ''
-    +size(70px)
+    +size(64px)
     display: block
-    padding: 1px
     border: 2px white solid
     border-radius: 100%
     position: relative
