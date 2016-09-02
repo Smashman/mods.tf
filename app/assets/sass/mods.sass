@@ -4,7 +4,8 @@
   white-space: nowrap
 
 $mods_tf-mods-info-transition: 0.2s
-$mods_tf-class-icon-color: $mods_tf-highlight !default
+$mods_tf-class-icon-bg-color: $mods_tf-highlight !default
+$mods_tf-class-icon-ring-color: #e6e6e6 !default
 $mods_tf-class-icon-image: '../images/class_icons.png' !default
 
 +font-face("Neris SemiBold", "../fonts/neris-semibold/Neris-SemiBold-webfont")
@@ -14,7 +15,7 @@ $mods_tf-class-icon-image: '../images/class_icons.png' !default
   +size(80px)
   padding: 8px
   border-radius: 100%
-  background-image: url($mods_tf-class-icon-image), radial-gradient(40px at 50% 50% , $mods_tf-class-icon-color 0px, $mods_tf-class-icon-color 35px, rgba(0, 0, 0, 0) 36px, rgba(0, 0, 0, 0) 40px)
+  background-image: url($mods_tf-class-icon-image), radial-gradient(40px at 50% 50% , $mods_tf-class-icon-bg-color 0px, $mods_tf-class-icon-bg-color 35px, rgba(0, 0, 0, 0) 36px, rgba(0, 0, 0, 0) 40px)
   @for $i from 0 to length($mods_tf-classes)
     $mods_tf-class: nth($mods_tf-classes, $i+1)
     &.#{$mods_tf-class}
@@ -24,7 +25,7 @@ $mods_tf-class-icon-image: '../images/class_icons.png' !default
     content: ''
     +size(64px)
     display: block
-    border: 2px white solid
+    border: 2px $mods_tf-class-icon-ring-color solid
     border-radius: 100%
     position: relative
 
