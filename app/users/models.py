@@ -23,7 +23,7 @@ class AnonymousUser(AnonymousUserMixin):
 class User(db.Model):
     __tablename__ = "users"
     account_id = db.Column(db.Integer, primary_key=True, autoincrement=False)
-    name = db.Column(db.String(256, collation="utf8_swedish_ci"), default=account_id)
+    name = db.Column(db.String(512, collation="utf8mb4_unicode_ci"), default=account_id)
     profile_url = db.Column(db.String(128))
     avatar_small = db.Column(db.String(128))
     avatar_medium = db.Column(db.String(128))

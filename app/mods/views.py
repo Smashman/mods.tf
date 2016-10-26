@@ -33,6 +33,8 @@ def tag(tag_id=None):
     if not tag_info:
         return abort(404)
     mods = enabled_mods().filter(Mod.tags.any(Tag.id == tag_id)).limit(18).all()
+    for mod in mods:
+        mod_stats = get_mod_stats(mod)
     return render_template('mods/tag.html', mods=mods, tag_info=tag_info, bg_num=tag_info.bg_num,
                            tag_theme=tag_info.id if tag_info.css else None,
                            title=tag_info.id.capitalize() + " tagged mods")
