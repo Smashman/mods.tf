@@ -124,6 +124,10 @@ def update_tf2_items():
                             tf2_class = tf2_class.lower()
                             if model_player_per_class:
                                 class_model = model_player_per_class.get(tf2_class)
+                                if class_model is None:
+                                    basename = model_player_per_class.get("basename")
+                                    if basename:
+                                        class_model = basename.replace("%s", tf2_class)
                             elif model_player:
                                 #class_model = model_player
                                 continue
@@ -137,6 +141,8 @@ def update_tf2_items():
                         existing_item.bodygroups = []
                     bodygroups = []
                     if visuals:
+                        if type(visuals) is list:  # Merge visuals lists. Why you do this Valve?
+                            visuals = {k: v for d in visuals for k, v in d.items()}
                         bodygroups_dict = visuals.get('player_bodygroups')
                         if bodygroups_dict:
                             bodygroups += list_from_vdf_dict(bodygroups_dict)
