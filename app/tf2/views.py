@@ -36,8 +36,6 @@ def item_search(classes=None, bodygroups=None, equip_regions=None, item_name=Non
         items_query = items_query.filter(TF2Item.bodygroups.any(or_(*[TF2BodyGroup.bodygroup == bodygroup for bodygroup in bodygroups])))
         bodygroup_count = db.session.query(schema_bodygroup.c.defindex, func.count('*').label("bg_count")).group_by(schema_bodygroup.c.defindex).subquery()
         items_query = items_query.join(bodygroup_count, TF2Item.defindex == bodygroup_count.c.defindex).filter(bodygroup_count.c.bg_count == len(bodygroups))
-    else:
-        items_query = items_query.filter(TF2Item.bodygroups == None)
     return items_query
 
 
