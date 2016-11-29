@@ -4,5 +4,5 @@ DEBUG_TB_INTERCEPT_REDIRECTS = False
 GAME = "tf2"
 DATE_STRING_FORMAT = "%d %b %Y, %H:%M UTC"
 # THEME
-THEME = "halloween"
-BG_NUM = 3
+THEME = "frontline"
+BG_NUM = 2
