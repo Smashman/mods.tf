@@ -28,7 +28,7 @@ class EditMod(Form):
     tags = QuerySelectMultipleField("Tags:")
     authors = FieldList(FormField(AuthorField), min_entries=5)
     package_format = SelectField("Package format:", validators=[Required()])
-    equip_regions = QuerySelectMultipleField("Equip regions:", validators=[Required()])
+    equip_regions = QuerySelectMultipleField("Equip regions:")
     bodygroups = QuerySelectMultipleField("Bodygroups:")
     defindex = TextField('Defindex:', description="If your item is officially in-game, "
                                                   "find the defindex in the corner of the item on the "
