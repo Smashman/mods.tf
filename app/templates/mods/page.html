@@ -61,9 +61,13 @@
             {%- endif -%}
             <div class="equip_regions">
                 <span class="mod-stat-title">Equip regions: </span>
+                {%- if mod.equip_regions -%}
                 {%- for equip_region in mod.equip_regions -%}
                     <a href="{{ url_for('.search', equip_regions=equip_region.equip_region) }}">{{ equip_region }}</a>{{ ", " if not loop.last }}
                 {%- endfor -%}
+                {%- else -%}
+                    Any
+                {%- endif -%}
             </div>
             {%- if mod.tags | length > 0 -%}
             <div class="equip_regions">
