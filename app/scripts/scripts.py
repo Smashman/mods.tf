@@ -127,7 +127,10 @@ def update_tf2_items():
                                 if class_model is None:
                                     basename = model_player_per_class.get("basename")
                                     if basename:
-                                        class_model = basename.replace("%s", tf2_class)
+                                        basename_class = tf2_class
+                                        if basename_class == "demoman":
+                                            basename_class = "demo"
+                                        class_model = basename.replace("%s", basename_class)
                             elif model_player:
                                 #class_model = model_player
                                 continue
