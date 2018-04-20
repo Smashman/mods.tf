@@ -33,7 +33,7 @@ def login():
 
 @oid.after_login
 def create_or_login(resp):
-    steam_id = long(resp.identity_url.replace("http://steamcommunity.com/openid/id/", ""))
+    steam_id = long(resp.identity_url.replace("https://steamcommunity.com/openid/id/", ""))
     account_id = int(steam_id & 0xFFFFFFFF)
     _user = User.query.get(account_id)
     new_user = False
