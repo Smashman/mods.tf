@@ -1,6 +1,6 @@
 import os
 from . import app, db
-from flask import render_template, url_for, send_from_directory
+from flask import render_template, url_for, send_from_directory, flash
 from mods.models import Mod
 from mods.functions import get_mod_stats
 
