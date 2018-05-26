@@ -47,6 +47,9 @@ def extract_and_image(zip_in, db_record):
                 except KeyError:
                     flash("No manifest, please upload a Workshop zip.", "danger")
                     return
+                except BadZipfile:
+                    flash("Archive is corrupt, please try repackaging your item before trying again.", "danger")
+                    return
                 print "Converting manifest. vdf -> dict"
             else:
                 flash("Zip is too large when extracted, min size is ~100MB", "danger")

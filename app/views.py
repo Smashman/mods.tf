@@ -7,7 +7,6 @@ from mods.functions import get_mod_stats
 
 @app.route('/')
 def index():
-    flash(u"Login has been fixed, apologies for the downtime!", "success")
     mods = Mod.query.filter_by(visibility="Pu", enabled=True, completed=True).limit(18).all()
     for mod in mods:
         mod_stats = get_mod_stats(mod)

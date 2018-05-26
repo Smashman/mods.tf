@@ -99,8 +99,9 @@ def edit(mod_id):
         mod.description = edit_form.description.data
         workshop_id = edit_form.workshop_id.data
         if workshop_id:
+            from re import match
             try:
-                if "http://steamcommunity.com/sharedfiles/filedetails/" in workshop_id:
+                if match("http[s]?:\/\/(www\.)?steamcommunity\.com\/sharedfiles\/filedetails\/", workshop_id):
                     from urlparse import urlparse, parse_qs
                     workshop_id = parse_qs(urlparse(workshop_id).query).get("id")[0]
                     int(workshop_id)
