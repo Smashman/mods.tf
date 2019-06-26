@@ -1,17 +1,6 @@
 {% from "macros.html" import steam_block %}
 <div class="header bg_{{ range(bg_num or config.BG_NUM) | random }} cf">
     <div class="container">
-        <div id="status">
-            <div class="title">Current status: <span>Closed Beta</span></div>
-            <div class="info">
-                During this early stage in development, mod uploading is restricted only to pre-approved users.
-                <br />
-                This is to restrict load upon the server.
-                <br />
-                <br />
-                After a sufficient testing period, the site will move into <span>Open Beta</span>, allowing all users to upload mods.
-            </div>
-        </div>
         {%- if current_user.is_authenticated() -%}
             {{ steam_block(current_user, True) }}
             <ul class="dropdown-menu">
