@@ -3,7 +3,7 @@
     {{ user.name }}
     <div><a href="{{ user.perma_profile_url }}" target="_blank">Steam</a></div>
     {%- if current_user.is_moderator() -%}
-        <div>Current Tokens: {{ user.upload_credits }}</div>
+        <div>Current Tokens: {% if user.upload_credits != -1 -%} {{ user.upload_credits | default(0) }} {%- else -%} Infinite {%- endif %} token{{ user.upload_credits | pluralize }}</div>
         <div>Is moderator: {{ 'Yes' if user.is_moderator() else 'No' }}</div>
         <div><a href="{{ url_for('moderator.token', user_id=user.account_id) }}">Grant Tokens and Manage User</a></div>
     {%- endif -%}
