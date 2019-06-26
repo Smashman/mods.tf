@@ -7,7 +7,7 @@
                 {%- if current_user.is_uploader() -%}
                     <li><a href="{{ url_for('mods.upload') }}">Upload mod<br />(
                         {%- if current_user.upload_credits != -1 -%}
-                        {{ current_user.upload_credits | default(0) }} {%- else -%} Infinite {%- endif %} credit{{ current_user.upload_credits | pluralize }}
+                        {{ current_user.upload_credits | default(0) }} {%- else -%} Infinite {%- endif %} token{{ current_user.upload_credits | pluralize }}
                         )</a></li>
                 {%- endif -%}
                 {%- if current_user.is_admin() -%}

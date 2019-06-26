@@ -12,6 +12,10 @@ class AnonymousUser(AnonymousUserMixin):
         return False
 
     @staticmethod
+    def is_moderator():
+        return False
+
+    @staticmethod
     def is_admin():
         return False
 
@@ -62,6 +66,9 @@ class User(db.Model):
     @staticmethod
     def is_authenticated():
         return True
+
+    def is_moderator(self):
+        return True if self.user_class > 0 else False
 
     def is_admin(self):
         return True if self.user_class > 1 else False

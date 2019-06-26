@@ -7,7 +7,7 @@
     {%- if user_info.avatar_small -%}
         <div class="iconholder"><img src="{{ user_info.avatar_small }}"/></div>
     {%- endif -%}
-    <div class="name">{{ user_info.name }}</div>
+    <div class="name">{{ user_info.name }}{{ ' (Moderator)' if header and user_info.is_moderator() }}</div>
     {%- if header -%}
         <div class="dropdown-arrow"></div>
     {%- endif -%}

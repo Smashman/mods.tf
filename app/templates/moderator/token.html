@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% from "macros.html" import form_field, steam_block, field_errors %}
+{% block content %}
+    {%- if user -%}
+        <div class="author-block cf">{{ steam_block(user, no_link=True) }}</div>
+        <form method=POST id="token_form">
+            {{ token_form.hidden_tag() }}
+            {{ form_field(token_form.token_number) }} (-1 is Infinite)
+            {{ form_field(token_form.is_moderator) }}
+            {{ token_form.save(class="input-default") }}
+        </form>
+    {%- endif -%}
+{% endblock %}

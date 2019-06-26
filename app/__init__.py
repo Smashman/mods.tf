@@ -39,6 +39,7 @@ import views
 from .tf2.views import tf2 as tf2_blueprint
 from .users.views import users as users_blueprint
 from .mods.views import mods as mods_blueprint
+from .moderator.views import moderator as moderator_blueprint
 
 # Admin
 from .users.models import User
@@ -53,6 +54,7 @@ from .tf2.models import TF2Item, TF2EquipRegion, TF2BodyGroup
 app.register_blueprint(users_blueprint)
 app.register_blueprint(mods_blueprint)
 app.register_blueprint(tf2_blueprint)
+app.register_blueprint(moderator_blueprint)
 
 # Assets
 from assets import assets

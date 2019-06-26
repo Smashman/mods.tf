@@ -2,6 +2,11 @@
 {% block content %}
     {{ user.name }}
     <div><a href="{{ user.perma_profile_url }}" target="_blank">Steam</a></div>
+    {%- if current_user.is_moderator() -%}
+        <div>Current Tokens: {{ user.upload_credits }}</div>
+        <div>Is moderator: <input type="checkbox" disabled="disabled" {{ 'checked' if user.is_moderator() }}/></div>
+        <div><a href="{{ url_for('moderator.token', user_id=user.account_id) }}">Grant Tokens and Manage User</a></div>
+    {%- endif -%}
     {%- if current_user.account_id == user.account_id -%}
         {%- if current_user.is_uploader() -%}
             <div><a href="{{ url_for('mods.upload') }}">Upload a mod</a></div>
