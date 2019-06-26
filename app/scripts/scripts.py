@@ -20,8 +20,23 @@ def insert_classes():
     db.session.commit()
 
 
+def get_items(start=0):
+    items = []
+    try:
+        schema = steam.api.interface("IEconItems_440").GetSchemaItems(language="english", start=start).get("result")
+        if schema.get('items'):
+            items += schema.get('items')
+        if schema.get('next'):
+            items += get_items(schema.get('next'))
+    except HTTPError:
+        raise
+    return items
+
+
 def update_tf2_items():
     update_completed = False
+
+    defindex_start = 47  # Start at Demoman's Fro as everything before is a weapon
 
     insert_classes()
 
@@ -49,15 +64,16 @@ def update_tf2_items():
 
     for i in range(10):
         if not update_completed:
-            print "Not completed. Trying again."
+            if i > 0:
+                print "Not completed. Trying again."
             try:
-                schema = steam.api.interface("IEconItems_440").GetSchema(language="english").get("result")
+                items = get_items(defindex_start)
+                schema = steam.api.interface("IEconItems_440").GetSchemaOverview(language="english").get("result")
                 items_game_url = schema.get('items_game_url')
                 items_game = steam.vdf.load(urllib2.urlopen(items_game_url)).get('items_game')
             except HTTPError:
                 db.session.rollback()
                 continue
-            items = schema.get('items')
             print "{} items in schema. Starting loop".format(len(items))
             for item in items:
                 defindex = item.get('defindex')

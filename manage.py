@@ -4,7 +4,7 @@ Manager script :)
 Takes the following commands:
 - runserver
 - shell
-- update_tf2_items (Updates information about TF2 Items stored in the DB - Runs every 24h via cron)
+- update_tf2_items (Updates information about TF2 Items stored in the DB - Runs every 14d via cron)
 - delete_expired_packages (Deletes packages that have expired - Runs every 24h via cron)
 """
 
