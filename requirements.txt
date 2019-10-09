@@ -15,7 +15,7 @@ MarkupSafe==0.23
 MySQL-python==1.2.5
 SQLAlchemy==0.9.6
 WTForms==1.0.5
-Werkzeug==0.9.6
+Werkzeug==0.15.3
 alembic==0.6.5
 argparse==1.2.1
 blinker==1.3
