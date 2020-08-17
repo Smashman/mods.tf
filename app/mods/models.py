@@ -1,6 +1,7 @@
 from app import db
 import datetime
 from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.dialects.mysql import INTEGER
 
 
 class ModAuthor(db.Model):
@@ -133,7 +134,7 @@ class Mod(db.Model):
     pretty_name = db.Column(db.String(256))
     description = db.Column(db.Text())
     zip_file = db.Column(db.String(256))
-    workshop_id = db.Column(db.Integer)
+    workshop_id = db.Column(INTEGER(unsigned=True))
     app = db.Column(db.Integer, default=440)
     package_format = db.Column(db.Enum('VPK', 'ZIP', name='package_types'), default='VPK')
     manifest_steamid = db.Column(db.Integer)
