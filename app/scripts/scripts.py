@@ -148,8 +148,7 @@ def update_tf2_items():
                                             basename_class = "demo"
                                         class_model = basename.replace("%s", basename_class)
                             elif model_player:
-                                #class_model = model_player
-                                continue
+                                class_model = model_player
                             else:
                                 continue
                             class_and_model = {tf2_class: class_model}
