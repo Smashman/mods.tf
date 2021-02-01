@@ -1,3 +1,4 @@
+import ntpath
 import os
 import steam
 import zipfile
@@ -66,12 +67,14 @@ def extract_and_image(zip_in, db_record):
 
     if icon:
         # 'icon' can contain a lot of backslashes for reasons unknown to man, we'll get rid of them here.
-        icon = os.path.normpath(icon.replace('\\', os.path.sep))
+        icon = ntpath.normpath(icon.replace('\\', ntpath.sep))
+        iconUnix = os.path.normpath(icon.replace('\\', os.path.sep))
 
     # List of files we want to extract and later pack into a VPK
     to_extract = []
 
     # Start extracting
+    print "Start extracting"
     with zipfile.ZipFile(zip_filename) as zip_open:
         for infile in zip_open.namelist():
             # Only extract the contents of the game, materials or models folder
@@ -79,7 +82,7 @@ def extract_and_image(zip_in, db_record):
             if '..' in infile or infile.startswith('/'):
                 flash("Error", "danger")
                 return
-            if os.path.dirname(infile).split(os.path.sep)[0] in allowed_extracts:
+            if ntpath.dirname(infile).split(ntpath.sep)[0] in allowed_extracts:
                 to_extract.append(infile)
 
         # How many to extract
@@ -89,12 +92,16 @@ def extract_and_image(zip_in, db_record):
         print "Extracting."
         safe_name = secure_filename(name)
         folder_name = "{mod_id}".format(mod_id=mod_id)
+        os.path.altsep = '\\'
         zip_open.extractall(os.path.join(output_folder, folder_name), to_extract)
 
         if icon:
             # Load the icon into a byte stream
             print "Reading TGA image."
-            tga_f = BytesIO(zip_open.read(icon))
+            try:
+                tga_f = BytesIO(zip_open.read(iconUnix))
+            except KeyError:
+                tga_f = BytesIO(zip_open.read(icon))
             img = Image.open(tga_f)
 
             # Save the image as a PNG
@@ -115,54 +122,54 @@ def extract_and_image(zip_in, db_record):
             backpack_icon = ModImage(filename, db_record.id, 1)
             db.session.add(backpack_icon)
 
-        # Fetch desired item info from manifest
+    # Fetch desired item info from manifest
 
-        items_game_info = manifest['ImportSession']['ItemSchema']
+    items_game_info = manifest['ImportSession']['ItemSchema']
 
-        equip_regions = []
-        equip_region = items_game_info.get('equip_region')
-        if equip_region:
-            equip_regions.append(equip_region)
+    equip_regions = []
+    equip_region = items_game_info.get('equip_region')
+    if equip_region:
+        equip_regions.append(equip_region)
+    else:
+        equip_region_dict = items_game_info.get('equip_regions')
+        if equip_region_dict:
+            equip_regions += list_from_vdf_dict(equip_region_dict)
+
+    visuals = items_game_info.get('visuals')
+    bodygroups = []
+    if visuals:
+        bodygroups_dict = visuals.get('player_bodygroups')
+        if bodygroups_dict:
+            bodygroups += list_from_vdf_dict(bodygroups_dict)
+
+    used_by_classes = items_game_info.get('used_by_classes')
+    used_by_classes = list_from_vdf_dict(used_by_classes)
+    used_by_classes = [i.lower() for i in used_by_classes]
+    model_player = items_game_info.get('model_player')
+
+    class_models = {}
+
+    if used_by_classes and len(used_by_classes) is 1:
+        if model_player:
+            class_models.update({used_by_classes[0].lower(): model_player})
         else:
-            equip_region_dict = items_game_info.get('equip_regions')
-            if equip_region_dict:
-                equip_regions += list_from_vdf_dict(equip_region_dict)
+            return
 
-        visuals = items_game_info.get('visuals')
-        bodygroups = []
-        if visuals:
-            bodygroups_dict = visuals.get('player_bodygroups')
-            if bodygroups_dict:
-                bodygroups += list_from_vdf_dict(bodygroups_dict)
-
-        used_by_classes = items_game_info.get('used_by_classes')
-        used_by_classes = list_from_vdf_dict(used_by_classes)
-        used_by_classes = [i.lower() for i in used_by_classes]
-        model_player = items_game_info.get('model_player')
-
-        class_models = {}
-
-        if used_by_classes and len(used_by_classes) is 1:
-            if model_player:
-                class_models.update({used_by_classes[0].lower(): model_player})
-            else:
-                return
-
-        elif not used_by_classes or len(used_by_classes) > 1:
-            if not used_by_classes:
-                used_by_classes = all_classes
-            model_player_per_class = items_game_info.get('model_player_per_class')
-            model_player_per_class = dict((k.lower(), v) for k, v in model_player_per_class.iteritems())
-            for tf2_class in used_by_classes:
-                if tf2_class.title() in all_classes:
-                    if model_player_per_class:
-                        class_model = model_player_per_class.get(tf2_class)
-                    elif model_player:
-                        class_model = model_player
-                    else:
-                        continue
-                    class_and_model = {tf2_class: class_model}
-                    class_models.update(class_and_model)
+    elif not used_by_classes or len(used_by_classes) > 1:
+        if not used_by_classes:
+            used_by_classes = all_classes
+        model_player_per_class = items_game_info.get('model_player_per_class')
+        model_player_per_class = dict((k.lower(), v) for k, v in model_player_per_class.iteritems())
+        for tf2_class in used_by_classes:
+            if tf2_class.title() in all_classes:
+                if model_player_per_class:
+                    class_model = model_player_per_class.get(tf2_class)
+                elif model_player:
+                    class_model = model_player
+                else:
+                    continue
+                class_and_model = {tf2_class: class_model}
+                class_models.update(class_and_model)
 
         # Update database record
 
