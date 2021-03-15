@@ -171,32 +171,32 @@ def extract_and_image(zip_in, db_record):
                 class_and_model = {tf2_class: class_model}
                 class_models.update(class_and_model)
 
-        # Update database record
+    # Update database record
 
-        db_record.name = safe_name
-        db_record.pretty_name = manifest['ImportSession']['name']
-        db_record.manifest_steamid = int(manifest['steamid'], 16)
-        db_record.item_slot = "misc"  # Only miscs have Workshop zips to date
-        db_record.image_inventory = items_game_info.get('image_inventory')
-        if bodygroups:
-            for bodygroup in bodygroups:
-                bg_db = TF2BodyGroup.query.get(bodygroup)
-                if bg_db:
-                    db_record.bodygroups.append(bg_db)
-        if equip_regions:
-            for er in equip_regions:
-                er_db = TF2EquipRegion.query.get(er)
-                if er_db:
-                    db_record.equip_regions.append(er_db)
-        if class_models:
-            for class_name, model in class_models.items():
-                db_record.class_model[class_name] = (get_or_create(db.session, ModClassModel, mod_id=mod_id,
-                                                                   class_name=class_name, model_path=model))
+    db_record.name = safe_name
+    db_record.pretty_name = manifest['ImportSession']['name']
+    db_record.manifest_steamid = int(manifest['steamid'], 16)
+    db_record.item_slot = "misc"  # Only miscs have Workshop zips to date
+    db_record.image_inventory = items_game_info.get('image_inventory')
+    if bodygroups:
+        for bodygroup in bodygroups:
+            bg_db = TF2BodyGroup.query.get(bodygroup)
+            if bg_db:
+                db_record.bodygroups.append(bg_db)
+    if equip_regions:
+        for er in equip_regions:
+            er_db = TF2EquipRegion.query.get(er)
+            if er_db:
+                db_record.equip_regions.append(er_db)
+    if class_models:
+        for class_name, model in class_models.items():
+            db_record.class_model[class_name] = (get_or_create(db.session, ModClassModel, mod_id=mod_id,
+                                                                class_name=class_name, model_path=model))
 
-        # And we're fin
-        print "Done: {}".format(db_record.zip_file)
-        db_record.completed = True
-        return db_record
+    # And we're fin
+    print "Done: {}".format(db_record.zip_file)
+    db_record.completed = True
+    return db_record
 
 
 def vpk_package(folder):
